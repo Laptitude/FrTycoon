@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2250%22 font-size=%2250%22>🇫🇷</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>France Tycoon 3D</title>
+<style>
+:root{--bg:#080b12;--panel:#111722;--panel2:#171e2b;--fg:#f5f7fb;--mut:#8d98aa;--line:#252e3d;--gold:#ffd35a;--green:#54e38a;--blue:#59a8ff;--red:#ff667d;--purple:#b77cff;--cyan:#62d9ff;box-sizing:border-box}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden}body{background:radial-gradient(circle at 50% -20%,#1a2740 0,#080b12 55%);color:var(--fg);font:13px/1.35 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}button{border:0;color:var(--fg);cursor:pointer}.app{height:100dvh;min-height:100vh;display:grid;grid-template-rows:68px 1fr 34px;min-width:1040px}
+/* Header / portefeuille */
+.top{height:68px;margin:0;padding:8px 14px;display:flex;align-items:center;gap:10px;background:rgba(9,13,21,.94);border-bottom:1px solid var(--line);box-shadow:0 4px 24px #0008;z-index:10}.brand{display:flex;align-items:center;gap:9px;min-width:220px}.brand .flag{font-size:25px}.brand b{font-size:16px}.brand small{display:block;color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.12em}.levelBox{width:260px;padding:6px 10px;background:linear-gradient(135deg,#151f31,#101722);border:1px solid #334158;border-radius:10px}.levelTop{display:flex;align-items:center;justify-content:space-between;gap:8px}.levelTop b{font-size:12px}.levelTop span{color:var(--gold);font-weight:800;font-size:11px}.xpbar{height:7px;margin-top:5px;background:#273142;border-radius:99px;overflow:hidden}.xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#59a8ff,#b77cff);border-radius:99px;transition:width .25s}.levelNext{margin-top:3px;color:var(--mut);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wallet{display:flex;gap:8px;flex:1}.money{min-width:210px;padding:7px 12px;border:1px solid #354057;background:linear-gradient(135deg,#182133,#111722);border-radius:10px}.money .label{color:var(--mut);font-size:10px;text-transform:uppercase}.money strong{display:block;font-size:19px;line-height:20px;color:#fff}.money em{font-style:normal;color:var(--green);font-size:11px}.stat{padding:7px 11px;background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:105px}.stat span{display:block;color:var(--mut);font-size:10px}.stat b{font-size:14px}.tax{display:flex;align-items:center;gap:5px;color:var(--mut);font-size:10px}.tax input{width:75px}.tax b{color:#fff;font-size:10px}.topActions{display:flex;gap:5px;align-items:center}.topActions button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px}.topActions .play{background:var(--green);color:#07110b;border-color:var(--green);font-weight:800}
+/* Main shell */
+.main{min-height:0;display:grid;min-height:0;grid-template-columns:minmax(560px,1fr) 390px;gap:10px;padding:10px;overflow:hidden}.left{min-width:0;display:grid;grid-template-rows:minmax(330px,1fr) 190px;gap:10px}.mapCard,.panel{background:rgba(17,23,34,.94);border:1px solid var(--line);border-radius:13px;box-shadow:0 8px 30px #0005;overflow:hidden}.mapHead{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--line)}.mapHead b{font-size:13px}.mapHead span{color:var(--mut);font-size:11px}.mapTools{display:flex;gap:5px;align-items:center}.mapTools button,.mapTools select{background:#1c2635;border:1px solid #2c394c;border-radius:7px;padding:5px 8px;color:var(--fg)}.mapTools button:hover,.mapTools select:hover{border-color:#53647e}.mapTools select{max-width:150px}.mapTools button.active{background:#243a2c;border-color:var(--green);color:var(--green)}#v{height:calc(100% - 42px);min-height:0;border-radius:0;overflow:hidden;background:#0b1723;position:relative}#v canvas{width:100%;height:100%;display:block;touch-action:none}
+.mapLocked{color:#8a93a1}.mapLegend{position:absolute;right:10px;top:10px;z-index:4;max-width:260px;background:#09111dcc;border:1px solid #ffffff14;border-radius:9px;padding:7px 9px;backdrop-filter:blur(4px);font-size:10px;pointer-events:none}.mapLegend b{color:#fff}.mapLegend span{color:var(--mut)}
+#tip{position:absolute;left:12px;bottom:10px;color:#dce5f0;background:#0a1019cc;border:1px solid #ffffff12;padding:5px 8px;border-radius:7px;font-size:10px}
+/* KPI strip */
+.kpiRow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi{padding:10px 12px;background:linear-gradient(145deg,#151d2a,#10151e);border:1px solid var(--line);border-radius:11px}.kpi .ico{float:left;font-size:22px;margin-right:8px}.kpi span{display:block;color:var(--mut);font-size:10px;text-transform:uppercase}.kpi b{font-size:16px}.kpi small{display:block;color:var(--green);font-size:10px;margin-top:1px}
+/* Right idle panel */
+.right{min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px}.rightTabs{display:flex;gap:5px}.tab{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--mut)}.tab.on{background:#202a3a;color:#fff;border-color:#43526b}.scroll{min-height:0;overflow:auto;padding-right:2px}.panel{padding:11px;margin-bottom:8px}.panelTitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.panelTitle b{font-size:13px}.panelTitle small{color:var(--mut)}
+/* Business catalogue */
+.shop{display:grid;gap:7px}.shopCat{border:1px solid #263449;border-radius:10px;padding:7px;background:#0f1722}.shopCatTitle{display:flex;justify-content:space-between;align-items:center;padding:3px 2px 6px}.shopCatTitle b{font-size:12px}.shopCatTitle small,.shopSub{color:var(--mut);font-size:9px}.shopSub{padding:4px 3px;text-transform:uppercase;letter-spacing:.06em}.biz.dragging{opacity:.45;transform:scale(.98)}.districtInfo{position:absolute;left:10px;top:10px;z-index:4;background:#09111ddd;border:1px solid #ffffff18;border-radius:9px;padding:8px 10px;font-size:10px;pointer-events:none}.districtInfo b{color:#fff}.districtInfo span{color:var(--mut)}.districtDrop{outline:3px solid #ffd35a!important;outline-offset:3px}
+.shopCat{display:grid;gap:6px;padding:7px 0 3px}.shopCatTitle{display:flex;align-items:center;justify-content:space-between;padding:8px 9px;border:1px solid #344158;border-radius:9px;background:linear-gradient(135deg,#1a2535,#111923);position:sticky;top:0;z-index:2}.shopCatTitle b{font-size:12px}.shopCatTitle small{color:var(--mut);font-size:9px}.shopSub{padding:3px 4px;color:#9fb0c7;font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+.buildHint{padding:7px 9px;margin-bottom:7px;border:1px solid #26374b;border-radius:8px;background:#101a27;color:var(--mut);font-size:10px;line-height:1.35}.buildHint b{color:#ffd35a}.mapZones{display:grid;gap:5px}.mapZone{padding:7px 8px;border:1px solid #293448;border-radius:8px;background:#121a25}.mapZone.lock{opacity:.72}.mapZone.on{border-color:#54e38a;background:#14251d}.mapZoneTop{display:flex;justify-content:space-between;gap:8px;font-weight:800}.mapZone small{display:block;color:var(--mut);margin-top:3px;font-size:10px}.mapZone .ok{color:var(--green)}.mapZone .req{color:var(--gold)}.biz{position:relative;padding:9px;background:linear-gradient(135deg,#171f2d,#121923);border:1px solid #293448;border-radius:10px;cursor:pointer;transition:.12s transform,.12s border-color,.12s background}.biz:hover{transform:translateY(-1px);border-color:#53647e;background:#1a2433}.bizTop{display:flex;justify-content:space-between;align-items:center;gap:8px}.bizName{font-weight:800}.bizCount{color:var(--mut);font-size:11px}.bizMeta{display:flex;justify-content:space-between;align-items:center;margin-top:5px;color:var(--mut);font-size:10px}.bizMeta strong{color:var(--gold);font-size:11px}.buy{margin-top:7px;width:100%;padding:7px;border-radius:7px;background:var(--green);color:#07110b;font-weight:800}.buy:disabled{background:#2b3340;color:#7d8795}.bizBar{height:3px;margin-top:6px;background:#252e3d;border-radius:4px;overflow:hidden}.bizBar i{display:block;height:100%;background:var(--blue)}
+
+/* Radial construction menu */
+.radialMenu{position:absolute;z-index:20;width:0;height:0;display:none;pointer-events:none}.radialMenu.open{display:block}.radialCenter{position:absolute;left:-45px;top:-45px;width:90px;height:90px;border-radius:50%;display:grid;place-items:center;text-align:center;padding:8px;background:radial-gradient(circle,#24364a 0,#121c29 70%);border:2px solid #ffd35a;box-shadow:0 0 0 7px #ffd35a18,0 12px 34px #000b;color:#fff;font-size:10px;font-weight:900;pointer-events:auto;z-index:3}.radialCenter small{display:block;color:#aebbd0;font-size:8px;font-weight:600}.radialItem{position:absolute;left:-50px;top:-50px;width:100px;height:100px;border-radius:50%;border:1px solid #43556c;background:linear-gradient(145deg,#182536,#0e1722);box-shadow:0 10px 25px #0009,0 0 0 1px #ffffff08;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px;text-align:center;color:#fff;pointer-events:auto;transition:.15s transform,.15s border-color,.15s box-shadow,.15s opacity;transform:translate(var(--rx),var(--ry))}.radialItem:hover{transform:translate(var(--rx),var(--ry)) scale(1.08);border-color:#ffd35a;box-shadow:0 0 0 3px #ffd35a22,0 12px 30px #000b}.radialItem .riIcon{font-size:23px;line-height:1}.radialItem b{font-size:8.5px;line-height:1.05;max-width:84px}.radialItem small{font-size:7.5px;color:#aebbd0}.radialItem.good{border-color:#54e38a;box-shadow:0 0 0 2px #54e38a22,0 10px 28px #000b}.radialItem.warn{border-color:#ff667d;background:linear-gradient(145deg,#321925,#17121a)}.radialItem.locked{opacity:.48;filter:saturate(.45)}.radialItem.recommended::after{content:'RECOMMANDÉ';position:absolute;bottom:5px;font-size:6px;font-weight:900;letter-spacing:.06em;color:#54e38a}.radialClose{position:absolute;left:52px;top:-12px;width:34px;height:34px;border-radius:50%;background:#263143;border:1px solid #56667b;color:#fff;pointer-events:auto;font-size:13px;z-index:4}.radialBackdrop{position:absolute;inset:0;z-index:19;background:radial-gradient(circle at var(--mx) var(--my),#ffd35a0b 0,transparent 180px);display:none;pointer-events:auto}.radialBackdrop.open{display:block}
+/* Fixed no-scroll shop */
+#shopPanel{display:flex;flex-direction:column;min-height:0;overflow:hidden}.shopTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:7px}.shopTab{min-width:0;padding:7px 4px;border-radius:8px;border:1px solid #2c394c;background:#141d2a;color:#9eabba;font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shopTab.on{color:#fff;border-color:#59a8ff;background:#1d3046;box-shadow:inset 0 -2px 0 #59a8ff}.shopTab.alert{border-color:#ff667d;color:#ff9aaa}.shopTab.reco{border-color:#54e38a;color:#54e38a;box-shadow:0 0 0 1px #54e38a16}.shopGuideArrow{position:absolute;right:6px;top:39px;z-index:8;color:#ff667d;font-size:20px;font-weight:900;animation:guideArrow .8s ease-in-out 2}@keyframes guideArrow{0%,100%{transform:translateX(0)}50%{transform:translateX(-7px)}}.shop{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;min-height:0;overflow:hidden}.shopCat{display:contents}.shopCatTitle,.shopSub{display:none}.biz{min-width:0;padding:7px;border-radius:9px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}.bizTop{min-width:0}.bizName{font-size:9px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bizCount{font-size:8px}.bizMeta{display:block;font-size:8px;line-height:1.2;min-height:27px}.bizMeta span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bizMeta strong{display:block;margin-top:2px;font-size:9px}.bizBar{margin-top:4px}.buy{font-size:8px;padding:6px 4px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.biz.smartGood{border-color:#54e38a;background:linear-gradient(145deg,#152a20,#101b17);box-shadow:0 0 0 1px #54e38a18}.biz.smartBad{border-color:#ff667d;background:linear-gradient(145deg,#2a1820,#17131a)}.biz.smartLocked{opacity:.58}.biz.smartBad .buy{background:#48222d;color:#ff9aaa}.biz.smartLocked .buy{background:#2b3340;color:#7d8795}
+@media(max-width:1180px){.app{min-width:0}.main{grid-template-columns:minmax(500px,1fr) 350px}.brand{min-width:185px}.levelBox{width:220px}.shopTabs{gap:3px}.shopTab{font-size:8px}}
+@media(max-height:760px){.main{padding:7px;gap:7px}.left{grid-template-rows:minmax(300px,1fr) 170px}.panel{padding:8px}.buildHint{padding:5px 7px;margin-bottom:5px;font-size:9px}.shopTabs{margin-bottom:5px}.biz{padding:6px}.buy{padding:5px 3px}.radialItem{width:102px;height:102px;left:-51px;top:-51px}.radialCenter{width:78px;height:78px;left:-39px;top:-39px}}
+
+/* Existing panels */
+.g{display:block;margin:0}.c{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px;margin-bottom:8px}.bl{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.bl button{padding:8px;text-align:left;background:#192231;border:1px solid #2c394c;border-radius:7px}.bl small{display:block;color:var(--mut);margin-top:2px;font-size:10px}.r{display:grid;grid-template-columns:92px 1fr 45px;gap:6px;align-items:center;margin:5px 0}.r span:last-child{text-align:right;font-variant-numeric:tabular-nums}.b{height:5px;background:#293241;border-radius:4px;overflow:hidden}.b i{display:block;height:100%;border-radius:4px}.scroll #sl{background:linear-gradient(145deg,#151e2c,#10161f)}
+#st{display:block}#log{max-height:110px;overflow:auto;font-size:11px}#log div{padding:4px 0;border-bottom:1px solid var(--line)}/* Objectives / charts */
+#ob{background:linear-gradient(145deg,#171f2d,#111722)}#ob .r{grid-template-columns:1fr 70px 40px}#chart{width:100%;height:110px;display:block;background:#0b1018;border-radius:8px;margin-top:5px}#bottleneck{font-size:10px}.shortcut{display:flex;flex-wrap:wrap;gap:4px}.shortcut kbd{background:#202a38;border:1px solid #344158;border-radius:5px;padding:3px 5px;color:#dfe7f3;font-size:10px}
+/* Selection / toast / modal */
+.mode{outline:2px solid var(--green);box-shadow:0 0 0 3px #54e38a22}.replaceBurst{position:absolute;pointer-events:none;z-index:8;transform:translate(-50%,-50%);font-size:18px;animation:burst .72s ease-out forwards;white-space:nowrap}.replaceBurst b{display:inline-block;margin:0 2px;animation:coinFly .72s ease-out forwards}@keyframes burst{0%{opacity:1;transform:translate(-50%,-50%) scale(.55)}45%{opacity:1;transform:translate(-50%,-50%) scale(1.35)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}@keyframes coinFly{to{transform:translate(var(--dx),var(--dy)) rotate(360deg);opacity:0}}.fl{position:absolute;font-weight:900;text-shadow:0 1px 3px #000;animation:up 1.25s forwards;transform:translate(-50%,0);z-index:12;white-space:nowrap;will-change:transform,left,top}.fl.paymentNotice{padding:6px 12px;border:1px solid #54e38a;background:#0b1710eF;border-radius:9px;box-shadow:0 5px 18px #0008;letter-spacing:.01em}.fl.paymentNotice{animation:paymentUp 1.25s forwards}@keyframes up{to{transform:translate(-50%,calc(-42px - var(--fy,0px)));opacity:0}}@keyframes paymentUp{0%{opacity:0;transform:translate(-50%,6px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}72%{opacity:1;transform:translate(-50%,-2px) scale(1)}100%{opacity:0;transform:translate(-50%,-16px) scale(1.02)}}#toast{position:fixed;left:50%;bottom:46px;transform:translateX(-50%);background:#182131;border:1px solid var(--green);padding:9px 15px;border-radius:9px;z-index:40;display:none;font-weight:800;box-shadow:0 10px 30px #0008}.cf{position:absolute;top:-12px;width:7px;height:11px;animation:fall 2s linear forwards}@keyframes fall{to{transform:translateY(420px) rotate(540deg);opacity:0}}#md{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:50}#md>div{background:var(--panel);max-width:440px;width:100%;border-radius:12px;padding:16px;border:1px solid var(--green)}#md button{display:block;width:100%;margin-top:8px;text-align:left;background:#192231;border:1px solid var(--line);padding:8px;border-radius:7px}
+.footer{min-height:34px;display:flex;align-items:center;padding:0 12px;padding-bottom:env(safe-area-inset-bottom);justify-content:center;color:#697588;font-size:10px;border-top:1px solid var(--line);background:#090d14}.footer b{color:#aab5c5}
+@media(max-width:1100px){.app{min-width:0}.main{grid-template-columns:1fr 340px}.wallet .stat:nth-child(3){display:none}.brand{min-width:175px}}@media(max-width:850px){html,body{overflow:auto}.app{height:auto;min-height:100vh}.main{grid-template-columns:1fr;padding:7px}.right{max-height:none}.left{grid-template-rows:520px auto}.wallet .stat{display:none}.top{position:sticky;top:0}.footer{height:auto;min-height:34px;padding-bottom:env(safe-area-inset-bottom)}.right .scroll{overflow:visible}}
+
+.tacticalMap{height:100%;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 42%,#1b3045 0,#0d1a27 48%,#08111a 100%);isolation:isolate}.tacticalMap:before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent);pointer-events:none}.tMapFrance{position:absolute;inset:5% 8% 4%;width:84%;height:91%;overflow:visible;z-index:0;pointer-events:none}.tMapFrance .land{fill:#152838;stroke:#36506a;stroke-width:1.2}.tMapFrance .coast{fill:#0a1621;stroke:#2c4358;stroke-width:1}.tMapFrance .route{fill:none;stroke:#3b5870;stroke-width:1.3;stroke-dasharray:3 4;opacity:.7}.tMapFrance .route.done{stroke:#54e38a;stroke-width:2.2;stroke-dasharray:none;opacity:.75}.tMapFrance .route.next{stroke:#ffd35a;stroke-width:2;opacity:.75}.tacticalTitle{position:absolute;left:16px;top:14px;z-index:4;padding:9px 12px;border:1px solid #33485e;border-radius:10px;background:#09131ed9;backdrop-filter:blur(7px);box-shadow:0 8px 24px #0004}.tacticalTitle b{display:block;font-size:13px}.tacticalTitle span{display:block;margin-top:2px;color:#9eafc2;font-size:10px}.tacticalStats{position:absolute;right:16px;top:14px;z-index:4;display:flex;gap:6px}.tacticalStats span{padding:7px 9px;border-radius:8px;background:#09131ed9;border:1px solid #33485e;color:#aebdcd;font-size:10px}.tacticalStats b{color:#fff}.tRegion{position:absolute;width:142px;min-height:68px;text-align:left;padding:9px 9px 8px 39px;border-radius:11px;border:1px solid #3a4c60;background:linear-gradient(145deg,#111e2b,#0b141e);color:#eef4fb;transition:.16s transform,.16s border-color,.16s box-shadow,.16s opacity;cursor:pointer;z-index:3;box-shadow:0 8px 22px #0006;transform:translate(-50%,-50%)}.tRegion:hover{transform:translate(-50%,-50%) scale(1.035);border-color:#7690ad;box-shadow:0 10px 28px #0008}.tRegion.unlocked{border-color:#3f7d59;background:linear-gradient(145deg,#12291e,#0d1915)}.tRegion.unlocked:hover{border-color:#68d695;box-shadow:0 0 0 2px #54e38a20,0 12px 30px #0009}.tRegion.current{border-color:#ffd35a;box-shadow:0 0 0 2px #ffd35a28,0 10px 28px #0008}.tRegion.locked{opacity:.72;cursor:not-allowed}.tRegion.ready{border-color:#d2a93d;box-shadow:0 0 0 2px #ffd35a15,0 8px 24px #0007}.tRegion .tEmoji{position:absolute;left:9px;top:10px;width:26px;height:26px;display:grid;place-items:center;border-radius:7px;background:#263547;font-size:17px}.tRegion.unlocked .tEmoji{background:#1c4930}.tRegion b{display:block;font-size:10.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tRegion small{display:block;color:#aeb9c8;margin-top:4px;line-height:1.2;font-size:8.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tRegion i{display:block;margin-top:5px;font-style:normal;font-size:8px;font-weight:900;letter-spacing:.04em;color:#54e38a}.tRegion.locked i{color:#ffd35a}.tRegion.ready i{color:#ffd35a}@media(max-height:760px){.tRegion{min-height:62px;width:132px;padding-top:7px;padding-bottom:6px}.tRegion .tEmoji{top:8px}.tRegion small{margin-top:3px}.tRegion i{margin-top:3px}.tacticalTitle,.tacticalStats{top:9px}.tacticalHint{bottom:7px}}.tacticalHint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;padding:7px 11px;border:1px solid #33485e;border-radius:9px;background:#09131ed9;color:#b8c5d3;font-size:9px;backdrop-filter:blur(6px);white-space:nowrap}.tacticalHint b{color:#fff}.regionBack{position:absolute;left:12px;top:10px;z-index:6;background:#172334;border:1px solid #43526b;border-radius:8px;padding:7px 10px;color:#fff;font-weight:800;display:none}.focusTitle{display:none;position:absolute;left:12px;top:54px;z-index:5;padding:8px 11px;background:#09111ddd;border:1px solid #ffffff18;border-radius:9px}.focusTitle b{display:block}.focusTitle small{color:#9daabd}
+
+/* ===== COCKPIT REGION EPURE ===== */
+.app{grid-template-rows:82px 1fr 34px}
+.top{height:82px;padding:10px 18px;display:grid;grid-template-columns:minmax(210px,1fr) minmax(320px,1.15fr) minmax(210px,1fr);gap:18px;align-items:center}
+.top .brand,.top .levelBox,.top .wallet,.top .tax,.top .topActions{display:none!important}
+.regionHub{display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:center;gap:18px;width:100%;height:100%}
+.hubMoney,.hubServices,.hubLevel{min-width:0;height:58px}
+.hubMoney{display:flex;align-items:center;justify-content:flex-start}
+.hubMoney strong{font-size:25px;letter-spacing:-.03em;white-space:nowrap}
+.hubMoney small{display:block;color:#8d98aa;font-size:10px;margin-top:2px;white-space:nowrap}
+.hubServices{display:flex;align-items:center;justify-content:center;gap:10px}
+.serviceGauge{width:150px;padding:8px 10px;border:1px solid #31533e;background:#0f1b16;border-radius:10px;box-shadow:inset 0 0 18px #54e38a08}
+.serviceGauge.bad{border-color:#6b2937;background:#211116;animation:serviceAlarm .8s ease-in-out infinite alternate}
+.serviceGauge .sgTop{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800}
+.serviceGauge .sgTop b{font-size:15px}
+.serviceGauge .sgBar{height:5px;margin-top:5px;background:#26342e;border-radius:99px;overflow:hidden}.serviceGauge .sgBar i{display:block;height:100%;width:0;background:#54e38a;border-radius:99px;transition:width .25s}.serviceGauge.bad .sgBar i{background:#ff667d}
+.hubLevel{display:flex;align-items:center;justify-content:flex-end;gap:12px}.hubLevelMain{text-align:right}.hubLevelMain b{font-size:21px;white-space:nowrap}.hubLevelMain small{display:block;color:#8d98aa;font-size:9px}.hubXp{width:130px}.hubXpBar{height:6px;background:#283142;border-radius:99px;overflow:hidden}.hubXpBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#59a8ff,#b77cff);border-radius:99px}.hubXp small{display:block;color:#8d98aa;font-size:8px;margin-top:3px;text-align:right}
+.main{grid-template-columns:1fr;padding:0 14px 8px;gap:0}
+.left{grid-template-rows:minmax(0,1fr) 58px;gap:8px}
+.mapCard{border-radius:14px;position:relative;background:#0a131d;border-color:#202f40}
+.mapHead{display:none}
+#v{height:100%;background:radial-gradient(circle at 50% 45%,#172c3c 0,#0b1823 48%,#071019 100%)}
+#v:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 0 35%,#0003 78%,#0008 100%)}
+#cv{position:relative;z-index:1}
+#tacticalMap{z-index:8}
+.regionBack{top:14px;left:14px}
+.focusTitle{left:50%;top:14px;transform:translateX(-50%);text-align:center;z-index:8;background:#09131ed9;border-color:#3b4e62;min-width:180px}
+.focusTitle b{font-size:14px}.focusTitle small{font-size:9px}
+#tip{z-index:8;bottom:12px;left:50%;transform:translateX(-50%);white-space:nowrap}
+.mapLegend{display:none!important}
+.right{display:none!important}
+.kpiRow{grid-template-columns:repeat(4,1fr);gap:8px}
+.kpi{padding:7px 14px;display:flex;align-items:center;gap:9px;position:relative;overflow:hidden}
+.kpi .ico{float:none;font-size:20px;margin:0}.kpi span{font-size:9px}.kpi b{font-size:14px}.kpi small{font-size:8px;margin:0}
+.kpi.flashReject{animation:rejectFlash .16s ease-in-out 4;border-color:#ff667d!important;box-shadow:0 0 0 3px #ff667d55,0 0 30px #ff667d66!important}@keyframes rejectFlash{50%{transform:scale(1.025);filter:brightness(1.35)}}.kpi.alert{border-color:#ff667d;box-shadow:0 0 0 1px #ff667d22,0 0 18px #ff667d14;animation:kpiAlarm .8s ease-in-out infinite alternate}
+.kpi.ok{border-color:#31533e}.mapAccess{display:flex;align-items:center;justify-content:center;gap:8px;background:#172536;border:1px solid #3a526d;border-radius:11px;color:#dce8f5;font-weight:800;font-size:11px;cursor:pointer}.mapAccess:hover{border-color:#ffd35a;color:#ffd35a;background:#1d2b3c}
+.radialMenu{z-index:30}
+.radialItem{width:126px;height:126px;left:-63px;top:-63px}.radialItem.industrialUrgent{border-color:#54e38a!important;box-shadow:0 0 0 4px #54e38a22,0 0 28px #54e38a55,0 14px 34px #000b;animation:industrialPulse .9s ease-in-out infinite alternate}.radialItem.industrialUrgent::before{content:'👥 EMPLOIS PRIORITAIRES';position:absolute;top:7px;left:50%;transform:translateX(-50%);font-size:6px;font-weight:900;color:#54e38a;white-space:nowrap;letter-spacing:.04em}@keyframes industrialPulse{to{box-shadow:0 0 0 6px #54e38a12,0 0 36px #54e38a70,0 14px 34px #000b}}.radialCenter{width:96px;height:96px;left:-48px;top:-48px}
+.regionFocusSilhouette{position:absolute;inset:8% 18% 8%;z-index:0;pointer-events:none;display:none;opacity:.34;filter:drop-shadow(0 0 20px #59a8ff14)}
+.regionFocusSilhouette svg{width:100%;height:100%;display:block}.regionFocusSilhouette path{fill:#1a3446;stroke:#3f647f;stroke-width:1.2}.regionFocusSilhouette .inner{fill:none;stroke:#54e38a;stroke-width:.45;opacity:.4;stroke-dasharray:1.5 2}
+@keyframes serviceAlarm{to{box-shadow:inset 0 0 24px #ff667d18,0 0 12px #ff667d18}}
+@keyframes kpiAlarm{to{box-shadow:0 0 0 2px #ff667d2b,0 0 24px #ff667d1b}}
+@media(max-width:900px){.top{grid-template-columns:1fr 1.2fr 1fr;gap:8px;padding:8px}.hubServices{gap:5px}.serviceGauge{width:125px}.hubLevel{gap:6px}.hubXp{width:90px}.hubMoney strong{font-size:20px}.kpi{padding:6px 9px}}
+@media(max-height:700px){.app{grid-template-rows:70px minmax(0,1fr) 30px}.top{height:70px}.hubMoney,.hubServices,.hubLevel{height:48px}.serviceGauge{padding:5px 8px}.serviceGauge .sgTop b{font-size:13px}.left{grid-template-rows:minmax(0,1fr) 50px}.regionFocusSilhouette{inset:5% 20% 5%}}
+</style>
+<style id="footer-safe-area-fix">
+/* Sécurité bas de page : le contenu reste toujours au-dessus du footer. */
+.main{
+  padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px));
+  box-sizing:border-box;
+}
+#tip{
+  bottom:20px;
+  max-width:calc(100% - 24px);
+  white-space:normal;
+  text-align:center;
+  line-height:1.35;
+}
+@media(max-height:700px){
+  #tip{bottom:16px}
+}
+#challengeHUD{
+  bottom:calc(34px + 58px + 12px + env(safe-area-inset-bottom, 0px)) !important;
+  max-width:calc(100vw - 28px);
+  box-sizing:border-box;
+}
+@media(max-width:850px){
+  .main{padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+</head><body><div class="app">
+<header class="top">
+  <div class="regionHub">
+    <div class="hubMoney"><div><strong id="hubMoney">0 €</strong><small id="hubRegion">Région active</small></div></div>
+    <div class="hubServices">
+      <div class="serviceGauge" id="healthGauge"><div class="sgTop"><span>🩺 Santé</span><b id="hubHealth">100%</b></div><div class="sgBar"><i id="hubHealthFill"></i></div></div>
+      <div class="serviceGauge" id="eduGauge"><div class="sgTop"><span>🎓 Éducation</span><b id="hubEdu">100%</b></div><div class="sgBar"><i id="hubEduFill"></i></div></div>
+    </div>
+    <div class="hubLevel"><div class="hubLevelMain"><b id="hubLevel">⭐ Niveau 1</b><small id="hubLevelLabel">Progression globale</small></div><div class="hubXp"><div class="hubXpBar"><i id="hubXpFill"></i></div><small id="hubXpText">0 / 70 XP</small></div></div>
+  </div>
+  <div style="display:none">
+    <span id="lvlNow"></span><span id="xpText"></span><span id="xpFill"></span><span id="levelNext"></span><span id="k1"></span><span id="income"></span><span id="k2"></span><span id="k3"></span><span id="k4"></span><span id="txv"></span><button id="snd"></button><button id="ng"></button>
+  </div>
+</header>
+<main class="main">
+ <section class="left">
+  <div class="mapCard">
+   <div id="v">
+    <div id="tacticalMap" class="tacticalMap"></div>
+    <div id="regionFocusSilhouette" class="regionFocusSilhouette" aria-hidden="true"></div>
+    <canvas id="cv"></canvas>
+    <div id="radialMenu" class="radialMenu" aria-hidden="true"></div>
+    <button id="regionBack" class="regionBack">← Carte de France</button>
+    <div id="focusTitle" class="focusTitle"><b id="focusRegionName">Région</b><small id="focusRegionSub">Vue de construction</small></div>
+    <div class="mapLegend" id="mapLegend"></div>
+    <div id="fx" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+    <div id="tip">Cliquez un district pour ouvrir sa roue de construction</div>
+   </div>
+  </div>
+  <div class="kpiRow">
+   <div class="kpi" id="energyKpi"><div class="ico">⚡</div><div><span>Énergie</span><b id="kx1">0/1</b><small id="kx1s">OK</small></div></div>
+   <div class="kpi" id="unemploymentKpi"><div class="ico">👥</div><div><span>Chômage</span><b id="kx2">0%</b><small id="kx2s">Marché du travail</small></div></div>
+   <div class="kpi ok" id="networkKpi"><div class="ico">📦</div><div><span>Réseaux / Fluides</span><b id="kx4">OK</b><small id="kx4s">Flux opérationnels</small></div></div>
+   <button class="mapAccess" id="mapAccess">🗺️ Voir la carte de France</button>
+  </div>
+ </section>
+ <aside class="right" aria-hidden="true">
+   <div class="scroll">
+    <div class="panel" id="shopPanel"><div id="shopHint"></div><div id="shopTabs"></div><div id="shop"></div></div>
+    <div class="panel" id="mapProgress"><div id="mapLevel"></div><div id="mapZones"></div></div>
+    <div class="panel" id="sl"></div><div class="panel" id="ob"></div><div class="panel"><div id="log"></div></div>
+   </div>
+ </aside>
+</main>
+<footer class="footer"><span>France Tycoon · <b>Chaque seconde compte.</b> Investissez, automatisez, développez.</span></footer>
+</div><div id="toast"></div><div id="md"><div><b id="mt"></b><p id="mx"></p><div id="mb"></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script>
+const $=i=>document.getElementById(i),T=THREE,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const RN=[['Hauts-de-France',62,10],['Normandie',40,22],['Bretagne',10,32],['Pays de la Loire',24,44],['Île-de-France',55,30],['Grand Est',80,32],['Centre-Val de Loire',45,44],['Bourgogne-Franche-Comté',70,48],['Nouvelle-Aquitaine',28,68],['Auvergne-Rhône-Alpes',70,66],['Occitanie',50,84],['PACA',80,80],['Corse',95,85]];
+const REGION_ORDER=[2,3,1,0,4,6,7,5,9,8,10,11,12];
+const REGION_META=[
+ {emoji:'🧭',cost:8000000,tax:8000000,obj:'95 % Santé en Normandie + taxe de raccordement',prev:1},
+ {emoji:'⛵',cost:5000000,tax:5000000,obj:'95 % Santé dans les Pays de la Loire + taxe de raccordement',prev:3},
+ {emoji:'🌊',cost:0,tax:0,obj:'Point de départ',prev:null},
+ {emoji:'🏰',cost:1000000,tax:1000000,obj:'95 % Santé en Bretagne + taxe de raccordement',prev:2},
+ {emoji:'🗼',cost:12000000,tax:12000000,obj:'95 % Santé dans les Hauts-de-France + taxe de raccordement',prev:0},
+ {emoji:'🏛️',cost:35000000,tax:35000000,obj:'95 % Santé en Bourgogne-Franche-Comté + taxe de raccordement',prev:7},
+ {emoji:'🌿',cost:18000000,tax:18000000,obj:'95 % Santé en Île-de-France + taxe de raccordement',prev:4},
+ {emoji:'🍇',cost:25000000,tax:25000000,obj:'95 % Santé dans le Centre-Val de Loire + taxe de raccordement',prev:6},
+ {emoji:'🍷',cost:60000000,tax:60000000,obj:'95 % Santé en Auvergne-Rhône-Alpes + taxe de raccordement',prev:9},
+ {emoji:'🏭',cost:45000000,tax:45000000,obj:'95 % Santé dans le Grand Est + taxe de raccordement',prev:5},
+ {emoji:'🚀',cost:80000000,tax:80000000,obj:'95 % Santé en Nouvelle-Aquitaine + taxe de raccordement',prev:8},
+ {emoji:'🌊',cost:110000000,tax:110000000,obj:'95 % Santé en Occitanie + taxe de raccordement',prev:10},
+ {emoji:'🏝️',cost:150000000,tax:150000000,obj:'95 % Santé en PACA + taxe de raccordement',prev:11}
+];
+const MAPZ=RN.map((r,id)=>({id,city:r[0],emoji:REGION_META[id].emoji,level:id===2?1:Math.max(1,id+1),cash:REGION_META[id].cost,prev:REGION_META[id].prev,obj:REGION_META[id].obj}));
+const MAP_BY_ID=Object.fromEntries(MAPZ.map(z=>[z.id,z]));
+
+const FR=[[60,4],[72,10],[80,16],[78,20],[86,26],[92,34],[90,46],[88,52],[92,62],[90,70],[88,80],[78,84],[66,86],[52,92],[36,96],[16,90],[14,70],[14,58],[8,50],[0,40],[0,34],[8,26],[14,26],[22,24],[20,12],[30,16],[40,20],[50,12]],CO=[[93,80],[97,80],[98,88],[94,90]];
+const inside=(P,x,y)=>{let c=0;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>y)!=(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c};
+const GS=[[88,66,11,1],[28,94,9,.9],[44,94,8,.8],[58,66,10,.55],[86,32,5,.45],[84,52,5,.5],[95,84,4,.8],[10,32,6,.15]];
+const ht=(x,y)=>Math.min(1.2,GS.reduce((s,g)=>s+g[3]*Math.exp(-((x-g[0])**2+(y-g[1])**2)/(g[2]*g[2])),0));
+// Ancienne carte à 300 villes supprimée : la carte de jeu utilise désormais uniquement
+// 13 régions × 5 districts majeurs. Cela évite des centaines de calculs inutiles au démarrage.
+// ---- scène
+const rd=new T.WebGLRenderer({canvas:$('cv'),antialias:false});rd.setPixelRatio(1);const sc=new T.Scene(),cam=new T.PerspectiveCamera(45,1,1,500);
+sc.background=new T.Color(0x0d1a26);sc.add(new T.HemisphereLight(0xffffff,0x334455,.85));
+const dl=new T.DirectionalLight(0xfff2d8,.8);dl.position.set(40,80,20);sc.add(dl);
+const sea=new T.Mesh(new T.PlaneGeometry(400,400),new T.MeshLambertMaterial({color:0x1b4a72}));sea.rotation.x=-Math.PI/2;sea.position.set(50,.3,55);sc.add(sea);
+const tc=h=>{const a=h<.3?[[70,120,72],[140,140,80],h/.3]:h<.8?[[140,140,80],[185,178,160],(h-.3)/.5]:[[185,178,160],[245,245,245],Math.min(1,(h-.8)/.4)];return new T.Color(...a[0].map((v,i)=>(v+(a[1][i]-v)*a[2])/255))};
+const cells=[],meshes=[];
+// ---- Carte régionale : 13 régions × 5 districts majeurs ----
+const DISTRICT_TYPES=[
+  {id:0,n:'🏠 District résidentiel',short:'Résidentiel',kind:'residential'},
+  {id:1,n:'🏭 District industriel',short:'Industriel',kind:'industrial'},
+  {id:2,n:'🏙️ Centre-ville',short:'Centre-ville',kind:'city'},
+  {id:3,n:'🩺 Pôle santé',short:'Santé',kind:'health'},
+  {id:4,n:'🎓 Pôle éducation',short:'Éducation',kind:'education'}
+];
+const DISTRICT_OFFSETS=[[-11,9],[11,9],[0,0],[11,-9],[-11,-9]];
+const districtRings=[],districtFlux=[];
+const REGION_PALETTE=[0x244f63,0x315a4c,0x5b4b39,0x4c4f70,0x5b3d58,0x3d5c69,0x555b3a,0x51456b,0x4c5d45,0x654d3d,0x3e5964,0x5a4b43,0x4c4968];
+for(let r=0;r<13;r++){
+  const [name,cx,cy]=RN[r];
+  for(let d=0;d<5;d++){
+    const [ox,oy]=DISTRICT_OFFSETS[d],x=cx+ox,y=cy+oy;
+    const id=r*5+d;
+    const m=new T.Mesh(new T.CylinderGeometry(4.2,4.2,.7,12),new T.MeshLambertMaterial({color:REGION_PALETTE[r%REGION_PALETTE.length],transparent:true,opacity:.92}));
+    m.position.set(x,.7,y);m.userData.i=id;m.userData.region=r;m.userData.district=d;m.userData.kind=DISTRICT_TYPES[d].kind;
+    m.userData.baseColor=REGION_PALETTE[r%REGION_PALETTE.length];
+    sc.add(m);meshes.push(m);
+    const ring=new T.Mesh(new T.TorusGeometry(4.65,.13,8,32),new T.MeshBasicMaterial({color:0x6f5435,transparent:true,opacity:.95}));
+    ring.rotation.x=Math.PI/2;ring.position.set(x,.78,y);ring.userData.i=id;ring.userData.region=r;ring.userData.district=d;sc.add(ring);districtRings.push(ring);
+    cells.push({x,y,r,top:.7,district:d,id,name});
+  }
+  // Lignes de flux : les quatre pôles extérieurs convergent discrètement vers le Centre-Ville.
+}
+for(let r=0;r<13;r++){
+  const [name,cx,cy]=RN[r];
+  const center=new T.Vector3(cx,.83,cy);
+  for(const d of [0,1,3,4]){
+    const c=cells[r*5+d];
+    const geom=new T.BufferGeometry().setFromPoints([new T.Vector3(c.x,.81,c.y),center]);
+    const line=new T.Line(geom,new T.LineBasicMaterial({color:0x8c6a3f,transparent:true,opacity:.26}));
+    line.userData.region=r;line.userData.district=d;sc.add(line);districtFlux.push(line);
+  }
+}
+let regionBackdrops=[];
+for(let r=0;r<13;r++){
+  const [name,cx,cy]=RN[r];
+  const bg=new T.Mesh(new T.CircleGeometry(15.5,18),new T.MeshLambertMaterial({color:0x172431,transparent:true,opacity:.62,depthWrite:false}));
+  bg.rotation.x=-Math.PI/2;bg.position.set(cx,.35,cy);bg.userData.region=r;sc.add(bg);regionBackdrops.push(bg);
+}
+const districtLabels=[];
+for(let d=0;d<5;d++){
+  const cv=document.createElement('canvas');cv.width=360;cv.height=72;const x=cv.getContext('2d');
+  x.fillStyle='rgba(7,13,22,.92)';x.strokeStyle='rgba(255,211,90,.8)';x.lineWidth=3;x.beginPath();x.roundRect(2,2,356,68,18);x.fill();x.stroke();x.font='700 25px system-ui';x.fillStyle='#fff';x.textAlign='center';x.fillText(['🏠 Résidentiel','🏭 Industriel','🏙️ Centre-ville','🩺 Santé','🎓 Éducation'][d],180,44);
+  const sp=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(cv),transparent:true,depthTest:false}));sp.scale.set(8.6,1.72,1);sp.visible=false;sc.add(sp);districtLabels.push(sp);
+}
+let G;
+const fmt=n=>Math.round(n).toLocaleString('fr-FR');
+const zoneLabels=new Map();
+function zoneUnlocked(id){return Array.isArray(G?.unlocked)&&G.unlocked.includes(id)}
+function refreshMapVisual(){
+  for(let i=0;i<cells.length;i++){
+    const c=cells[i],m=meshes[i],u=zoneUnlocked(c.r),visible=G?.view==='region'?(c.r===G.activeRegion):false;
+    m.material.color.setHex(u?m.userData.baseColor:0x39414b);m.material.opacity=visible&&u?.98:(u?.20:.08);
+    m.visible=G?.view==='region'&&c.r===G.activeRegion;
+  }
+  regionBackdrops.forEach((m,r)=>{m.visible=G?.view==='region'&&r===G.activeRegion;m.material.opacity=.72});
+  districtLabels.forEach((sp,d)=>{const c=cells[(G?.activeRegion??2)*5+d];sp.visible=G?.view==='region';if(c)sp.position.set(c.x,c.top+2.65,c.y)});
+  districtRings.forEach((ring,i)=>{
+    const c=cells[i],active=G?.view==='region'&&c?.r===G.activeRegion,focused=active&&Number($('radialMenu')?.dataset?.district)===i;
+    ring.visible=active; ring.scale.setScalar(focused?1.12:1);
+    ring.material.color.setHex(focused?0xffd35a:0x8c6a3f); ring.material.opacity=focused?.98:.82;
+  });
+  districtFlux.forEach(line=>{line.visible=G?.view==='region'&&line.userData.region===G.activeRegion;line.material.opacity=line.visible?.28:0});
+  updateTacticalMap();
+}
+function updateTacticalMap(){
+ const el=$('tacticalMap');if(!el)return;
+ const W=100,H=100;
+ const routeSvg=REGION_META.map((m,i)=>{
+   if(m.prev==null)return '';
+   const a=RN[i],b=RN[m.prev];
+   const ready=regionReady(i),done=zoneUnlocked(i)&&zoneUnlocked(m.prev);
+   const cls=done?'done':ready?'next':'';
+   return `<line class="route ${cls}" x1="${a[1]}" y1="${a[2]}" x2="${b[1]}" y2="${b[2]}"/>`;
+ }).join('');
+ const regionNodes=REGION_ORDER.map(i=>{
+   const r=RN[i],u=zoneUnlocked(i),ready=!u&&regionReady(i),meta=REGION_META[i];
+   const budget=G?.budgets?.[i]??0;
+   const status=u?'OUVERTE':ready?'PRÊTE À DÉBLOQUER':'VERROUILLÉE';
+   const detail=u?'Budget · '+fmt(budget)+' €':fmt(meta.cost)+' € · '+(meta.obj.split(' + ')[0]||'Objectif');
+   return `<button class="tRegion ${u?'unlocked':'locked'} ${ready?'ready':''} ${G?.activeRegion===i?'current':''}" data-region="${i}" style="left:${r[1]}%;top:${r[2]}%" aria-label="${r[0]} — ${status}"><span class="tEmoji">${meta.emoji}</span><b>${r[0]}</b><small>${u?'✓ '+detail:'🔒 '+detail}</small><i>${u?'OUVRIR':ready?'DÉBLOQUER':'VERROUILLÉE'}</i></button>`;
+ }).join('');
+ const openCount=G?.unlocked?.length||1;
+ const current=RN[G?.activeRegion??2]?.[0]||'France';
+ el.innerHTML=`<svg class="tMapFrance" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="land" d="M28 8L43 7L57 13L68 10L79 18L89 29L94 43L88 53L92 64L84 74L82 87L67 91L52 95L38 92L25 87L16 76L13 61L7 51L11 38L7 29L15 23L20 12Z"/><path class="coast" d="M91 82L96 82L98 87L94 91Z"/><g>${routeSvg}</g></svg><div class="tacticalTitle"><b>🇫🇷 Grille métropolitaine</b><span>${openCount}/13 régions · ${current} sélectionnée</span></div><div class="tacticalStats"><span>Régions <b>${openCount}/13</b></span><span>Mode <b>Stratégique</b></span></div>${regionNodes}<div class="tacticalHint"><b>Cliquez une région ouverte</b> pour entrer dans la vue de construction · les lignes indiquent les raccordements</div>`;
+}
+function renderRegionSilhouette(id){
+ const el=$('regionFocusSilhouette'); if(!el)return;
+ const paths={
+  2:'M12 55 L7 45 L12 37 L19 38 L26 29 L35 34 L42 28 L51 35 L58 45 L55 56 L47 61 L39 58 L31 65 L22 61 L15 66 Z',
+  3:'M20 25 L34 18 L48 22 L61 17 L75 27 L70 42 L78 54 L66 66 L53 61 L42 72 L29 65 L21 54 L14 42 Z',
+  1:'M18 20 L35 13 L52 19 L69 15 L80 27 L74 42 L81 54 L69 67 L54 63 L43 74 L29 66 L19 54 L12 39 Z'
+ };
+ const d=paths[id]||'M18 22 L35 12 L53 18 L72 20 L81 36 L74 52 L80 67 L63 78 L46 72 L31 81 L18 66 L12 49 Z';
+ el.innerHTML=`<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><path d="${d}"/><path class="inner" d="M25 46 L39 35 L54 43 L66 37 L69 52 L57 62 L43 55 L31 64 Z"/></svg>`;
+}
+function setView(mode,id=G.activeRegion){
+ if(G.view==='region'&&Number.isInteger(G.activeRegion))G.budgets[G.activeRegion]=G.m;
+ G.view=mode;
+ if(mode==='region'){
+   G.activeRegion=id;G.m=G.budgets[id]??0;focusRegion(id);$('tacticalMap').style.display='none';$('cv').style.display='block';$('regionBack').style.display='flex';
+   $('focusTitle').style.display='block';$('focusRegionName').textContent=REGION_META[id].emoji+' '+RN[id][0];$('focusRegionSub').textContent='5 grands chantiers · cliquez pour construire';
+   $('regionFocusSilhouette').style.display='block';renderRegionSilhouette(id);
+   $('tip').textContent='Cliquez un district pour ouvrir sa roue de construction';
+ }else{
+   $('cv').style.display='none';$('tacticalMap').style.display='grid';$('regionBack').style.display='none';$('focusTitle').style.display='none';$('regionFocusSilhouette').style.display='none';
+   $('tip').textContent='Cliquez sur une région ouverte pour entrer dans son écran de construction';
+   updateTacticalMap();
+ }
+ refreshMapVisual();uiDirty=true;ui();
+}
+function regionReady(id){
+ if(zoneUnlocked(id))return false;
+ const meta=REGION_META[id];if(!meta||meta.prev==null||!zoneUnlocked(meta.prev))return false;
+ const prev=regionStats()[meta.prev];return regionalHealthCoverage(meta.prev)>=.95&&(G.budgets?.[meta.prev]||0)>=meta.tax;
+}
+function regionalHealthCoverage(id){
+ const st=regionStats()[id];return cl((st?.health||0)/Math.max(1,(st?.houses||0)),0,1);
+}
+// ---- bâtiments : id:[nom,coût,entretien,effets…,couleur]
+const BD={
+// 🏠 LOGEMENTS — Habitat rural/populaire
+coron:{n:'🛖 Coron du Nord',c:2.5,u:.025,homes:.65,jobs:.03,inc:.9,pol:.18,lv:1,residential:true,tier:.18,cat:'🏠 Logements',sub:'Habitat rural et populaire'},
+phoenix:{n:'🏠 Maison Phénix',c:4,u:.035,homes:.9,jobs:.04,inc:1.5,pol:.14,lv:1,residential:true,tier:.22,cat:'🏠 Logements',sub:'Habitat rural et populaire'},
+longere:{n:'🏡 Longère',c:4.5,u:.04,homes:1,jobs:.04,inc:1.3,pol:.10,lv:1,residential:true,tier:.25,cat:'🏠 Logements',sub:'Habitat rural et populaire'},
+chaumiere:{n:'🌾 Chaumière Briéronne',c:5,u:.045,homes:1.05,jobs:.05,inc:1.6,pol:.10,lv:1,residential:true,tier:.27,cat:'🏠 Logements',sub:'Habitat rural et populaire'},
+toulousaine:{n:'🏠 Maison Toulousaine',c:5.5,u:.045,homes:1.1,jobs:.05,inc:1.7,pol:.11,lv:1,residential:true,tier:.28,cat:'🏠 Logements',sub:'Habitat rural et populaire'},
+// 🏢 LOGEMENTS — Urbain et collectif
+lli:{n:'🏢 Logement LLI',c:11,u:.07,homes:1.7,jobs:.07,inc:5.5,pol:.08,lv:4,residential:true,tier:.62,eduNeed:1,cat:'🏠 Logements',sub:'Habitat urbain et collectif'},
+hlm:{n:'🏢 Logement HLM social',c:9,u:.065,homes:2.0,jobs:.06,inc:4.3,pol:.10,lv:2,residential:true,tier:.52,eduNeed:1,cat:'🏠 Logements',sub:'Habitat urbain et collectif'},
+recon:{n:'🏢 Appartement de Reconstruction',c:13,u:.08,homes:2.15,jobs:.08,inc:6.2,pol:.09,lv:2,residential:true,tier:.65,eduNeed:2,cat:'🏠 Logements',sub:'Habitat urbain et collectif'},
+echoppe:{n:'🏘️ Échoppe Bordelaise',c:15,u:.09,homes:2.25,jobs:.09,inc:7.2,pol:.08,lv:2,residential:true,tier:.72,eduNeed:2,cat:'🏠 Logements',sub:'Habitat urbain et collectif'},
+hauss:{n:'🏛️ Appartement Haussmannien',c:18,u:.11,homes:2.5,jobs:.11,inc:9,pol:.06,lv:6,residential:true,tier:.82,eduNeed:4,cat:'🏠 Logements',sub:'Habitat urbain et collectif'},
+// 🏰 LOGEMENTS — Demeures d'exception
+bastide:{n:'🏡 Bastide Provençale',c:32,u:.16,homes:2.8,jobs:.13,inc:15,pol:.05,lv:8,residential:true,tier:1.0,eduNeed:5,cat:'🏠 Logements',sub:'Demeures bourgeoises et d’exception'},
+maitre:{n:'🏠 Maison de Maître',c:38,u:.19,homes:3,jobs:.15,inc:18,pol:.045,lv:9,residential:true,tier:1.08,eduNeed:6,healthNeed:2,cat:'🏠 Logements',sub:'Demeures bourgeoises et d’exception'},
+malouiniere:{n:'🏰 Malouinière',c:55,u:.25,homes:3.3,jobs:.18,inc:26,pol:.035,lv:10,residential:true,tier:1.2,eduNeed:8,healthNeed:4,cat:'🏠 Logements',sub:'Demeures bourgeoises et d’exception'},
+hotel:{n:'🏰 Hôtel Particulier Parisien',c:70,u:.30,homes:3.7,jobs:.20,inc:35,pol:.025,lv:11,residential:true,tier:1.3,eduNeed:12,healthNeed:6,cat:'🏠 Logements',sub:'Demeures bourgeoises et d’exception'},
+chateau:{n:'🏯 Château de la Loire',c:120,u:.5,homes:4.5,jobs:.24,inc:65,pol:.01,lv:12,residential:true,tier:1.45,eduNeed:20,healthNeed:10,cat:'🏠 Logements',sub:'Demeures bourgeoises et d’exception'},
+// 🏛️ BÂTIMENTS PUBLICS
+mairie:{n:'🏣 Mairie de Village',c:7,u:.08,jobs:.08,publicBonus:.15,lv:1,cat:'🏛️ Bâtiments publics',sub:'Administration',overwriteAll:true},
+pref:{n:'🏢 Hôtel de Préfecture',c:35,u:.30,jobs:.25,publicBonus:2,lv:7,cat:'🏛️ Bâtiments publics',sub:'Administration',overwriteAll:true},
+elysee:{n:'🏛️ Élysée / Ministères',c:180,u:1.5,jobs:.8,inc:10,publicBonus:5,eduNeed:50,healthNeed:50,lv:15,cat:'🏛️ Bâtiments publics',sub:'Administration nationale',overwriteAll:true},
+// 🏭 PRIVÉS / INDUSTRIE / COMMERCE / TERTIAIRE
+artisan:{n:'🛠️ Atelier artisanal / PME',c:5,u:.12,jobs:.22,inc:1.4,healthNeed:1,lv:1,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Artisanat et petits commerces'},
+boulangerie:{n:'🥖 Commerce de centre-ville',c:5.5,u:.12,jobs:.18,inc:1.7,healthNeed:1,lv:1,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Artisanat et petits commerces'},
+com:{n:'🛒 Hypermarché / zone commerciale',c:12,u:.22,jobs:.3,inc:4.5,pol:.1,healthNeed:4,lv:3,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Industrie moyenne et grande distribution'},
+ind:{n:'🏭 Usine métallurgique / textile',c:14,u:.35,jobs:.65,pol:1.2,inc:3.5,healthNeed:8,lv:3,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Industrie moyenne et grande distribution'},
+nuc:{n:'☢️ Centrale nucléaire',c:40,u:1.2,en:6,jobs:.2,inc:1,pol:.1,healthNeed:15,lv:10,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Haute technologie et tertiaire supérieur',factoryBoost:1.35},
+aero:{n:'✈️ Complexe aéronautique',c:65,u:1.0,jobs:1.0,inc:12,pol:.35,healthNeed:20,lv:11,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Haute technologie et tertiaire supérieur',factoryBoost:1.55},
+defense:{n:'🏙️ Tour de bureaux · La Défense',c:100,u:1.2,jobs:1.2,inc:28,pol:.25,healthNeed:30,lv:13,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Haute technologie et tertiaire supérieur',factoryBoost:1.8,healthStrike:true},
+// 🩺 SANTÉ
+med:{n:'🩺 Dispensaire / cabinet médical rural',c:8,u:.18,health:10,jobs:.12,lv:1,cat:'🩺 Santé',sub:'Niveau 1 · proximité',healthTier:1},
+chr:{n:'🏥 Centre Hospitalier Régional',c:25,u:.45,health:40,jobs:.35,lv:5,cat:'🩺 Santé',sub:'Niveau 2 · régional',healthTier:2},
+chu:{n:'🚑 CHU · Mégalopole médicale',c:60,u:.8,health:100,jobs:.8,lv:10,cat:'🩺 Santé',sub:'Niveau 3 · universitaire',healthTier:3},
+// 🎓 ÉDUCATION
+sch:{n:'🎒 École communale',c:12,u:.4,edu:10,jobs:.1,lv:1,cat:'🎓 Éducation',sub:'Niveau 1 · maternelle / primaire',eduTier:1},
+lycee:{n:'🏛️ Lycée régional',c:28,u:.65,edu:40,jobs:.28,lv:5,cat:'🎓 Éducation',sub:'Niveau 2 · régional',eduTier:2},
+univ:{n:'🎓 Grande École / Université',c:60,u:1,edu:100,jobs:.65,lv:10,res:1,cat:'🎓 Éducation',sub:'Niveau 3 · supérieur',eduTier:3},
+// 🏗️ INFRASTRUCTURES & RÉSEAUX (conservés du jeu)
+farm:{n:'🌾 Ferme',c:4,u:.05,jobs:.1,inc:.8,pol:.1,lv:1,cat:'🏗️ Infrastructures & réseaux',sub:'Agriculture'},
+route:{n:'🛤️ Réseau ferroviaire',c:3,u:.03,jobs:.03,tgv:.25,lv:2,cat:'🏗️ Infrastructures & réseaux',sub:'Transport'},
+wind:{n:'🌬️ Éolien',c:8,u:.1,en:1.2,jobs:.03,lv:2,cat:'🏗️ Infrastructures & réseaux',sub:'Énergie'},
+sol:{n:'☀️ Solaire',c:6,u:.1,en:.9,jobs:.03,lv:2,cat:'🏗️ Infrastructures & réseaux',sub:'Énergie'},
+fib:{n:'📡 Antenne 5G / fibre',c:5,u:.1,fib:1,lv:2,cat:'🏗️ Infrastructures & réseaux',sub:'Numérique'},
+tgv:{n:'🚄 Gare TGV',c:20,u:.5,tgv:1,inc:2,jobs:.2,lv:5,cat:'🏗️ Infrastructures & réseaux',sub:'Transport'},
+park:{n:'🌳 Parc naturel',c:5,u:.1,hapb:.6,pol:-.6,lv:5,cat:'🏗️ Infrastructures & réseaux',sub:'Environnement'},
+tour:{n:'🗿 Monument / tourisme',c:12,u:.3,inc:2.5,hapb:.2,jobs:.2,lv:6,cat:'🏗️ Infrastructures & réseaux',sub:'Tourisme'},
+port:{n:'⚓ Port maritime',c:18,u:.35,jobs:.5,inc:3,tgv:.5,lv:6,cat:'🏗️ Infrastructures & réseaux',sub:'Transport'},
+metro:{n:'🚇 Métro / tramway',c:14,u:.25,jobs:.45,inc:1.5,tgv:.7,hapb:.3,lv:7,cat:'🏗️ Infrastructures & réseaux',sub:'Transport'},
+res:{n:'🔬 Centre de recherche',c:25,u:.8,res:1,lv:7,cat:'🏗️ Infrastructures & réseaux',sub:'Recherche'},
+airport:{n:'✈️ Aéroport',c:35,u:1,jobs:.7,inc:5,tgv:1,lv:8,cat:'🏗️ Infrastructures & réseaux',sub:'Transport'},
+rec:{n:'♻️ Recyclage / dépollution',c:14,u:.4,pol:-2,jobs:.1,lv:8,cat:'🏗️ Infrastructures & réseaux',sub:'Environnement'},
+bus:{n:'🚌 Réseau de bus',c:2.5,u:.18,jobs:.08,inc:.4,hapb:.12,tgv:.18,lv:2,cat:'🚆 Transport',sub:'Mobilité locale'},
+ter:{n:'🚆 Réseau TER',c:7,u:.28,jobs:.14,inc:.8,hapb:.18,tgv:.55,lv:3,cat:'🚆 Transport',sub:'Mobilité régionale'},
+tram:{n:'🚊 Tramway',c:12,u:.32,jobs:.2,inc:1.1,hapb:.25,tgv:.7,lv:5,cat:'🚆 Transport',sub:'Mobilité urbaine'},
+velo:{n:'🚲 Vélo en libre-service',c:3,u:.08,jobs:.04,inc:.25,hapb:.2,pol:-.3,lv:3,cat:'🚆 Transport',sub:'Mobilité douce'},
+adsl:{n:'📞 ADSL',c:1.5,u:.04,jobs:.03,fib:.25,res:.05,lv:1,cat:'💻 Numérique',sub:'Accès internet'},
+vdsl:{n:'🌐 VDSL',c:2.5,u:.05,jobs:.04,fib:.45,res:.1,lv:2,cat:'💻 Numérique',sub:'Accès internet'},
+fibrepro:{n:'🔌 Fibre professionnelle',c:6,u:.12,jobs:.08,fib:1.2,res:.35,inc:.5,lv:4,cat:'💻 Numérique',sub:'Très haut débit'},
+wifi7:{n:'📶 Wi‑Fi 7 public',c:8,u:.15,jobs:.08,fib:.8,res:.5,hapb:.12,lv:6,cat:'💻 Numérique',sub:'Connectivité publique'},
+reseau5g:{n:'📡 Réseau 5G national',c:14,u:.22,jobs:.15,fib:1.4,res:.8,inc:1,lv:7,cat:'💻 Numérique',sub:'Réseau mobile'},
+datacenter:{n:'🖥️ Data center',c:25,u:.55,jobs:.35,fib:1.8,res:1.1,en:-.5,inc:2.5,lv:8,cat:'💻 Numérique',sub:'Infrastructure cloud'},
+dam:{n:'💧 Barrage hydroélectrique',c:28,u:.5,en:4,jobs:.12,inc:1,lv:9,cat:'🏗️ Infrastructures & réseaux',sub:'Énergie'}
+};
+// Compatibilité avec les anciennes sauvegardes / anciens boutons.
+BD.home=BD.phoenix;
+const LF=[1,1.8,3],UC=[0,1.5,2.5];
+const BUILD_MUL={bus:1.06,ter:1.075,tram:1.085,velo:1.06,adsl:1.05,vdsl:1.06,fibrepro:1.075,wifi7:1.08,reseau5g:1.09,datacenter:1.10,coron:1.055,phoenix:1.065,lli:1.085,hauss:1.095,hotel:1.11,chateau:1.13,farm:1.07,route:1.07,wind:1.085,sol:1.08,fib:1.08,ind:1.09,com:1.085,sch:1.09,hosp:1.095,tgv:1.10,park:1.075,tour:1.09,port:1.09,metro:1.085,res:1.11,airport:1.12,rec:1.095,dam:1.11,nuc:1.12};
+function buildingUnlocked(t){return !!BD[t]&&G.lvl>=(BD[t].lv||1)}
+function housingBlocked(C,t){
+  const d=BD[t]; if(!d?.residential)return {blocked:false,reason:''};
+  if((C.unemployment??0)>.15) return {blocked:true,reason:"Permis de construire suspendu. Réduisez le chômage sous 15 % en développant le District Industriel."};
+  if((C.attractiveness??0)<1) return {blocked:true,reason:"Permis de construire suspendu. Améliorez le Pôle Santé ou le Pôle Éducation pour rouvrir les chantiers."};
+  if((C.jobsAvailable||0)<=0) return {blocked:true,reason:"Permis de construire suspendu. Créez des emplois pour stabiliser la région."};
+  return {blocked:false,reason:''};
+}
+
+function targetDistrictFor(t){
+  if(mapRegion<0)return -1;
+  if(sel>=0&&cells[sel]?.r===mapRegion)return sel;
+  const d=BD[t]; const preferred=d?.residential?0:d?.healthTier?3:d?.eduTier?4:(d?.cat==='🚆 Transport'||d?.cat==='💻 Numérique')?2:d?.cat?.includes('Privés')?1:2;
+  return zoneUnlocked(mapRegion)?mapRegion*5+preferred:-1;
+}
+function ownedCount(t){return n(t)}
+function nextCost(t){const d=BD[t];if(!d)return 0;return Math.round(totalCost(t,1)*Math.pow(BUILD_MUL[t]||1.08,ownedCount(t)))}
+const bx=(g,w,h,d,c,x,y,z)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshLambertMaterial({color:c}));m.position.set(x,y+h/2,z);g.add(m);return m};
+const cy=(g,a,b,h,c,x,y,z,s=12)=>{const m=new T.Mesh(new T.CylinderGeometry(a,b,h,s),new T.MeshLambertMaterial({color:c}));m.position.set(x,y+h/2,z);g.add(m);return m};
+function mk(t){const g=new T.Group();
+switch(t){
+case 'coron':case 'phoenix':case 'longere':case 'chaumiere':case 'toulousaine':case 'lli':case 'hlm':case 'recon':case 'echoppe':case 'hauss':case 'bastide':case 'maitre':case 'malouiniere':case 'hotel':case 'chateau':case 'home':bx(g,.9,1,.9,0xe8c39e,-.6,0,-.5);bx(g,.8,1.6,.8,0xd9a066,.5,0,-.4);bx(g,.9,.8,.9,0xf0e0c8,0,0,.6);bx(g,1,.15,1,0xb5523b,-.6,1,-.5);break;
+case 'mairie':case 'artisan':case 'boulangerie':bx(g,1.4,.7,1.1,0xc7a77a,0,0,0);bx(g,1.5,.12,.15,0x9d3b2f,0,.72,.5);break;
+case 'pref':bx(g,1.7,1.4,1.2,0xd9d2c7,0,0,0);bx(g,.35,.6,.12,0x2e5b91,0,1.45,.55);break;
+case 'elysee':bx(g,1.9,1.1,1.4,0xe2d5bb,0,0,0);bx(g,1.3,.18,.15,0x173b6c,0,1.12,.65);break;
+case 'med':case 'chr':case 'chu':case 'hosp':bx(g,1.6,1.3,1.1,0xf4f4f4,0,0,0);bx(g,.7,.1,.2,0xd8262f,0,1.32,0);bx(g,.2,.1,.7,0xd8262f,0,1.32,0);break;
+case 'lycee':case 'univ':case 'sch':bx(g,1.7,.9,1,0xc9a15a,0,0,0);bx(g,.5,1.3,.5,0xb98a3e,-.6,0,-.2);cy(g,.02,.02,.9,0x444444,.7,.9,0,6);break;
+case 'aero':case 'defense':bx(g,1.8,1.5,1.1,0x7b8fa6,0,0,0);bx(g,1.9,.08,.25,0x55a7d9,0,1.52,.3);break;
+case 'ind':bx(g,1.8,.9,1.4,0x8a8f99,0,0,0);cy(g,.15,.2,1.7,0x555b66,.6,0,-.4);bx(g,.8,.5,.6,0x6f7480,-.5,.9,.2);break;
+case 'nuc':cy(g,.45,.7,1.7,0xeeeeee,-.6,0,-.3,16);cy(g,.45,.7,1.7,0xeeeeee,.6,0,.3,16);bx(g,.7,.5,.6,0x9aa3ad,.6,0,-.6);break;
+case 'wind':cy(g,.05,.09,2.4,0xf4f4f4,0,0,0,8);{const r=new T.Group();r.position.y=2.4;for(let k=0;k<3;k++){const b=bx(r,.07,1,.03,0xffffff,0,0,0);b.rotation.z=k*2.094;b.position.set(-Math.sin(k*2.094)*.5,Math.cos(k*2.094)*.5,0)}g.add(r);g.userData.rotor=r}break;
+case 'sol':for(let k=0;k<3;k++){const b=bx(g,1.6,.06,.5,0x1f3a7a,0,.3,-.8+k*.8);b.rotation.x=.5}break;
+case 'hosp':bx(g,1.6,1.3,1.1,0xf4f4f4,0,0,0);bx(g,.7,.1,.2,0xd8262f,0,1.32,0);bx(g,.2,.1,.7,0xd8262f,0,1.32,0);break;
+case 'sch':bx(g,1.7,.9,1,0xc9a15a,0,0,0);bx(g,.5,1.3,.5,0xb98a3e,-.6,0,-.2);cy(g,.02,.02,.9,0x444444,.7,.9,0,6);break;
+case 'com':bx(g,1.9,.6,1.4,0xd6dae0,0,0,0);bx(g,1.9,.18,.1,0xe4572e,0,.6,.7);break;
+case 'farm':bx(g,1.9,.05,1.9,0x9bbf58,0,0,0);bx(g,.6,.5,.5,0xb23a2e,-.5,0,-.4);bx(g,.4,.05,1.6,0x6f9a3a,.5,.05,0);break;
+case 'res':bx(g,1.2,1.6,1.2,0x66b7e8,0,0,0);{const s=new T.Mesh(new T.SphereGeometry(.4,12,8),new T.MeshLambertMaterial({color:0xbfe6ff}));s.position.set(.4,1.9,.3);g.add(s)}break;
+case 'fib':cy(g,.04,.1,2.6,0xd0d0d0,0,0,0,6);cy(g,.15,.15,.05,0xff4d4d,0,2.6,0,8);break;
+case 'tgv':bx(g,2,.3,.8,0x555b66,0,0,0);bx(g,1.6,.25,.5,0xd8262f,0,.3,0);break;
+case 'park':for(let k=0;k<4;k++){const c=new T.Mesh(new T.ConeGeometry(.35,1.1,8),new T.MeshLambertMaterial({color:0x2f7a3a}));c.position.set(-.7+k%2*1.3,.55,-.5+(k>>1)*1);g.add(c)}break;
+case 'tour':{const c=new T.Mesh(new T.ConeGeometry(.5,2.6,4),new T.MeshLambertMaterial({color:0x8a8f99}));c.position.y=1.3;g.add(c)}break;
+case 'route':bx(g,2.1,.12,.45,0x555b66,0,0,0);break;
+case 'rec':bx(g,1.4,.7,1,0x3f9b5a,0,0,0);cy(g,.3,.3,1.1,0x2f7a3a,.5,0,.3,10);break;
+case 'port':bx(g,1.9,.25,1.2,0x48677f,0,0,0);bx(g,.25,1.2,.25,0xd8a85a,-.6,.25,0);bx(g,.25,.9,.25,0xd8a85a,.6,.25,0);break;
+case 'metro':bx(g,1.9,.35,.7,0x4d5968,0,0,0);bx(g,1.4,.22,.45,0xd8262f,0,.35,0);break;
+case 'airport':bx(g,2.1,.12,.55,0x8d98aa,0,0,0);bx(g,.12,.25,1.9,0x8d98aa,0,.1,0);break;
+case 'dam':bx(g,2,.9,.5,0x7f8792,0,0,0);cy(g,.3,.3,.8,0x4d9be8,.55,0,.35,12);break;
+case 'bus':case 'ter':case 'tram':case 'velo':bx(g,1.5,.5,1.8,0x4d7ea8,0,0,0);cy(g,.22,.22,.18,0x20252c,-.55,0,-.75,12);cy(g,.22,.22,.18,0x20252c,.55,0,-.75,12);break;
+case 'adsl':case 'vdsl':case 'fibrepro':case 'wifi7':case 'reseau5g':bx(g,.65,1.8,.65,0x6e8aa6,0,0,0);cy(g,.08,.08,1.2,0xd7e7f5,0,1.8,0,10);break;
+case 'datacenter':bx(g,1.8,1.2,1.3,0x3b526c,0,0,0);for(let k=0;k<3;k++)bx(g,.12,.7,.08,0x61c5ff,-.55,.2+k*.3,.67);break}
+return g}
+// ---- état
+const blds=new Map();let sel=-1,run=false,spd=1,acc=0,last=0,cool=0,uiDirty=true,lastUI=0,history=[];
+const rnd=(s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296})(7);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const DUR={home:3,farm:2,route:0,wind:3,sol:3,fib:2,ind:5,com:4,sch:6,hosp:6,tgv:8,park:2,tour:5,port:6,metro:4,res:9,airport:10,rec:5,dam:9,nuc:12,bus:2,ter:4,tram:5,velo:2,adsl:1,vdsl:2,fibrepro:3,wifi7:3,reseau5g:5,datacenter:7};
+const EURO_COST={coron:35000,phoenix:45000,longere:50000,chaumiere:55000,toulousaine:58000,hlm:70000,recon:85000,echoppe:95000,lli:105000,hauss:160000,bastide:260000,maitre:320000,malouiniere:480000,hotel:650000,chateau:1200000,mairie:90000,pref:450000,elysee:2500000,artisan:60000,boulangerie:65000,com:140000,ind:220000,nuc:900000,aero:1400000,defense:2200000,med:30000,chr:180000,chu:600000,sch:30000,lycee:160000,univ:650000,farm:50000,route:70000,wind:180000,sol:120000,fib:90000,tgv:350000,park:60000,tour:150000,port:420000,metro:300000,res:500000,airport:900000,rec:180000,dam:650000,bus:90000,ter:280000,tram:450000,velo:60000,adsl:35000,vdsl:50000,fibrepro:120000,wifi7:180000,reseau5g:350000,datacenter:1200000};
+const EURO_MONTHLY={coron:350,phoenix:450,longere:500,chaumiere:550,toulousaine:600,hlm:650,recon:800,echoppe:950,lli:1100,hauss:1800,bastide:3000,maitre:3800,malouiniere:5200,hotel:7000,chateau:11000,mairie:0,pref:0,elysee:0,artisan:900,boulangerie:750,com:2200,ind:4200,nuc:8000,aero:12000,defense:18000,med:0,chr:0,chu:0,sch:0,lycee:0,univ:0,farm:450,route:0,wind:0,sol:0,fib:0,tgv:1800,park:0,tour:1400,port:2400,metro:600,res:2600,airport:5000,rec:0,dam:3500};
+for(const k of Object.keys(BD)){if(EURO_COST[k]!=null)BD[k].c=EURO_COST[k];if(EURO_MONTHLY[k]!=null)BD[k].inc=EURO_MONTHLY[k]}
+function totalCost(t,l){const c=EURO_COST[t]??((BD[t]?.c||0)*10000);return Math.round(c*(l<=1?1:l===2?1.7:2.6))}
+function stackAt(i){const v=blds.get(i);return Array.isArray(v)?v:(v?[v]:[])}
+function lastBuilding(i){const a=stackAt(i);return a.length?a[a.length-1]:null}
+function allBuildings(){const a=[];for(const [i,v] of blds){for(const b of (Array.isArray(v)?v:[v]))if(b)a.push([i,b])}return a}
+function buildingCount(){let n=0;for(const v of blds.values())n+=Array.isArray(v)?v.length:(v?1:0);return n}
+function place(i,t,l=1,build=false,spent=null){
+  if(!cells[i]||!BD[t])return false;
+  const a=stackAt(i),g=mk(t),c=cells[i],slot=a.length;
+  const ang=slot*.95,rad=Math.min(2.8,1.1+slot*.38);
+  g.position.set(c.x+Math.cos(ang)*rad,c.top,c.y+Math.sin(ang)*rad);
+  g.scale.x=g.scale.z=.72+.12*(l-1);g.scale.y=.05;g.userData.birth=performance.now();g.userData.targetScale=1+.3*(l-1);
+  sc.add(g);
+  a.push({t,l,g,dur:0,rd:0,spent:spent==null?totalCost(t,l):spent}); blds.set(i,a);
+  return true;
+}
+
+function log(t){const el=$('log');const d=document.createElement('div');d.textContent=t;el.prepend(d);while(el.children.length>150)el.lastElementChild.remove();uiDirty=true}
+function newGame(){for(const [i,b] of allBuildings())sc.remove(b.g);blds.clear();$('log').innerHTML='';
+history=[];G={m:120000,y:0.2,a:0,o:0,hap:68,tax:30,budgets:Array(13).fill(0),activeRegion:2,view:'tactical',t:0,cycle:0,cycleName:'Création',momentum:0,milestones:[],tm:{hit:0,hapd:0,up:0,heat:0}};defaults();G.budgets[2]=120000;G.m=120000;run=true;last=performance.now();
+const free=shuffle(cells.map((_,i)=>i).filter(i=>cells[i].r===2));
+// Le pays démarre réellement sans infrastructure : aucune construction gratuite.
+
+refreshMapVisual();
+log('Bienvenue ! Construis, améliore, équilibre. Le jeu ne s\'arrête jamais.');sel=-1;uiDirty=true;ui()}
+function totals(){
+  const B={homes:0,jobs:0,en:0,health:0,edu:0,healthNeed:0,eduNeed:0,pol:0,hapb:0,res:0,fib:0,tgv:0,ind:0,com:0,up:0,inc:0,landTax:0,resIncome:0,prestigeBonus:0,lowHousingPressure:0,avgLandPressure:0,publicBonus:1,factoryBoost:1,healthStrike:false},cnt={};
+  const regional={};
+  for(let r=0;r<13;r++) regional[r]={occupied:0,active:0,sch:0,hosp:0,metro:0,residential:0,pressure:0};
+  for(const c of cells) if(zoneUnlocked(c.r)) regional[c.r].active++;
+  for(const [i,b] of allBuildings()){
+    if(b.rd>G.t||cells[i]?.r!==G.activeRegion)continue;
+    const d=BD[b.t],f=LF[b.l-1]||1,r=cells[i]?.r??2;
+    if(r!==(G.activeRegion??2))continue;
+    for(const k of ['homes','jobs','en','health','edu','pol','hapb','res','fib','tgv'])B[k]+=(d[k]||0)*f; B.healthNeed+=(d.healthNeed||0)*f; B.eduNeed+=(d.eduNeed||0)*f; if(d.publicBonus)B.publicBonus=Math.max(B.publicBonus,d.publicBonus); if(d.factoryBoost)B.factoryBoost=Math.max(B.factoryBoost,d.factoryBoost); if(d.healthStrike)B.healthStrike=true;
+    cnt[b.t]=(cnt[b.t]||0)+f;
+    regional[r].occupied+=f;
+    if(d.residential)regional[r].residential+=f;
+    if(b.t==='sch')regional[r].sch+=f;
+    if(b.t==='hosp')regional[r].hosp+=f;
+    if(b.t==='metro')regional[r].metro+=f;
+    B.up+=(d.u||0)*f*(b.l>1?.7:1); B.inc += (EURO_MONTHLY[b.t]||0)*f; B.inc -= (EURO_MONTHLY[b.t]||0)*0.0;
+  }
+  let pressureSum=0,pressureN=0;
+  for(let r=0;r<13;r++){
+    const q=regional[r],capacity=Math.max(12,q.active*.58);
+    q.pressure=cl((q.occupied-capacity)/Math.max(1,capacity),0,2.5);
+    pressureSum+=q.pressure;pressureN++;
+    const service=cl(q.sch*.12+q.hosp*.18+q.metro*.05,0,4);
+    for(const [i,b] of allBuildings()){
+      if(b.rd>G.t||cells[i]?.r!==r||r!==G.activeRegion)continue;
+      const d=BD[b.t]; if(!d.residential)continue;
+      const lowTier=(d.tier||0)<.5;
+      const densityFactor=cl(1-q.pressure*(lowTier?.72:.28),lowTier?.18:.55,1);
+      const prestigeFactor=1+service*(d.tier||0)*.72;
+      const base=(d.inc||0)*LF[b.l-1]*densityFactor*prestigeFactor;
+      B.resIncome+=base;
+      B.prestigeBonus+=Math.max(0,prestigeFactor-1)*base;
+      if(lowTier)B.lowHousingPressure+=q.pressure;
+      B.landTax+=(.008+.045*q.pressure)*LF[b.l-1];
+    }
+  }
+  B.ind=cnt.ind||0;B.com=cnt.com||0;
+  for(const t in cnt){if(BD[t]?.residential)continue;B.inc+=(BD[t].inc||0)*Math.pow(cnt[t],.85)}
+  B.inc+=B.resIncome;
+  B.up=Math.max(0,B.up*18);
+  B.landTax=0;
+  const networkBase=20+(B.tgv*8)+(B.fib*3)+(n('route')*1.5);
+  const networkLoad=(B.ind*1.5+B.com*1.1+B.tgv*.5+(cnt.nuc||0)*.8);
+  B.network=networkBase;B.networkLoad=networkLoad;B.bottleneck=networkLoad>networkBase?Math.min(1,(networkLoad-networkBase)/Math.max(1,networkBase)):0;
+  B.avgLandPressure=pressureN?pressureSum/pressureN:0;
+  B.landTax*=1+B.avgLandPressure*.55;
+  return B
+}
+function debtCapacity(C){return 0}
+function canSpend(cost,C=null){if(!Number.isFinite(cost)||cost<0)return false;C=C||calc();return G.m>=cost}
+function calc(){
+ const B=totals(G.activeRegion),P=G.y+G.a+G.o,houses=B.homes,jobsAvailable=B.jobs,occupiedWorkers=Math.min(houses*.8,jobsAvailable);
+ const unemployment=houses>0?cl(1-occupiedWorkers/Math.max(1,houses*.8),0,1):0;
+ const healthCoverage=regionalHealthCoverage(G.activeRegion),educationCoverage=cl(B.edu/Math.max(1,houses),0,1.5);
+ const attractiveness=houses===0?((B.health+B.edu)>=2?1:0):(healthCoverage+educationCoverage);
+ const serviceGap=houses>0?cl(1-Math.min(1,(healthCoverage+educationCoverage)/2),0,1):0;
+ const emp=houses>0?cl(jobsAvailable/Math.max(1,houses*.8),0,1):1;
+ const health=healthCoverage,edu=educationCoverage;
+ const energyScore=cl((B.en+1)/Math.max(1,houses*.12+1),0,1.2),digitalScore=cl(B.fib/Math.max(1,houses*.05),0,1.2),transportScore=cl(B.tgv/Math.max(1,Math.ceil(houses/10)),0,1.2),researchScore=cl(B.res/Math.max(1,houses*.03),0,1.2);
+ const balanceScore=.18*emp+.20*health+.20*edu+.12*energyScore+.10*digitalScore+.10*transportScore+.10*researchScore;
+ const stable=attractiveness>=1;
+ const solidarity=(B.inc>25000&&(B.health+B.edu)<houses*.5)?.30:1;
+ const servicePenalty=stable?1:.35, unemploymentPenalty=unemployment>.15?.55:1;
+ const productionMult=cl((.72+balanceScore*.55)*(B.publicBonus||1)*(B.factoryBoost||1)*servicePenalty*unemploymentPenalty*solidarity,.15,4);
+ const monthlyGross=B.inc,monthlyMaintenance=B.up,net=monthlyGross*productionMult-monthlyMaintenance;
+ const autoTax=solidarity<1?70:cl(8+unemployment*12+Math.max(0,1-attractiveness)*20,5,35);G.tax=autoTax;
+ const hap=cl(58+emp*20+health*10+edu*8-B.pol*.8-Math.max(0,1-attractiveness)*20-unemployment*18,0,100);
+ const dem=houses*.12+B.ind*.6+B.com*.3+1,enOk=B.en>=dem?1:cl(.4+.6*B.en/Math.max(1,dem),.4,1);
+ const cap=houses;
+ return {B,P,dem,enOk,emp,health,edu,dig:digitalScore,pol:cl(Math.max(0,B.pol)/10,0,2),econ:productionMult,productionMult,baseProductionMult:productionMult,serviceBoost:1,balanceScore,housingScore:houses,energyScore,employmentScore:emp,healthScore:health,educationScore:edu,digitalScore,transportScore,researchScore,cap,hap,net,operatingNet:net,debtRecovery:0,debtDrag:0,debtCapacity:0,autoTax,infraScore:balanceScore,unemployment,serviceGap,serviceCapacity:(healthCoverage+educationCoverage)/2,jobsAvailable,occupiedWorkers,solidarity,attractiveness,healthCoverage,educationCoverage,stable};
+}
+function regionalSolidarityMalus(){const C=calc();return C.solidarity}
+
+function xpNeed(l){return Math.round(55+32*Math.pow(l-1,1.32))}
+function levelReward(l){return Math.round(2500+1250*l)}
+function levelLabel(l){const names=['Fondateur local','Entrepreneur régional','Capitaine industriel','Métropole émergente','Puissance économique','Nation moderne','Nation connectée','Pôle européen','Leader continental','Puissance nationale','Économie avancée','Nation automatisée','Grande puissance'];return names[Math.min(l-1,names.length-1)]||('Niveau '+l)}
+function nextLevelText(){const n=G.lvl+1;const z=MAPZ.filter(z=>!zoneUnlocked(z.id)&&z.level<=n).sort((a,b)=>a.level-b.level)[0];return z?'Prochain cap : '+z.emoji+' '+z.city+' · niveau '+z.level:(n<=10?'Prochain cap : nouvelles infrastructures':'Prochain cap : nouvelle expansion régionale')}
+function addXP(v){G.xp=(G.xp||0)+Math.max(0,v);let up=false;while(G.xp>=xpNeed(G.lvl)){G.xp-=xpNeed(G.lvl);G.lvl++;G.m+=levelReward(G.lvl);up=true;celebrate('⭐ Niveau '+G.lvl+' ! +'+levelReward(G.lvl)+' € · '+levelLabel(G.lvl));log('⭐ Niveau '+G.lvl+' atteint : '+levelLabel(G.lvl));}if(up){uiDirty=true;refreshMapVisual()} }
+function zoneReady(z,C){return regionReady(z)}
+function unlockRegion(id){
+ const meta=REGION_META[id];if(!meta||zoneUnlocked(id)||meta.prev==null||!zoneUnlocked(meta.prev))return false;
+ const prevBudget=G.budgets[meta.prev]||0;if(regionalHealthCoverage(meta.prev)<.95||prevBudget<meta.tax)return false;
+ G.budgets[meta.prev]=prevBudget-meta.tax;G.unlocked.push(id);G.unlocked.sort((a,b)=>a-b);if(!(G.budgets[id]>0))G.budgets[id]=120000;G.activeRegion=id;G.m=G.budgets[id];G.view='region';setView('region',id);celebrate('🗺️ '+RN[id][0]+' débloquée !');log('🗺️ Nouvelle région : '+RN[id][0]+' · taxe de raccordement '+fmt(meta.tax)+' € · dotation initiale régionale 120 000 €');addXP(25);return true;
+}
+function checkMapUnlocks(){updateTacticalMap()}
+function BVal(t){let q=0;for(const [i,b] of allBuildings())if(b.t===t&&(cells[i]?.r??2)===G.activeRegion)q++;return q}
+function checkMapUnlocks(C){updateTacticalMap()}
+// Jalons économiques : déclaration unique hors de la boucle tick()
+const MILESTONE_RULES=[
+  [250000,'Premier quart de million',5000],
+  [1000000,'Première autonomie régionale',15000],
+  [5000000,'Économie industrielle',50000],
+  [15000000,'Pôle régional',120000],
+  [50000000,'Puissance économique',300000]
+];
+
+function checkMilestones(){
+  if(!Array.isArray(G.milestones)) G.milestones=[];
+  for(const [goal,name,reward] of MILESTONE_RULES){
+    if(G.m>=goal && !G.milestones.includes(goal)){
+      G.milestones.push(goal);
+      G.m+=reward;
+      celebrate('🏆 '+name+' · bonus +'+reward+' €');
+    }
+  }
+}
+
+function tick(){
+ const savedRegion=G.activeRegion??2;
+ for(const r of (G.unlocked||[2])){
+   G.activeRegion=r;G.m=G.budgets[r]||0;
+   const RC=calc();G.m+=RC.net*(1+(G.momentum||0)*.08);G.budgets[r]=G.m;
+ }
+ G.activeRegion=savedRegion;G.m=G.budgets[savedRegion]||0;
+ const C=calc(),tm=G.tm;G.t++;uiDirty=true;updateGameSystems(C);
+ const quality=(C.emp*.25+Math.min(1,C.health)*.2+Math.min(1,C.edu)*.15+C.dig*.1+(C.B.en>=C.dem?.15:0)+Math.min(1,C.B.networkLoad/Math.max(1,C.B.network))*.15+Math.min(1,C.B.inc/Math.max(1,C.P*.8))*.15);
+ G.momentum=cl((G.momentum||0)*.92+quality*.08,0,1);
+const phase=G.t%120;G.cycle=phase<55?0:phase<85?1:phase<105?2:3;G.cycleName=['Croissance','Ralentissement','Boom','Transition'][G.cycle];
+if(G.m<0&&C.debtRecovery>0&&G.t%5===0)log('💳 Dette active : +'+C.debtRecovery.toFixed(2)+' € de récupération automatique.');
+G.hap+=(C.hap-G.hap)*.15;
+if(C.net>0)addXP(Math.min(2.5,0.35+C.net*.025));
+for(const k of ['hit','hapd','up','heat'])if(tm[k])tm[k]=k=='heat'?tm[k]-1:tm[k]*.9;
+const imm=G.hap>55&&C.P<C.cap?(G.hap-55)/45*.05:0;
+const bi=G.a*.0015*(G.hap/50)*(C.P<C.cap?1:.25),dy=G.y*.0001,da=G.a*.0004,dd=G.o*.003*(1.5-C.health*.5);
+G.y+=bi-G.y/216-dy;G.a+=imm+G.y/216-G.a/564-da;G.o+=G.a/564-dd;
+if(G.m<-300&&G.t%20==0)log('⚠ Faillite : l\'économie tourne au ralenti. Vends ou taxe !');
+const ib=allBuildings().filter(([i,b])=>BD[b.t]?.inc&&b.rd<=G.t&&(cells[i]?.r??-1)===G.activeRegion);
+if(ib.length){
+  const soundCount=Math.min(6,ib.length);
+  ib.slice(0,6).forEach(([i,b],k)=>fx(i,'+'+(BD[b.t].inc*LF[b.l-1]).toFixed(0)+' €','#ffe08a'));
+  coinChime(soundCount);
+}
+citizens(C);objectives(C);checkMapUnlocks();G.budgets[G.activeRegion]=G.m;checkMilestones();
+
+if(G.pe){G.pe.eta--;if(G.pe.eta<=0){const k=G.pe.k;G.pe=null;if(PREP[k](C)){G.m+=15;celebrate('Crise évitée : '+EV[k][0]+' ! +15 € — vous étiez prêts.')}else askEv(EV[k])}}
+else{cool--;if(cool<=0&&G.t>25&&rnd()<.05){cool=25;const k=Math.floor(rnd()*EV.length);G.pe={k,eta:5};log('⚠ Alerte : '+EV[k][0]+' dans 5 mois. '+HINT[k])}}
+if(G.t%15==0)saveG()}
+function saveG(){G.budgets[G.activeRegion]=G.m;try{localStorage.setItem('ftyc',JSON.stringify({version:8,G,ts:Date.now(),r:run,b:allBuildings().map(([i,b])=>[i,b.t,b.l,Math.max(0,b.rd-G.t),b.spent??totalCost(b.t,b.l)])}))}catch(e){console.error('Sauvegarde impossible',e);log('⚠ Sauvegarde impossible : stockage navigateur indisponible ou plein.')}}
+// ---- événements aléatoires
+const EV=[['Pandémie','Un nouveau virus circule.',[['Confiner (−20 €, économie freinée)',()=>{G.m-=20;G.tm.hit=.3}],['Laisser courir',()=>{const h=Math.min(1.2,totals().health/(G.y+G.a+G.o));const d=.6*(1.4-h);G.o-=d*.7;G.a-=d*.3;G.tm.hapd=10;log('Décès : '+Math.round(d*1e3)+' 000')}]]],
+['Canicule','Demande d\'énergie +30 % pendant 10 mois.',[['Aide climatisation (−10 €)',()=>{G.m-=10;G.tm.heat=10}],['Rien faire',()=>{G.tm.heat=10;G.tm.hapd=8}]]],
+['Krach boursier','Les marchés s\'effondrent.',[['Plan de relance (−25 €)',()=>{G.m-=25}],['Subir',()=>{G.tm.hit=.15}]]],
+['Grève générale','Les syndicats bloquent le pays.',[['Concessions (−12 €)',()=>{G.m-=12;G.tm.hapd=-3}],['Bras de fer',()=>{G.tm.hit=.2;G.tm.hapd=6}]]],
+['Crise énergétique','Les coûts d\'entretien grimpent de 25 %.',[['Bouclier tarifaire (−15 €)',()=>{G.m-=15}],['Ne rien faire',()=>{G.tm.up=.25;G.tm.hapd=6}]]],
+['Grand événement sportif','La France accueille le monde.',[['Investir (−20 €, +45 €)',()=>{G.m+=25}],['Passer son tour',()=>{}]]],
+['Inondations','Des crues frappent le pays.',[['Reconstruire (−15 €)',()=>{G.m-=15}],['Laisser',()=>{const k=[...blds.keys()];if(k.length){const i=k[Math.floor(rnd()*k.length)];{const a=stackAt(i),b=a.pop();if(b)sc.remove(b.g);if(a.length)blds.set(i,a);else blds.delete(i);}log('Un bâtiment a été détruit.')}}]]],
+['Boom des startups','Un vent d\'innovation souffle.',[['Financer (−10 €, +30 €)',()=>{G.m+=20}],['Ignorer',()=>{}]]]];
+function askEv(e){run=true;$('mt').textContent=e[0];$('mx').textContent=e[1];$('mb').innerHTML='';
+e[2].forEach(c=>{const b=document.createElement('button');b.textContent=c[0];b.onclick=()=>{c[1]();log(e[0]+' : '+c[0]);$('md').style.display='none';ui()};$('mb').append(b)});$('md').style.display='flex'}
+
+// ---- v2 : attachement, objectifs, alertes, lois, effets
+const n=t=>{let c=0;for(const [i,b] of allBuildings())if(b.t==t&&(cells[i]?.r??2)===(G?.activeRegion??2))c++;return c};
+const nAll=t=>{let c=0;for(const [i,b] of allBuildings())if(b.t==t)c++;return c};
+const HINT=['Prépare : santé ≥ 100 %.','Prépare : énergie ≥ 130 % de la demande.','Prépare : garde ≥ 100 €.','Prépare : bonheur ≥ 65 %.','Prépare : énergie ≥ 120 %.','Prépare : 5 gares TGV.','Prépare : 6 parcs naturels.','Prépare : 1 centre de recherche.'];
+const PREP=[C=>C.health>=1,C=>C.B.en>=C.dem*1.3,()=>G.m>=100,()=>G.hap>=65,C=>C.B.en>=C.dem*1.2,C=>C.B.tgv>=5,()=>n('park')>=6,C=>C.B.res>=1];
+let AC=null,mute=false;
+function beep(f,d=.12){if(mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+function coinChime(simultaneous=1){
+  if(mute)return;
+  try{
+    AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended')AC.resume();
+    const count=Math.max(1,Math.min(6,simultaneous));
+    const base=620+Math.min(5,count-1)*55;
+    for(let k=0;k<count;k++){
+      const o=AC.createOscillator(),g=AC.createGain(),now=AC.currentTime+k*.045;
+      o.type='sine';o.frequency.setValueAtTime(base+k*42,now);o.frequency.exponentialRampToValueAtTime(base*1.55+k*55,now+.16);
+      g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.065,now+.012);g.gain.exponentialRampToValueAtTime(.0001,now+.19);
+      o.connect(g);g.connect(AC.destination);o.start(now);o.stop(now+.21);
+    }
+  }catch(e){}
+}
+function flashUnemployment(){
+  const e=$('unemploymentKpi'); if(!e)return;
+  e.classList.remove('flashReject'); void e.offsetWidth; e.classList.add('flashReject');
+  setTimeout(()=>e.classList.remove('flashReject'),650);
+}
+function fx(i,t,c){
+ const p=cells[i];if(!p)return;
+ const e=document.createElement('div');
+ const isPayment=/€/.test(String(t));
+ e.className='fl'+(isPayment?' paymentNotice':'');
+ e.textContent=t;e.style.color=c;e.dataset.cell=String(i);
+ const same=[...$('fx').querySelectorAll('.fl')].filter(x=>x.dataset.cell===String(i)).length;
+ e.style.setProperty('--fy',(same*20)+'px');
+ $('fx').append(e);
+ updateFxPosition(e);
+ setTimeout(()=>e.remove(),1700);
+}
+function updateFxPosition(e){
+ if(!e)return;
+ // Les notifications financières sont volontairement indépendantes des districts :
+ // elles restent juste sous le nom de la région active (ex. « Bretagne »).
+ if(e.classList.contains('paymentNotice')){
+   const box=$('fx');if(!box)return;
+   const r=box.getBoundingClientRect();
+   e.style.left=(r.width/2)+'px';
+   e.style.top='58px';
+   e.style.display='block';
+   return;
+ }
+ const i=Number(e?.dataset?.cell),p=cells[i];if(!p)return;
+ const r=cvs.getBoundingClientRect();
+ const v=new T.Vector3(p.x,p.top+2,p.y).project(cam);
+ e.style.left=((v.x*.5+.5)*r.width)+'px';
+ e.style.top=((-v.y*.5+.5)*r.height)+'px';
+ e.style.display=(v.z>=-1&&v.z<=1)?'block':'none';
+}
+function updateFxPositions(){
+ const box=$('fx');if(!box)return;
+ box.querySelectorAll('.fl,.replaceBurst').forEach(e=>updateFxPosition(e));
+}
+function celebrate(t){beep(523);setTimeout(()=>beep(659),120);setTimeout(()=>beep(784),240);for(let k=0;k<36;k++){const e=document.createElement('i');e.className='cf';e.style.left=rnd()*100+'%';e.style.background=['#ef4135','#fff','#0055a4','#ffd166'][k%4];e.style.animationDelay=rnd()*.5+'s';$('fx').append(e);setTimeout(()=>e.remove(),2700)}log('🎉 '+t)}
+function info(t,x){$('mt').textContent=t;$('mx').textContent=x;$('mb').innerHTML='';const b=document.createElement('button');b.textContent='Reprendre';b.onclick=()=>{$('md').style.display='none'};$('mb').append(b);$('md').style.display='flex'}
+function away(ts){if(!ts)return;const m=(Date.now()-ts)/60000;if(m<2)return;const C=calc(),d=Math.round(5*Math.min(1,m/30)),g=Math.min(6,Math.floor(m/2))*Math.max(0,C.net)*.5;G.hap=Math.max(20,G.hap-d);G.m+=g;info('Pendant ton absence ('+Math.round(m)+' min)',`Le pays a tourné au ralenti : bonheur −${d} pts, +${Math.round(g)} € de recettes. ${G.cz[0].n} demande de tes nouvelles, ${G.cz[1].n} espère que les hôpitaux tiendront. Rien n'est perdu : tout se répare.`)}
+const FN=['Léa','Karim','Camille','Mohamed','Chloé','Yann','Inès','Pierre','Sofia','Thomas','Aïcha','Hugo','Manon','Youssef','Élise','Paul','Nadia','Louis','Clara','Jean'],LN=['Martin','Bernard','Dubois','Lefèvre','Benali','Le Goff','Moreau','Garcia','Nguyen','Petit','Roux','Diallo','Fontaine','Andrieu'];
+const JOBS=[['soignant(e)','health'],['enseignant(e)','edu'],['ouvrier(ère)','pol'],['agriculteur(trice)','pol'],['commerçant(e)','econ'],['ingénieur(e)','en'],['retraité(e)','health'],['étudiant(e)','edu'],['développeur(se)','dig'],['chômeur(se)','emp']];
+const TR=['optimiste','râleur(se)','courageux(se)','rêveur(se)','têtu(e)','généreux(se)','anxieux(se)','curieux(se)'],EPI=['Une vie simple, entourée des siens.','Il ou elle laisse un grand vide dans le quartier.','Toute une vie au service des autres.','On se souviendra de son rire.'];
+const pk=a=>a[Math.floor(rnd()*a.length)];
+function newC(k){const j=JOBS[k%JOBS.length];return{n:pk(FN)+' '+pk(LN),j:j[0],g:j[1],t:pk(TR),age:k%10==6?66+Math.floor(rnd()*20):k%10==7?19+Math.floor(rnd()*5):25+Math.floor(rnd()*35),r:Math.floor(rnd()*13),mood:65,hp:5,p:null}}
+const mkCZ=()=>Array.from({length:20},(_,k)=>newC(k));
+function defaults(){G=G||{};G.budgets=Array.isArray(G.budgets)&&G.budgets.length===13?G.budgets.map(v=>Number.isFinite(v)?v:0):Array(13).fill(0);G.activeRegion=Number.isInteger(G.activeRegion)?cl(G.activeRegion,0,12):2;G.view=G.view==='region'?'region':'tactical';G.m=Number.isFinite(G.m)?G.m:G.budgets[G.activeRegion]||120000;G.budgets[G.activeRegion]=G.m;G.y=Number.isFinite(G.y)?G.y:.2;G.a=Number.isFinite(G.a)?G.a:0;G.o=Number.isFinite(G.o)?G.o:0;G.hap=Number.isFinite(G.hap)?G.hap:65;G.tax=Number.isFinite(G.tax)?G.tax:30;G.t=Number.isFinite(G.t)?G.t:0;G.tm=Object.assign({hit:0,hapd:0,up:0,heat:0},G.tm||{});G.serviceBoostUntil=Number.isFinite(G.serviceBoostUntil)?G.serviceBoostUntil:0;G.educationPulseUntil=Number.isFinite(G.educationPulseUntil)?G.educationPulseUntil:0;G.healthPulseUntil=Number.isFinite(G.healthPulseUntil)?G.healthPulseUntil:0;G.mi=Number.isFinite(G.mi)?G.mi:0;G.mm=Number.isFinite(G.mm)?G.mm:0;G.lt=Number.isFinite(G.lt)?G.lt:0;G.xp=Number.isFinite(G.xp)?G.xp:0;G.lvl=Number.isFinite(G.lvl)?G.lvl:1;G.progressionVersion=7;ensureGameSystems();G.unlocked=Array.isArray(G.unlocked)?G.unlocked.filter(i=>i>=0&&i<13):[2];if(!G.unlocked.length)G.unlocked=[2];if(!G.unlocked.includes(2))G.unlocked.unshift(2);G.budgets[2]=G.budgets[2]||G.m;G.pe=G.pe||null;if(!Array.isArray(G.cz)||G.cz.length!==20)G.cz=mkCZ()}
+function citizens(C){
+  // Population cachée : aucune fiche individuelle n'est affichée.
+  // Plus le niveau monte, plus le temps biologique s'accélère pour les premiers habitants.
+  const ageRate=(1/12)*(1+Math.max(0,G.lvl-1)*.065);
+  const generationPressure=Math.max(0,G.lvl-5)*.002;
+  G.cz.forEach((c,k)=>{
+    c.age+=ageRate;
+    if(c.age>92 || (c.age>82 && rnd()<.004+generationPressure)){
+      G.cz[k]=newC(k);
+      G.cz[k].age=18+Math.floor(rnd()*12);
+      addXP(1.5);
+    }
+  });
+  // Les nouveaux habitants apparaissent progressivement avec les niveaux et la capacité de logement.
+  if(G.cz.length<Math.min(80,20+G.lvl*2) && rnd()<.004+G.lvl*.0007){
+    G.cz.push(newC(G.cz.length));
+  }
+}
+
+const MS=[['Avoir 6 éoliennes',()=>n('wind')>=6,15],['Construire un centre de recherche',()=>n('res')>=1,20],['Bonheur ≥ 75 %',()=>G.hap>=75,20],['Avoir 8 parcs naturels',()=>n('park')>=8,15],['Numérique à 100 %',C=>C.dig>=1,20],['Trésor ≥ 500 €',()=>G.m>=500,25],['Avoir 6 gares TGV',()=>n('tgv')>=6,20],['Pollution ≤ 20 %',C=>C.pol<=.4,25]];
+const curMS=()=>G.mi<MS.length?MS[G.mi]:['Posséder '+(90+15*(G.mi-MS.length))+' bâtiments',()=>buildingCount()>=90+15*(G.mi-MS.length),30+G.mi];
+const ltOK=C=>[C.B.en>=C.dem*1.3,C.pol<=.4,G.hap>=Math.min(95,85+2*G.lt),C.emp>=.98];
+function celebrateBuild(i,name){
+ const c=cells[i],g=lastBuilding(i)?.g;if(g){g.scale.y=.08;g.userData.birth=performance.now();}
+ fx(i,'🏗️ '+name,'#ffe08a');beep(700,.07);uiDirty=true;
+}
+function ensureGameSystems(){
+ G.challenges=Array.isArray(G.challenges)?G.challenges:[];G.achievements=Array.isArray(G.achievements)?G.achievements:[];
+ G.records=Object.assign({maxMoney:0,maxHap:0,maxLevel:1,maxBuildings:0,bestScore:0},G.records||{});
+ G.challenge=G.challenge||null;G.eventClock=Number.isFinite(G.eventClock)?G.eventClock:22;G.lastMiniEvent=G.lastMiniEvent||0;
+}
+const ACH=[
+ ['urban','🏙️ Urbaniste','Construire 10 bâtiments',()=>buildingCount()>=10,1000],
+ ['jobs','👷 Plein emploi','Maintenir le chômage sous 15 % pendant 30 mois',()=>G.lowUnempStreak>=30,2500],
+ ['digital','💻 France connectée','Atteindre 100 % de couverture numérique',C=>C.dig>=1,3000],
+ ['mobility','🚆 Grande mobilité','Atteindre 100 % de couverture transport',C=>C.transportScore>=1,3000],
+ ['green','🌱 Transition','Pollution ≤ 20 % avec 10 parcs/solutions vertes',C=>C.pol<=.2&&n('park')+n('rec')+n('wind')+n('sol')>=10,4000],
+ ['million','💰 Million régional','Dépasser 1 000 000 €',()=>G.m>=1000000,10000]
+];
+const CHALLENGES=[
+ {id:'speed_jobs',title:'Contrat express',text:'Crée 2 emplois sans dépasser 15 % de chômage.',time:90,goal:C=>C.unemployment<=.15&&C.B.jobs>=2,reward:3500},
+ {id:'speed_digital',title:'Plan fibre',text:'Atteins 50 % de couverture numérique.',time:120,goal:C=>C.dig>=.5,reward:4500},
+ {id:'speed_transport',title:'Mobilité régionale',text:'Atteins 50 % de couverture transport.',time:150,goal:C=>C.transportScore>=.5,reward:5000},
+ {id:'speed_health',title:'Urgence santé',text:'Atteins 95 % de couverture santé.',time:120,goal:C=>C.healthCoverage>=.95,reward:5000}
+];
+function newChallenge(){ensureGameSystems();const pool=CHALLENGES.filter(x=>!G.achievements.includes('challenge:'+x.id));const q=pool[Math.floor(rnd()*pool.length)]||CHALLENGES[Math.floor(rnd()*CHALLENGES.length)];G.challenge={id:q.id,title:q.title,text:q.text,remain:q.time,reward:q.reward};toast('⏱️ '+q.title+' · '+q.text);log('⏱️ Nouveau contrat : '+q.text+' · '+q.time+' s');}
+function checkAchievements(C){ensureGameSystems();for(const a of ACH){if(!G.achievements.includes(a[0])&&a[3](C)){G.achievements.push(a[0]);G.m+=a[4];addXP(15);celebrate('🏆 '+a[1]+' · +'+fmt(a[4])+' €');}}
+ const score=Math.round((C.balanceScore||0)*100+G.lvl*10+Math.log10(Math.max(1,G.m))*20);G.records.maxMoney=Math.max(G.records.maxMoney,G.m);G.records.maxHap=Math.max(G.records.maxHap,G.hap);G.records.maxLevel=Math.max(G.records.maxLevel,G.lvl);G.records.maxBuildings=Math.max(G.records.maxBuildings,buildingCount());G.records.bestScore=Math.max(G.records.bestScore,score);return score;}
+function miniEvent(C){const choices=[
+ ['🌧️ Alerte inondation','Des pluies exceptionnelles mettent les réseaux sous pression.',[['Prévention (-2 500 €)',()=>{G.m-=2500;G.tm.hit=.05;toast('🌧️ Réseaux sécurisés')}],['Attendre',()=>{G.tm.hit=.18;G.tm.hapd=3;toast('🌧️ Des quartiers ralentissent')}]]],
+ ['🌱 Pacte vert local','Une entreprise propose un contrat de transition énergétique.',[['Accepter (-4 000 €, pollution ↓)',()=>{G.m-=4000;G.o=Math.max(0,G.o-.04);G.hap+=2;toast('🌱 Contrat vert signé')}],['Refuser',()=>toast('Contrat refusé')]]],
+ ['💻 Mission numérique','Un opérateur propose de fibrer rapidement la région.',[['Signer (-6 000 €, numérique ↑)',()=>{G.m-=6000;G.y+=.01;toast('💻 Chantier numérique lancé')}],['Négocier',()=>{G.m+=1000;toast('💬 Négociation réussie')}]]]
+ ];const e=choices[Math.floor(rnd()*choices.length)];askEv(e);}
+function updateGameSystems(C){ensureGameSystems();if(C.unemployment<=.15)G.lowUnempStreak=(G.lowUnempStreak||0)+1;else G.lowUnempStreak=0;
+ if(!G.challenge)newChallenge();else{G.challenge.remain--;if((CHALLENGES.find(x=>x.id===G.challenge.id)?.goal||(()=>false))(C)){const q=CHALLENGES.find(x=>x.id===G.challenge.id);G.m+=G.challenge.reward;G.achievements.push('challenge:'+G.challenge.id);celebrate('⏱️ Contrat terminé · +'+fmt(G.challenge.reward)+' €');G.challenge=null;}else if(G.challenge.remain<=0){toast('⌛ Contrat échoué · un nouveau défi arrive');G.challenge=null;}}
+ G.eventClock--;if(G.eventClock<=0){G.eventClock=35+Math.floor(rnd()*45);miniEvent(C);}checkAchievements(C);renderChallengeHUD(C);
+}
+function renderChallengeHUD(C){let h=document.getElementById('challengeHUD');if(!h){h=document.createElement('div');h.id='challengeHUD';h.innerHTML='<b></b><span></span><i></i>';document.body.appendChild(h);const st=document.createElement('style');st.textContent='#challengeHUD{position:fixed;left:50%;bottom:calc(34px + 58px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;min-width:260px;max-width:440px;padding:9px 12px;border:1px solid #ffd35a66;border-radius:12px;background:#0c1522eF;box-shadow:0 8px 30px #0008;color:#fff;font:800 10px Inter,Arial;pointer-events:none}#challengeHUD b{display:block;color:#ffd35a;font-size:11px}#challengeHUD span{display:block;color:#c8d3e2;margin-top:3px;font-weight:600}#challengeHUD i{display:block;height:3px;margin-top:6px;background:#ffd35a;border-radius:9px;width:100%;transform-origin:left}';document.head.appendChild(st)}
+ if(!G.challenge){h.style.display='none';return}h.style.display='block';h.querySelector('b').textContent='⏱️ '+G.challenge.title+' · '+G.challenge.remain+'s';h.querySelector('span').textContent=G.challenge.text+' · +'+fmt(G.challenge.reward)+' €';h.querySelector('i').style.transform='scaleX('+cl(G.challenge.remain/Math.max(1,(CHALLENGES.find(q=>q.id===G.challenge.id)?.time||1)),0,1)+')';}
+function objectives(C){
+  const r=regionStats();
+  const goal=r.active>=2&&C.unemployment<=.15&&C.serviceGap<=.15;
+  if(goal&&!G.mi){G.mi=1;G.m+=5000;celebrate('🏆 Équilibre régional atteint · +5 000 €')}
+}
+function regionStats(){const out=[];for(let r=0;r<13;r++){let houses=0,jobs=0,edu=0,health=0,inc=0;for(const [i,b] of allBuildings()){if(cells[i]?.r!==r)continue;const x=BD[b.t];houses+=x.homes||0;jobs+=x.jobs||0;edu+=x.edu||0;health+=x.health||0;inc+=EURO_MONTHLY[b.t]||0}out.push({r,houses,jobs,edu,health,inc,active:zoneUnlocked(r)})}return out}
+
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>e.style.display='none',1200)}
+function why(C){const w=[];if(C.health<1)w.push('Santé −'+((1-C.health)*15).toFixed(0));if(C.edu<1)w.push('Éducation −'+((1-C.edu)*10).toFixed(0));if(C.emp<.7)w.push('Emploi −'+((.7-C.emp)*25).toFixed(0));if(C.pol>.1)w.push('Pollution −'+(C.pol*12).toFixed(0));if(C.autoTax>30)w.push('Impôts −'+((C.autoTax-30)*.9).toFixed(0));if(C.enOk<1)w.push('Coupures −15');if(C.P>C.cap)w.push('Surpopulation −10');if(G.tm.hapd>.5)w.push('Crise −'+G.tm.hapd.toFixed(0));return 'Bonheur '+Math.round(G.hap)+' % — '+(w.length?'freins : '+w.join(', '):'tout va bien 👍')}
+function ui2(C){
+  const bn=$('bottleneck');
+  if(bn)bn.textContent=(C.B.bottleneck>0.05?'🔴 Réseaux saturés : '+Math.round(C.B.bottleneck*100)+' %':'🟢 Réseaux fluides')+' · '+(G.cycleName||'cycle normal')+' · momentum '+Math.round((G.momentum||0)*100)+' %';
+  const ob=$('ob');
+  if(ob){ob.innerHTML='<b>Progression dynamique</b><div style="margin-top:5px">'+(G.challenge?'⏱️ '+G.challenge.title+' · '+G.challenge.remain+' s':'🎯 Nouveau contrat imminent')+'</div><div style="margin-top:4px">🏆 Succès : '+(G.achievements?.length||0)+' · 🏗️ Bâtiments : '+buildingCount()+'</div>';}
+  const al=$('al');if(al)al.textContent=G.challenge?'⏱️ '+G.challenge.text:'🟢 Économie autonome';
+}
+
+$('mapZones').onclick=e=>{const z=e.target.closest('[data-region]');if(z)focusRegion(Number(z.dataset.region))};
+$('mapZones').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){const z=e.target.closest('[data-region]');if(z){e.preventDefault();focusRegion(Number(z.dataset.region))}}};
+const sndBtn=$('snd');if(sndBtn)sndBtn.onclick=()=>{mute=!mute;$('snd').textContent=mute?'🔇':'🔊'};
+// ---- interface
+function renderMapZones(C){const el=$('mapZones');if(!el)return;el.innerHTML=REGION_ORDER.map(i=>{const r=RN[i],u=zoneUnlocked(i),ready=!u&&regionReady(i),m=REGION_META[i];return `<div class="mapZone ${u?'on':'lock'}"><div class="mapZoneTop"><span>${m.emoji} ${r[0]}</span><span class="${u?'ok':'req'}">${u?'✓ OUVERTE':ready?'🟢 PRÊT':'🔒'}</span></div><small>${u?'Budget régional : '+fmt(G.budgets[i]||0)+' €':fmt(m.cost)+' € · '+m.obj+(ready?' · 🟢 PRÊT':'')}</small></div>`}).join('');$('mapLevel').textContent='13 régions · '+(G.unlocked?.length||1)+' ouvertes'}
+const SHOP_TABS=[
+ {id:'home',label:'🏠 Logements',keys:['phoenix','hauss','chateau']},
+ {id:'private',label:'🏢 Privé',keys:['artisan','ind','defense']},
+ {id:'public',label:'🏛️ Public',keys:['mairie','pref','elysee']},
+ {id:'health',label:'🩺 Santé',keys:['med','chr','chu']},
+ {id:'edu',label:'🎓 Éducation',keys:['sch','lycee','univ']}
+];
+let shopTab='home';
+const RADIAL_MAP={
+  0:['phoenix','hauss','chateau'],
+  1:['artisan','ind','defense'],
+  2:['boulangerie','com','tour','bus','ter','tram','velo','adsl','vdsl','fibrepro','wifi7','reseau5g','datacenter'],
+  3:['med','chr','chu'],
+  4:['sch','lycee','univ']
+};
+function districtOptions(d){return (RADIAL_MAP[d]||[]).filter(k=>BD[k]);}
+function shopCategoryFor(k){if(['phoenix','hauss','chateau'].includes(k))return'home';if(['artisan','ind','defense','boulangerie','com','tour'].includes(k))return'private';if(['mairie','pref','elysee'].includes(k))return'public';if(['med','chr','chu'].includes(k))return'health';if(['sch','lycee','univ'].includes(k))return'edu';return'private'}
+function smartState(C,k){
+ const d=BD[k],locked=!buildingUnlocked(k),hb=housingBlocked(C,k);
+ if(locked)return {cls:'smartLocked',kind:'locked',reason:'🔒 Niveau '+d.lv};
+ if(hb.blocked)return {cls:'smartBad',kind:'bad',reason:'🔴 '+hb.reason};
+ const serviceNeed=(d.health||0)+(d.edu||0), housing=(C.B.homes||0);
+ const recommended=(C.attractiveness<1 && serviceNeed>0)||(k==='artisan'&&BVal('phoenix')<1)||(d.residential&&C.attractiveness>=1&&C.unemployment<=.15);
+ return {cls:recommended?'smartGood':'',kind:recommended?'good':'normal',reason:recommended?'🟢 Recommandé':'Disponible'};
+}
+function shopCard(C,k){
+ const d=BD[k],count=n(k),cost=nextCost(k),selectedOld=sel>=0?lastBuilding(sel):null;
+ const refund=selectedOld&&canReplace(selectedOld.t,k)?replacementValue(selectedOld):0;
+ const displayCost=Math.max(0,cost-refund),state=smartState(C,k),can=state.kind!=='locked'&&!housingBlocked(C,k).blocked&&canSpend(displayCost,C);
+ const tags=[d.homes&&'🏠 '+d.homes,d.jobs&&'👷 '+d.jobs,d.health&&'🩺 '+d.health,d.edu&&'🎓 '+d.edu,d.inc&&'💶 '+fmt(d.inc)+' €/m'].filter(Boolean).slice(0,2).join(' · ');
+ let buttonText=state.kind==='locked'?'🔒 NIVEAU '+d.lv:!can&&housingBlocked(C,k).blocked?'🔒 PERMIS':refund?'↻ '+fmt(displayCost)+' €':'🏗 '+fmt(cost)+' €';
+ return `<div class="biz ${state.cls}" data-biz="${k}" title="${state.reason}"><div class="bizTop"><span class="bizName">${d.n}</span><span class="bizCount">${count}</span></div><div class="bizMeta"><span>${tags||state.reason}</span><strong>${state.kind==='locked'?'🔒 '+d.lv:!canSpend(displayCost,C)?'💸 Budget':fmt(displayCost)+' €'}</strong></div><div class="bizBar"><i style="width:${cl(Math.min(100,12+Math.log10(count+1)*35),0,100)}%"></i></div><button class="buy" data-buy="${k}" ${!can?'disabled':''}>${buttonText}</button></div>`;
+}
+function renderShop(C){
+ const tabs=$('shopTabs'),shop=$('shop');if(!tabs||!shop)return;
+ tabs.innerHTML=SHOP_TABS.map(t=>{const hasBlocked=t.keys.some(k=>smartState(C,k).kind==='bad'),hasReco=t.keys.some(k=>smartState(C,k).kind==='good');return `<button class="shopTab ${shopTab===t.id?'on ':''}${hasBlocked?'alert ':''}${hasReco?'reco':''}" data-shop-tab="${t.id}">${t.label}</button>`}).join('');
+ const tab=SHOP_TABS.find(t=>t.id===shopTab)||SHOP_TABS[0];
+ shop.innerHTML=tab.keys.map(k=>shopCard(C,k)).join('');
+ const h=$('shopHint');if(h)h.textContent=tab.label+' · 3 niveaux · clic ou roue radiale';
+}
+function openRadial(i){
+ const c=cells[i];if(!c||G.view!=='region'||c.r!==G.activeRegion)return;
+ closeRadial();
+ const menu=$('radialMenu');if(!menu)return;
+ const r=cvs.getBoundingClientRect(),p=new T.Vector3(c.x,c.top+2.1,c.y).project(cam);
+ let x=(p.x*.5+.5)*r.width,y=(-p.y*.5+.5)*r.height;
+ x=cl(x,115,r.width-115);y=cl(y,105,r.height-105);
+ menu.style.left=x+'px';menu.style.top=y+'px';menu.dataset.district=i;menu.classList.add('open');menu.setAttribute('aria-hidden','false');
+ const C=calc(),opts=districtOptions(c.district),label=DISTRICT_TYPES[c.district]?.short||'District';
+ const radius=Math.max(155,Math.min(205,95+opts.length*8));const positions=opts.map((_,n)=>{const a=-Math.PI/2+(Math.PI*2*n/Math.max(1,opts.length));return [Math.cos(a)*radius,Math.sin(a)*radius]});
+ const unemploymentHigh=C.unemployment>.15;
+ const industrialUrgent=c.district===1&&unemploymentHigh;
+ menu.innerHTML=`<button class="radialCenter" data-radial-close="1">${label}<small>District ${c.district+1}</small></button>`+opts.map((k,n)=>{const d=BD[k],st=smartState(C,k),locked=st.kind==='locked',blocked=st.kind==='bad'||!canSpend(nextCost(k),C);return `<button class="radialItem ${st.cls} ${locked||blocked?'locked':''} ${industrialUrgent?'industrialUrgent':''}" style="--rx:${positions[n][0]}px;--ry:${positions[n][1]}px" data-radial-buy="${k}" title="${st.reason}"><span class="riIcon">${(d.n.match(/^\S+/)||['🏗️'])[0]}</span><b>${d.n.replace(/^\S+\s*/,'')}</b><small>${locked?'Niv. '+d.lv:blocked?'Bloqué':fmt(nextCost(k))+' €'}</small></button>`}).join('')+`<button class="radialClose" data-radial-close="1">×</button>`;
+}
+function closeRadial(){const m=$('radialMenu');if(!m)return;m.classList.remove('open');m.setAttribute('aria-hidden','true');m.innerHTML='';refreshMapVisual()}
+function pulseShopTab(id){shopTab=id;const C=calc();renderShop(C);const b=document.querySelector(`[data-shop-tab="${id}"]`);if(b){b.classList.add('alert');b.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:500});const old=document.querySelector('.shopGuideArrow');if(old)old.remove();const a=document.createElement('div');a.className='shopGuideArrow';a.textContent='➜';a.title='Ouvrez cet onglet pour rééquilibrer la région';b.style.position='relative';b.appendChild(a);setTimeout(()=>a.remove(),1800)}}
+
+function ui(){
+ if(G?.budgets&&Number.isInteger(G.activeRegion))G.budgets[G.activeRegion]=G.m;
+ const C=calc();uiDirty=false;lastUI=performance.now();
+ const need=xpNeed(G.lvl),xp=Math.max(0,Math.min(need,G.xp||0)),pct=need?xp/need*100:0;
+ const healthPct=Math.max(0,Math.round((C.healthCoverage||0)*100));
+ const eduPct=Math.max(0,Math.round((C.educationCoverage||0)*100));
+ $('hubMoney').textContent=fmt(G.m)+' €';$('hubRegion').textContent=RN[G.activeRegion][0];
+ $('hubHealth').textContent=healthPct+'%';$('hubHealthFill').style.width=Math.min(100,healthPct)+'%';
+ $('hubEdu').textContent=eduPct+'%';$('hubEduFill').style.width=Math.min(100,eduPct)+'%';
+ $('healthGauge').classList.toggle('bad',healthPct<100);$('eduGauge').classList.toggle('bad',eduPct<100);
+ $('hubLevel').textContent='⭐ Niveau '+G.lvl;$('hubLevelLabel').textContent=levelLabel(G.lvl);$('hubXpFill').style.width=pct.toFixed(1)+'%';$('hubXpText').textContent=Math.floor(xp)+' / '+need+' XP';
+ const en=Math.round(C.B.en),dem=Math.max(1,Math.round(C.dem)),energyBad=en<dem;
+ $('kx1').textContent=en+'/'+dem;$('kx1s').textContent=energyBad?'À renforcer':'OK';$('energyKpi').classList.toggle('alert',energyBad);$('energyKpi').classList.toggle('ok',!energyBad);
+ const unemployment=Math.round((1-C.emp)*100);const jobBad=unemployment>15;
+ $('kx2').textContent=unemployment+'%';$('kx2s').textContent=jobBad?'Ouvrir le district industriel':'Marché équilibré';$('unemploymentKpi').classList.toggle('alert',jobBad);
+ const networkBad=C.B.bottleneck>0.05;$('kx4').textContent=networkBad?'À surveiller':'OK';$('kx4s').textContent=networkBad?'Flux saturés':'Flux opérationnels';$('networkKpi').classList.toggle('alert',networkBad);$('networkKpi').classList.toggle('ok',!networkBad);
+ renderMapZones(C);renderShop(C);selUI();ui2(C);
+ if(!history.length||history[history.length-1].t!==G.t||history[history.length-1].m!==Math.round(G.m))history.push({t:G.t,m:G.m,en:C.B.en,dem:C.dem,net:C.net});
+ if(history.length>120)history.shift();
+}
+function drawChart(C){const c=$('chart');if(!c)return;const x=c.getContext('2d');if(!x)return;const w=c.width=c.clientWidth*2,h=c.height=c.clientHeight*2;x.clearRect(0,0,w,h);if(history.length<2)return;const max=Math.max(1,...history.map(v=>Math.max(v.en,v.dem)),1);const minM=Math.min(...history.map(v=>v.m)),maxM=Math.max(...history.map(v=>v.m),minM+1);const line=(key,scale=1)=>{x.beginPath();history.forEach((v,i)=>{const px=i/(history.length-1)*w,py=h-(v[key]*scale/max)*h*.78-h*.08;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()};x.globalAlpha=.85;x.lineWidth=4;line('en');line('dem');x.lineWidth=3;x.setLineDash([8,8]);line('net',Math.max(1,max/(maxM-minM)));x.setLineDash([]);x.globalAlpha=1;x.font='24px system-ui';x.fillText('Énergie',8,26);x.fillText('Demande',120,26);x.fillText('€ / mois',255,26)}
+function selUI(){const s=$('sl');if(sel<0){return}const c=cells[sel],b=lastBuilding(sel);let h=`<b>${RN[c.r][0]}</b> · case ${sel}`;
+if(b){const d=BD[b.t];const rc=calc();h+=`<div>${d.cat||''} · ${d.n} · niveau ${b.l}/3${b.rd>G.t?' · 🚧 chantier : '+(b.rd-G.t)+' mois':''}</div>`+(d.residential?`<div>🏙️ Rendement dynamique · foncier ${Math.round(rc.B.avgLandPressure*100)} % · services locaux = bonus progressif</div>`:'')+`<div class="bl">`;if(b.l<3){const uc=Math.round(d.c*UC[b.l]);h+=`<button data-a="up" ${!canSpend(uc,calc())?'disabled':''}>Améliorer<small>${uc} €</small></button>`}
+h+=`<button data-a="bulk" ${b.l>=3?'disabled':''}>⬆ Tout améliorer<small>même type · niveau +1</small></button><button data-a="del">Démolir<small>remboursement 100 %</small></button></div>`}
+else{h+=`<div class="bl">`+Object.keys(BD).map(k=>{const d=BD[k],locked=!buildingUnlocked(k),e=[d.homes&&'+logements',d.jobs>.1&&'emplois',d.en&&'énergie',d.health&&'santé',d.edu&&'éducation',d.inc&&'revenus',d.res&&'recherche',d.fib&&'numérique',d.tgv&&'transport',d.hapb&&'bien-être',d.pol<0&&'dépollue',d.pol>0&&'pollue'].filter(Boolean).join(', ');return`<button data-a="${k}" ${locked||!canSpend(nextCost(k),calc())?'disabled':''}>${locked?'🔒 '+d.n+' · niveau '+d.lv:d.n}<small>${locked?'Déblocage progressif':fmt(nextCost(k))+' € · instantané · '+e}</small></button>`}).join('')+'</div>'}
+s.innerHTML=h}
+const slBtn=$('sl');if(slBtn)slBtn.onclick=e=>{const b=e.target.closest('button');if(!b||sel<0)return;const a=b.dataset.a,o=lastBuilding(sel);
+if(!o)return;
+if(a==='up'){const uc=Math.max(0,totalCost(o.t,Math.min(3,o.l+1))-totalCost(o.t,o.l));if(o.l<3&&canSpend(uc)){G.m-=uc;o.l++;o.spent=(o.spent||0)+uc;o.g.scale.x=o.g.scale.z=.72+.12*(o.l-1);o.g.scale.y=.05;o.g.userData.birth=performance.now();o.g.userData.targetScale=1+.3*(o.l-1);fx(sel,'⬆ +1','#9be7ff');beep(660);addXP(10);toast('Amélioration instantanée')}}
+else if(a==='bulk'){const targets=allBuildings().filter(([i,z])=>z.l<3&&z.t===o.t);let cost=targets.reduce((sum,[i,z])=>sum+Math.max(0,totalCost(z.t,z.l+1)-totalCost(z.t,z.l)),0);if(targets.length&&canSpend(cost)){G.m-=cost;for(const [i,z] of targets){const uc=Math.max(0,totalCost(z.t,z.l+1)-totalCost(z.t,z.l));z.l++;z.spent=(z.spent||0)+uc;z.g.scale.x=z.g.scale.z=.72+.12*(z.l-1);z.g.scale.y=.05;z.g.userData.birth=performance.now();z.g.userData.targetScale=1+.3*(z.l-1)}fx(sel,'⬆ x'+targets.length,'#9be7ff');beep(760);addXP(10*targets.length);toast(targets.length+' bâtiments améliorés')}}
+else if(a==='del'){G.m+=o.spent??totalCost(o.t,o.l);sc.remove(o.g);const arr=stackAt(sel).filter(x=>x!==o);if(arr.length)blds.set(sel,arr);else blds.delete(sel);fx(sel,'+100 %','#9dffb0');beep(520);toast('Bâtiment remboursé à 100 %')}
+else if(BD[a]){placeSelected(a)}uiDirty=true;ui()};
+function randomFreeIndex(){return targetDistrictFor('coron')}
+function bestBuildCell(t){
+  if(G.view!=='region')return -1;
+  const d=BD[t],preferred=d?.residential?0:d?.healthTier?3:d?.eduTier?4:(d?.cat==='🚆 Transport'||d?.cat==='💻 Numérique')?2:d?.cat?.includes('Privés')?1:2;
+  if(sel>=0&&cells[sel]&&cells[sel].r===G.activeRegion)return sel;
+  return G.activeRegion*5+preferred;
+}
+
+function canReplace(oldType,newType){
+  const o=BD[oldType],n=BD[newType];
+  // Toutes les cases deviennent polyvalentes : tout bâtiment peut en remplacer un autre.
+  // Le prix du nouveau bâtiment est diminué de la valeur de reprise de l'ancien.
+  return !!o&&!!n&&oldType!==newType;
+}
+function replacementValue(o){
+  return Math.max(0,Number(o?.spent)||totalCost(o?.t||'coron',o?.l||1));
+}
+function replaceBurst(i,refund,oldName,newName){
+  const p=cells[i];if(!p)return;
+  const e=document.createElement('div');e.className='replaceBurst';e.dataset.cell=String(i);
+  updateFxPosition(e);
+  e.innerHTML='<span>💨</span><b>🪙</b><b>🪙</b><b>🪙</b><span>💥</span>';
+  [...e.querySelectorAll('b')].forEach((b,k)=>{const a=[-1.2,-.4,.5][k];b.style.setProperty('--dx',(a*34)+'px');b.style.setProperty('--dy',(-34-Math.abs(a)*16)+'px')});
+  $('fx').append(e);
+  setTimeout(()=>e.remove(),760);
+  fx(i,'↻ '+oldName+' → '+newName+'  +'+fmt(refund)+' €','#ffe08a');
+}
+function placeSelected(t,forcedTarget=null){
+  if(G.view!=='region'){toast('🗺️ Ouvrez une région pour construire.');return false}
+  const d=BD[t],cost=nextCost(t); if(!d||!buildingUnlocked(t)){toast('Bâtiment verrouillé · niveau '+(d?.lv||'?'));return false}
+  const C=calc(); if(t==='artisan'&&BVal('phoenix')<1){toast('🛠️ L’Atelier nécessite au moins 1 Maison Phénix.');return false} const hb=housingBlocked(C,t); if(hb.blocked){toast(hb.reason);return false}
+  let target=forcedTarget!=null?forcedTarget:bestBuildCell(t);
+  if(mapRegion<0){toast('Ouvre une région depuis la grille métropolitaine avant de construire.');return false}if(target<0||!cells[target]||cells[target].r!==mapRegion||!zoneUnlocked(cells[target].r)){toast('Région verrouillée ou hors du zoom actuel');return false}
+  if(!canSpend(cost,C)){toast('Budget régional insuffisant');return false}
+  G.m-=cost; sel=target; place(target,t,1); if(meshes[target]?.material?.emissive) meshes[target].material.emissive.setHex(0x553311); addXP(6); celebrateBuild(target,d.n);
+  if(d.eduTier||d.healthTier){const isEdu=!!d.eduTier,boostPts=isEdu?(d.edu||0):(d.health||0);if(isEdu)G.educationPulseUntil=Math.max(G.educationPulseUntil||0,G.t+10);else G.healthPulseUntil=Math.max(G.healthPulseUntil||0,G.t+10);fx(target,isEdu?'🎓 ÉDUCATION +'+boostPts:'🩺 SANTÉ +'+boostPts,'#7dffb2');fx(target,'⚡ GAINS ×2','#ffe66d');beep(880,.14);toast((isEdu?'🎓 Éducation +'+boostPts:'🩺 Santé +'+boostPts)+' · ⚡ gains ×2 pendant 10 mois')}
+  else{fx(target,'🏗 '+d.n,'#ffd28a');beep(440,.08);toast('🏗 '+d.n+' · '+fmt(cost)+' €')}
+  uiDirty=true;ui();return true
+}
+
+$('shopTabs')?.addEventListener('click',e=>{const b=e.target.closest('[data-shop-tab]');if(!b)return;shopTab=b.dataset.shopTab;renderShop(calc())});
+$('radialMenu')?.addEventListener('click',e=>{
+ const close=e.target.closest('[data-radial-close]');if(close){closeRadial();return}
+ const b=e.target.closest('[data-radial-buy]');if(!b)return;
+ const k=b.dataset.radialBuy,i=Number($('radialMenu').dataset.district),C=calc();
+ if(!buildingUnlocked(k)){toast('🔒 Bâtiment disponible au niveau '+BD[k].lv);return}
+ const hb=housingBlocked(C,k);if(hb.blocked){
+  if(BD[k]?.residential && C.unemployment>.15){beep(180,.09);setTimeout(()=>beep(120,.08),70);flashUnemployment();toast('🚫 Logements bloqués : chômage à '+Math.round(C.unemployment*100)+' % · ouvrez le District Industriel.');return}
+  const tab=(C.healthCoverage<=C.educationCoverage?'health':'edu');pulseShopTab(tab);beep(180,.09);setTimeout(()=>beep(120,.08),70);toast(hb.reason);return}
+ if(!canSpend(nextCost(k),C)){toast('💶 Budget régional insuffisant');return}
+ closeRadial();placeSelected(k,i);
+});
+let holdTimer=null,holdInterval=null;
+function stopHold(){clearTimeout(holdTimer);clearInterval(holdInterval);holdTimer=null;holdInterval=null}
+function startHold(k){stopHold();holdTimer=setTimeout(()=>{holdInterval=setInterval(()=>{if(!placeSelected(k))stopHold()},115)},280)}
+let holdTriggered=false,holdKey=null;
+$('shop').onpointerdown=e=>{const b=e.target.closest('[data-buy]');if(!b)return;holdTriggered=false;holdKey=b.dataset.buy;stopHold();holdTimer=setTimeout(()=>{holdTriggered=true;holdInterval=setInterval(()=>{if(!placeSelected(holdKey))stopHold()},115)},280)};
+$('shop').onclick=e=>{const b=e.target.closest('[data-buy]');if(!b)return;if(holdTriggered)return;stopHold();const k=b.dataset.buy,C=calc(),hb=housingBlocked(C,k);if(hb.blocked){if(BD[k]?.residential&&C.unemployment>.15){beep(180,.09);setTimeout(()=>beep(120,.08),70);flashUnemployment();toast('🚫 Logements bloqués : chômage à '+Math.round(C.unemployment*100)+' % · ouvrez le District Industriel.');return}pulseShopTab(C.healthCoverage<=C.educationCoverage?'health':'edu');beep(180,.09);setTimeout(()=>beep(120,.08),70);toast(hb.reason);return}placeSelected(k);uiDirty=true;ui()};
+document.addEventListener('pointerup',stopHold);
+$('ng').onclick=()=>{try{localStorage.removeItem('ftyc')}catch(e){}newGame()};
+$('shop').addEventListener('dragstart',e=>{const card=e.target.closest('[data-biz]');if(!card||card.querySelector('button:disabled'))return;const k=card.dataset.biz;e.dataTransfer.setData('text/plain',k);card.classList.add('dragging');setTimeout(()=>card.classList.remove('dragging'),0)});
+$('cv').addEventListener('dragover',e=>{e.preventDefault();const i=hitCell(e);meshes.forEach(m=>m.classList?.remove?.('districtDrop'));if(i>=0&&zoneUnlocked(cells[i].r))meshes[i].material.emissive.setHex(0x6b4e12)});
+$('cv').addEventListener('drop',e=>{e.preventDefault();const k=e.dataTransfer.getData('text/plain');const i=hitCell(e);meshes.forEach(m=>m.material.emissive.setHex(0));if(k&&i>=0&&mapRegion>=0&&cells[i].r===mapRegion)placeSelected(k,i);else if(k)toast('Ouvre une région puis dépose le projet dans un de ses 5 districts.')});
+// ---- caméra
+let fcs=null,az=.15,el=.95,dist=105,tg=new T.Vector3(50,0,55),dr=null;let mapRegion=-1;const rc=new T.Raycaster();const cityRc=new T.Raycaster();
+const MAP_HOME={x:50,z:55,dist:105};
+function regionCenter(id){if(id<0)return {x:MAP_HOME.x,z:MAP_HOME.z,dist:MAP_HOME.dist};const r=RN[id]||RN[2];return {x:r[1],z:r[2],dist:id===2?62:48}}
+function focusRegion(id){mapRegion=Number(id);const p=regionCenter(mapRegion);fcs=new T.Vector3(p.x,0,p.z);dist=mapRegion<0?105:34;updateMapControls();}
+function zoomMap(delta){dist=cl(dist+delta,28,150);}
+function updateMapControls(){const sel=$('mapRegion');if(sel)sel.value=String(mapRegion)}
+function fillRegionSelector(){const sel=$('mapRegion');if(!sel)return;for(let i=0;i<13;i++){const o=document.createElement('option');o.value=i;o.textContent='📍 '+RN[i][0];sel.append(o)}sel.value='-1'}
+function cam_(){cam.position.set(tg.x+dist*Math.cos(el)*Math.sin(az),dist*Math.sin(el),tg.z+dist*Math.cos(el)*Math.cos(az));cam.lookAt(tg)}
+const cvs=$('cv');
+cvs.oncontextmenu=e=>e.preventDefault();
+function pointerNdc(e){const r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*2-1,y:-((e.clientY-r.top)/r.height*2-1)}}
+function hitCell(e){const p=pointerNdc(e);rc.setFromCamera(p,cam);const h=rc.intersectObjects(meshes)[0];return h?h.object.userData.i:-1}
+function districtLabel(i){const c=cells[i],d=DISTRICT_TYPES[c.district];return RN[c.r][0]+' · '+d.n}
+function hitCity(e){return null}
+cvs.onpointerdown=e=>{dr={x:e.clientX,y:e.clientY,m:0};cvs.setPointerCapture(e.pointerId)};
+cvs.onpointermove=e=>{if(!dr)return;const dx=e.clientX-dr.x,dy=e.clientY-dr.y;dr.m+=Math.abs(dx)+Math.abs(dy);dr.x=e.clientX;dr.y=e.clientY;az-=dx*.007;el=cl(el+dy*.005,.25,1.5)};
+cvs.onpointerup=e=>{if(!dr)return;if(dr.m<6){if(mapRegion<0){const id=hitCity(e);if(id!=null){focusRegion(id);dr=null;return}}else{const i=hitCell(e);if(i>=0&&cells[i].r===mapRegion){if(sel>=0&&meshes[sel])meshes[sel].material.emissive.setHex(0);sel=i;meshes[sel].material.emissive.setHex(0x553311);selUI();openRadial(i);refreshMapVisual();dr=null;return}}}dr=null};
+cvs.addEventListener('wheel',e=>{e.preventDefault();zoomMap(e.deltaY>0?7:-7)}, {passive:false});
+const mapHomeBtn=$('mapHome'),mapMinusBtn=$('mapMinus'),mapPlusBtn=$('mapPlus'),mapRegionSel=$('mapRegion'),regionBackBtn=$('regionBack'),tacticalMapEl=$('tacticalMap'),mapAccessBtn=$('mapAccess');
+if(mapAccessBtn)mapAccessBtn.onclick=()=>{closeRadial();setView('tactical')};
+if(mapHomeBtn)mapHomeBtn.onclick=()=>{closeRadial();G.view==='region'?setView('tactical'):setView('region',G.activeRegion)};
+if(mapMinusBtn)mapMinusBtn.onclick=()=>zoomMap(4);
+if(mapPlusBtn)mapPlusBtn.onclick=()=>zoomMap(-4);
+if(mapRegionSel)mapRegionSel.onchange=e=>{const id=Number(e.target.value);if(id>=0&&zoneUnlocked(id))setView('region',id)};
+if(regionBackBtn)regionBackBtn.onclick=()=>{closeRadial();setView('tactical')};
+if(tacticalMapEl)tacticalMapEl.addEventListener('click',e=>{closeRadial();const b=e.target.closest('[data-region]');if(!b)return;const id=Number(b.dataset.region);if(zoneUnlocked(id))setView('region',id);else if(regionReady(id))unlockRegion(id);else toast('🔒 '+REGION_META[id].obj)});
+
+function rs(){const w=Math.max(1,cvs.clientWidth),h=Math.max(1,cvs.clientHeight);rd.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',rs);
+function loop(t){if(!last)last=t;let dt=Math.min(.25,Math.max(0,(t-last)/1000));acc=Math.min(1.25,acc+dt);let steps=0;while(acc>=1&&steps<1){tick();acc-=1;steps++}if(uiDirty&&(t-lastUI>=160||!lastUI))ui();last=t;
+for(const v of blds.values()){const arr=Array.isArray(v)?v:[v];for(const b of arr){if(!b?.g)continue;const pr=b.rd>G.t&&b.dur>0?Math.max(.08,1-(b.rd-G.t)/b.dur):1;b.g.scale.y+=((1+.3*((b.l||1)-1))*pr-b.g.scale.y)*.15;if(b.g.userData?.rotor)b.g.userData.rotor.rotation.z=t/400}}
+if(fcs){tg.lerp(fcs,.08);if(tg.distanceTo(fcs)<.5)fcs=null}cam_();updateFxPositions();rd.render(sc,cam);requestAnimationFrame(loop)}
+rs();fillRegionSelector();newGame();setView('tactical',2);
+try{localStorage.removeItem('ftyc')}catch(e){}
+requestAnimationFrame(loop);
+
+</script></body></html>
