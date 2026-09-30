@@ -2,7 +2,7 @@
 <html lang="fr"><head><meta charset="utf-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2250%22 font-size=%2250%22>🇫🇷</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>France Tycoon 3D</title>
+<title>France Tycoon v4 3D</title>
 <style>:root{--bg:#080b12;--panel:#111722;--panel2:#171e2b;--fg:#f5f7fb;--mut:#8d98aa;--line:#252e3d;--gold:#ffd35a;--green:#54e38a;--blue:#59a8ff;--red:#ff667d;--purple:#b77cff;--cyan:#62d9ff;box-sizing:border-box}
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden}
@@ -123,6 +123,14 @@ button{border:0;color:var(--fg);cursor:pointer}
 .fl.paymentNotice{animation:paymentUp 1.25s forwards}
 @keyframes up{to{transform:translate(-50%,calc(-42px - var(--fy,0px)));opacity:0}}
 @keyframes paymentUp{0%{opacity:0;transform:translate(-50%,6px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}72%{opacity:1;transform:translate(-50%,-2px) scale(1)}100%{opacity:0;transform:translate(-50%,-16px) scale(1.02)}}
+
+.clickHUD{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:13;min-width:220px;max-width:calc(100% - 24px);padding:8px 12px;border:1px solid #54e38a66;border-radius:11px;background:#08131ce8;backdrop-filter:blur(6px);box-shadow:0 7px 24px #0007;text-align:center;pointer-events:none}
+.clickHUD b{display:block;font-size:11px;color:#f5f7fb}
+.clickHUD span{display:block;margin-top:2px;font-size:10px;color:#7dffb2;font-weight:900}
+.clickHUD i{display:block;height:5px;margin:5px 0 3px;background:#273142;border-radius:99px;overflow:hidden}
+.clickHUD i em{display:block;height:100%;width:0;background:linear-gradient(90deg,#54e38a,#ffd35a);border-radius:99px;transition:width .18s}
+.clickHUD small{display:block;color:#8d98aa;font-size:8px}
+@media(max-width:600px){.clickHUD{min-width:180px;padding:6px 9px;bottom:8px}.clickHUD b{font-size:9px}.clickHUD span{font-size:9px}.clickHUD small{font-size:7px}}
 #toast{position:fixed;left:50%;bottom:46px;transform:translateX(-50%);background:#182131;border:1px solid var(--green);padding:9px 15px;border-radius:9px;z-index:40;display:none;font-weight:800;box-shadow:0 10px 30px #0008}
 .cf{position:absolute;top:-12px;width:7px;height:11px;animation:fall 2s linear forwards}
 @keyframes fall{to{transform:translateY(420px) rotate(540deg);opacity:0}}
@@ -395,26 +403,115 @@ html,body{overflow:hidden}
 
 
 
-<style id="evo-dock-css">body.evo-open #distBar{display:none!important}body.evo-open #toast{bottom:auto!important;top:74px;z-index:100000}#toast{z-index:100000}#evoDock{bottom:8px;max-height:44%}.main{grid-template-columns:1fr!important}
-#evoDock{position:absolute;left:10px;right:10px;bottom:10px;z-index:200;display:none;max-height:48%;overflow-y:auto;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;background:rgba(7,13,23,.97);border:2px solid #ffd35a;border-radius:16px;padding:10px;box-shadow:0 12px 40px #000e;backdrop-filter:blur(8px)}
-#evoDock .evo-head{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:12px}
-#evoDock .evo-head b{flex:1}
-#evoDock .evo-head button{padding:6px 10px;border-radius:9px;background:#1d2b3c;border:1px solid #ffd35a;font-weight:800;font-size:11px}
-.evo-grp{display:grid;grid-template-columns:1fr 44px;gap:5px}
-.evo-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 6px;min-height:70px;border-radius:12px;border:2px solid #233347;background:linear-gradient(#152233,#080d16);color:#fff;font-weight:800;font-size:11px;cursor:pointer;transition:transform .1s,border-color .1s}
-.evo-btn:hover{border-color:#ffd35a;transform:translateY(-2px)}
-.evo-btn.locked,.evo-btn:disabled{opacity:.4;filter:grayscale(.7)}
-.evo-btn i{font-style:normal;font-size:21px;margin-bottom:2px}
-.evo-btn b{text-align:center;line-height:1.2}
-.evo-btn small{font-size:9px;color:#9fb0c6;margin-top:2px;font-weight:600;text-align:center}
-.evo-btn.build-mode{border-color:#59a8ff}.evo-btn.build-mode.reco{box-shadow:0 0 10px #54e38a88}
-.evo-btn.upgrade-mode{border-color:#54e38a}
-.evo-btn.evolve-mode{border-color:#ffd35a;background:linear-gradient(#2d210a,#080502);animation:evoPulse 1.5s infinite alternate}
-.evo-btn.max-mode{border-color:#b77cff}
-.evo-btn.evo-del{border-color:#ff667d;min-height:0;padding:4px}
-@keyframes evoPulse{to{box-shadow:0 0 12px #ffd35a88}}
-@media(max-width:600px){#evoDock{grid-template-columns:1fr 1fr;max-height:55%}}
-</style></head><body><div class="app">
+<style id="evo-dock-css">
+body.evo-open #distBar{display:none!important}body.evo-open #toast{bottom:auto!important;top:74px;z-index:100000}#toast{z-index:100000}.main{grid-template-columns:1fr!important}
+#sl{display:none!important}#evoDock{position:absolute;left:14px;right:14px;bottom:12px;z-index:200;display:none;max-height:54%;overflow:auto;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));align-content:start;gap:9px;padding:13px;background:linear-gradient(145deg,rgba(13,22,36,.98),rgba(5,10,18,.98));border:1px solid #34445c;border-top:3px solid #59a8ff;border-radius:17px;box-shadow:0 18px 55px #000c;backdrop-filter:blur(14px);scrollbar-width:thin;scrollbar-color:#42546c #101722}
+#evoDock .evo-head{grid-column:1/-1;position:sticky;top:-13px;z-index:3;display:flex;align-items:center;gap:10px;margin:-13px -13px 2px;padding:12px 15px;background:linear-gradient(100deg,#17283d,#101a29);border-bottom:1px solid #34445c;border-radius:14px 14px 0 0;font-size:12px}
+#evoDock .evo-head:before{content:'🏙️';display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#203b58;font-size:18px}
+#evoDock .evo-head b{display:block;flex:1;color:#f4f8ff;font-size:13px;letter-spacing:.01em}
+#evoDock .evo-head span{white-space:nowrap;color:#b8c8dc;background:#26364a;border:1px solid #3a4b61;padding:5px 8px;border-radius:8px;font-size:10px;font-weight:800}
+#evoDock .evo-section{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:5px 1px 0;color:#9aacc2;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+#evoDock .evo-section:after{content:'';height:1px;flex:1;background:#28384b}
+.evo-grp{display:grid;grid-template-columns:minmax(0,1fr) 38px;gap:5px;min-width:0}
+.evo-btn{width:100%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:11px 8px;min-height:92px;border-radius:12px;border:1px solid #2b3b50;background:linear-gradient(155deg,#172538,#0c131e 78%);color:#f7f9fc;font-weight:800;font-size:11px;cursor:pointer;transition:transform .14s,border-color .14s,background .14s,box-shadow .14s;text-align:center}
+.evo-btn:hover:not(:disabled){border-color:#83bfff;background:linear-gradient(155deg,#203750,#101a28);transform:translateY(-2px);box-shadow:0 7px 18px #0005}
+.evo-btn.locked,.evo-btn:disabled{opacity:.48;filter:saturate(.55);cursor:not-allowed}
+.evo-btn i{font-style:normal;display:grid;place-items:center;width:34px;height:34px;margin-bottom:2px;border-radius:10px;background:#26384c;font-size:20px}
+.evo-btn b{max-width:100%;line-height:1.25;font-size:11px;overflow-wrap:anywhere}
+.evo-btn small{font-size:10px;color:#a9bad0;margin-top:2px;font-weight:650;line-height:1.35;text-align:center;overflow-wrap:anywhere}
+.evo-btn.build-mode{border-color:#31577a}.evo-btn.build-mode i{background:#183b59}.evo-btn.build-mode.reco{border-color:#54e38a;box-shadow:inset 0 0 0 1px #54e38a25}
+.evo-btn.upgrade-mode{border-color:#286344}.evo-btn.upgrade-mode i{background:#17402f}
+.evo-btn.evolve-mode{border-color:#806329;background:linear-gradient(155deg,#34270e,#15120c);}.evo-btn.evolve-mode i{background:#594318}
+.evo-btn.max-mode{border-color:#584879}.evo-btn.max-mode i{background:#382b50}
+.evo-btn.evo-del{min-height:0;padding:5px;border-color:#57313b;background:#21131a;align-self:stretch}.evo-btn.evo-del i{width:26px;height:26px;background:#49202b;font-size:16px}.evo-btn.evo-del small{font-size:9px;color:#ffb1bd}
+#evoDock .buildHint{grid-column:1/-1;margin:0;padding:12px 14px;border:1px dashed #40516a;border-radius:11px;background:#111d2b;color:#b8c8dc;font-size:11px}
+#evoDock .buildHint b{color:#ffd35a}
+@keyframes evoPulse{to{box-shadow:inset 0 0 0 1px #ffd35a33}}
+@media(max-width:700px){#evoDock{left:6px;right:6px;bottom:6px;max-height:58%;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:9px}#evoDock .evo-head{top:-9px;margin:-9px -9px 2px;padding:10px}#evoDock .evo-head b{font-size:11px}.evo-btn{min-height:84px;padding:8px 5px}.evo-btn small{font-size:9px}}
+</style>
+<style id="map-redesign">
+.tacticalMap{background:radial-gradient(circle at 50% 48%,#19364a 0,#0d1c2a 48%,#071019 100%);}
+.tacticalMap:after{content:"";position:absolute;inset:8% 12%;border:1px solid #5c89a522;border-radius:48% 52% 46% 54%/44% 48% 52% 56%;box-shadow:0 0 80px #4d9bd20b,inset 0 0 70px #0006;pointer-events:none;z-index:0;}
+.tMapFrance{inset:4% 5% 3%;width:90%;height:93%;opacity:.92;}
+.tMapFrance .land{fill:#132b3a;stroke:#4b7893;stroke-width:1.1;}
+.tMapFrance .route{stroke:#54718a;stroke-width:1.05;stroke-dasharray:2 3;opacity:.48;}
+.tMapFrance .route.done{stroke:#54e38a;stroke-width:1.8;opacity:.82;}
+.tMapFrance .route.next{stroke:#ffd35a;stroke-width:1.6;opacity:.85;}
+.mapGridTitle{position:absolute;right:18px;bottom:45px;z-index:4;color:#55758d;font-size:9px;font-weight:900;letter-spacing:.18em;pointer-events:none;}
+.tRegion{width:156px;min-height:66px;padding:8px 9px 8px 39px;border-radius:13px;border:1px solid #3d5266;background:linear-gradient(145deg,#142333ee,#0a141fee);box-shadow:0 8px 24px #0008,0 0 0 1px #ffffff05 inset;backdrop-filter:blur(5px);}
+.tRegion:hover{transform:translate(-50%,-50%) scale(1.045);border-color:#8ba8c2;box-shadow:0 12px 32px #000a,0 0 0 2px #8ba8c218;}
+.tRegion.unlocked{border-color:#39704f;background:linear-gradient(145deg,#10291eee,#0b1712ee);}
+.tRegion.current{border-color:#ffd35a;box-shadow:0 0 0 2px #ffd35a30,0 12px 34px #000a;}
+.tRegion.ready{border-color:#c9a43e;box-shadow:0 0 0 2px #ffd35a20,0 10px 28px #0009;}
+.tRegion .tEmoji{left:8px;top:9px;width:26px;height:26px;border-radius:8px;background:#26384a;font-size:16px;box-shadow:0 3px 10px #0005;}
+.tRegion.unlocked .tEmoji{background:#1b4b32;}
+.tRegionBody{display:block;min-width:0;}
+.tRegion b{font-size:10px;line-height:1.2;}
+.tRegion small{font-size:8px;margin-top:4px;color:#9fb0c1;}
+.tRegion i{font-size:7.5px;margin-top:5px;}
+@media(max-width:600px){.tRegion{width:112px;min-height:58px;padding:7px 6px 6px 31px}.tRegion .tEmoji{left:5px;top:7px;width:22px;height:22px;font-size:13px}.tRegion b{font-size:7.8px}.tRegion small{font-size:6.6px}.tRegion i{font-size:6px}.mapGridTitle{right:10px;bottom:34px;font-size:7px}}
+</style>
+
+<style id="district-label-responsive">
+/* Labels districts : lisibles sans éblouissement */
+.tacticalMap .tRegion{font-size:inherit}
+@media (max-width: 900px){
+  .tacticalMap .tRegion{width:132px;min-height:62px;padding:7px 8px 7px 34px}
+  .tacticalMap .tRegion b{font-size:9px;line-height:1.15}
+  .tacticalMap .tRegion small{font-size:7px}
+  .tacticalMap .tRegion i{font-size:6.5px}
+}
+@media (max-width: 600px){
+  .tacticalMap .tRegion{width:94px;min-height:50px;padding:6px 5px 5px 27px;border-radius:8px}
+  .tacticalMap .tRegion .tEmoji{left:5px;top:6px;width:18px;height:18px;font-size:11px}
+  .tacticalMap .tRegion b{font-size:7px}
+  .tacticalMap .tRegion small{font-size:6px}
+  .tacticalMap .tRegion i{font-size:5.5px}
+}
+@media (max-width: 420px){
+  .tacticalMap .tRegion{width:82px;min-height:45px;padding-left:24px}
+  .tacticalMap .tRegion .tEmoji{width:16px;height:16px;font-size:9px}
+  .tacticalMap .tRegion b{font-size:6.5px}
+  .tacticalMap .tRegion small{font-size:5.5px}
+  .tacticalMap .tRegion i{display:none}
+}
+</style>
+
+<style id="region-readability-v15">
+/* Hiérarchie visuelle de la vue région : conserver les couleurs, réduire le bruit. */
+#questBar{gap:6px;padding:0 2px 2px}
+#seasonRow{height:20px;gap:5px;font-size:10px;line-height:20px}
+.sd{width:13px;height:13px}
+.qc{min-height:48px;padding:6px 9px;border-width:1px;border-radius:10px;font-size:10px}
+.qc .qr{font-size:9px}
+.qb{height:11px;margin-top:4px}
+.qb span{font-size:8px;line-height:11px}
+#collectBtn{min-height:48px;border-width:1px;border-radius:11px;font-size:13px}
+#collectBtn small{font-size:9px}
+#actBar{gap:7px;padding:1px 2px 4px}
+.ab{min-height:50px;padding:5px 3px;border-width:1px;border-radius:11px;font-size:10px;box-shadow:0 3px 0 #0008,inset 0 1px 0 #ffffff55}
+.ab i{font-size:18px}
+.ab small{font-size:8px}
+#distBar{left:10px;right:10px;bottom:10px;gap:6px;padding-bottom:2px}
+.dc{flex:0 0 184px;min-height:58px;padding:6px 7px;border-width:1px;border-radius:10px;box-shadow:0 3px 0 #0008}
+.dh{font-size:11px;line-height:1.1}
+.dh b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dh span{font-size:9px}
+.db{gap:4px;margin-top:5px}
+.db button{font-size:10px;padding:5px 7px;border-width:1px;border-radius:7px;box-shadow:0 2px 0 #0008}
+.dc:nth-child(1){border-top:3px solid #3fa36b;background:linear-gradient(180deg,#193426f5,#152131f5)}
+.dc:nth-child(2){border-top:3px solid #8d96a6;background:linear-gradient(180deg,#29303bf5,#152131f5)}
+.dc:nth-child(3){border-top:3px solid #e0b04a;background:linear-gradient(180deg,#3a321bf5,#152131f5)}
+.dc:nth-child(4){border-top:3px solid #d9576b;background:linear-gradient(180deg,#3a2028f5,#152131f5)}
+.dc:nth-child(5){border-top:3px solid #8a63d2;background:linear-gradient(180deg,#302344f5,#152131f5)}
+.dc:nth-child(6){border-top:3px solid #3d9bd6;background:linear-gradient(180deg,#19344af5,#152131f5)}
+.dc:nth-child(7){border-top:3px solid #e58a3c;background:linear-gradient(180deg,#3d2b1cf5,#152131f5)}
+.dc:nth-child(8){border-top:3px solid #33c7c7;background:linear-gradient(180deg,#173b3bf5,#152131f5)}
+@media(max-width:1100px){.dc{flex-basis:166px}.dh{font-size:10px}.db button{font-size:9px}}
+@media(max-width:760px){#questBar{grid-template-columns:1fr 1fr 1fr;gap:5px}.qc{font-size:9px;padding:5px 6px}.qc .qr{font-size:8px}.qc .ql{padding-right:0}.qc .qb{display:none}#collectBtn{font-size:11px}.ab{min-height:46px}.ab i{font-size:17px}.dc{flex-basis:148px;min-height:54px}.dh{font-size:9px}.dh span{font-size:8px}}
+@media(max-width:600px){#questBar{grid-template-columns:1fr 1fr}.qc{min-height:42px}.qc:nth-of-type(3){display:none}#collectBtn{grid-column:1/-1;min-height:46px}.dc{flex-basis:142px}.db button{font-size:9px;padding:4px 6px}}
+</style>
+</head><body><div class="app">
 <header class="top">
   <div class="regionHub">
     <div class="hubMoney"><div><strong id="hubMoney">0 €</strong><small id="hubRegion">Région active</small></div></div>
@@ -440,10 +537,11 @@ html,body{overflow:hidden}
     <div class="mapLegend" id="mapLegend"></div>
     <div id="fx" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
     <div id="tip">Cliquez un district pour ouvrir son dock de construction</div>
+    <div id="clickHUD" class="clickHUD"><b id="clickTitle">👆 Clic économique · Niv. 1</b><span id="clickGain">+5 € / clic</span><i><em id="clickFill"></em></i><small id="clickProgress">0 / 18 clics</small></div>
    </div>
   </div>
   <div class="kpiRow">
-   <div class="kpi" id="energyKpi"><div class="ico">⚡</div><div><span>Énergie</span><b id="kx1">0/1</b><small id="kx1s">OK</small></div></div>
+   <div class="kpi" id="energyKpi"><div class="ico">⚡</div><div><span>Énergie d'amélioration</span><b id="kx1">3/10 ⚡</b><small id="kx1s">Construisez une centrale pour en produire</small></div></div>
    <div class="kpi" id="unemploymentKpi"><div class="ico">👥</div><div><span>Chômage</span><b id="kx2">0%</b><small id="kx2s">Marché du travail</small></div></div>
    <div class="kpi ok" id="networkKpi"><div class="ico">📦</div><div><span>Réseaux / Fluides</span><b id="kx4">OK</b><small id="kx4s">Flux opérationnels</small></div></div>
    <button class="mapAccess" id="mapAccess">🗺️ Voir la carte de France</button>
@@ -452,7 +550,7 @@ html,body{overflow:hidden}
  <aside class="right" aria-hidden="true">
    <div class="scroll">
     <div class="panel" id="mapProgress"><div id="mapLevel"></div><div id="mapZones"></div></div>
-    <div class="panel" id="sl"></div><div class="panel" id="ob"></div><div class="panel"><div id="log"></div></div>
+    <div class="panel" id="sl" aria-hidden="true"></div><div class="panel" id="ob"></div><div class="panel"><div id="log"></div></div>
    </div>
  </aside>
 </main>
@@ -505,25 +603,27 @@ const DISTRICT_TYPES=[
   {id:6,n:'🛒 District commercial',short:'Commerce',kind:'commerce'},
   {id:7,n:'💻 District numérique',short:'Numérique',kind:'digital'}
 ];
-const DISTRICT_OFFSETS=[[-11,9],[11,9],[0,0],[11,-9],[-11,-9],[0,-14],[14,0],[-14,0]];
+const DISTRICT_OFFSETS=[[-10,-10],[10,-10],[0,0],[-10,0],[10,0],[-10,10],[10,10],[0,-10]];
 const districtRings=[],districtFlux=[];
 const DIST_COL=[0x3fa36b,0x8d96a6,0xe0b04a,0xd9576b,0x8a63d2,0x3d9bd6,0xe58a3c,0x33c7c7];
 function rrPath(P,w,hh,rd){const a=w/2,b=hh/2;P.moveTo(-a+rd,-b);P.lineTo(a-rd,-b);P.quadraticCurveTo(a,-b,a,-b+rd);P.lineTo(a,b-rd);P.quadraticCurveTo(a,b,a-rd,b);P.lineTo(-a+rd,b);P.quadraticCurveTo(-a,b,-a,b-rd);P.lineTo(-a,-b+rd);P.quadraticCurveTo(-a,-b,-a+rd,-b);return P}
-const TILE_GEO=(()=>{const g=new T.ExtrudeGeometry(rrPath(new T.Shape(),8.4,8.4,1.5),{depth:.7,bevelEnabled:false,curveSegments:8});g.rotateX(-Math.PI/2);g.translate(0,-.35,0);return g})();
-const FRAME_GEO=(()=>{const s=rrPath(new T.Shape(),9.4,9.4,1.9);s.holes.push(rrPath(new T.Path(),8.8,8.8,1.6));const g=new T.ExtrudeGeometry(s,{depth:.12,bevelEnabled:false,curveSegments:8});g.rotateX(-Math.PI/2);return g})();
+const TILE_GEO=(()=>{const g=new T.ExtrudeGeometry(rrPath(new T.Shape(),7.6,7.6,1.25),{depth:.62,bevelEnabled:true,bevelSegments:2,bevelSize:.16,bevelThickness:.10,curveSegments:8});g.rotateX(-Math.PI/2);g.translate(0,-.31,0);return g})();
+const FRAME_GEO=(()=>{const s=rrPath(new T.Shape(),8.65,8.65,1.55);s.holes.push(rrPath(new T.Path(),7.95,7.95,1.30));const g=new T.ExtrudeGeometry(s,{depth:.10,bevelEnabled:true,bevelSegments:2,bevelSize:.08,bevelThickness:.05,curveSegments:8});g.rotateX(-Math.PI/2);return g})();
 const REGION_PALETTE=[0x244f63,0x315a4c,0x5b4b39,0x4c4f70,0x5b3d58,0x3d5c69,0x555b3a,0x51456b,0x4c5d45,0x654d3d,0x3e5964,0x5a4b43,0x4c4968];
 for(let r=0;r<13;r++){
   const [name,cx,cy]=RN[r];
   for(let d=0;d<8;d++){
     const [ox,oy]=DISTRICT_OFFSETS[d],x=cx+ox,y=cy+oy;
     const id=r*8+d;
-    const m=new T.Mesh(TILE_GEO,new T.MeshLambertMaterial({color:DIST_COL[d],transparent:true,opacity:.98}));
-    m.position.set(x,.7,y);m.userData.i=id;m.userData.region=r;m.userData.district=d;m.userData.kind=DISTRICT_TYPES[d].kind;
+    const m=new T.Mesh(TILE_GEO,new T.MeshLambertMaterial({color:DIST_COL[d],transparent:true,opacity:.96,emissive:0x000000,emissiveIntensity:.0}));
+    m.position.set(x,.66,y);m.userData.i=id;m.userData.region=r;m.userData.district=d;m.userData.kind=DISTRICT_TYPES[d].kind;
     m.userData.baseColor=DIST_COL[d];
+    m.userData.baseScale=d===2?1.12:1;
+    m.scale.setScalar(m.userData.baseScale);
     sc.add(m);meshes.push(m);
-    const ring=new T.Mesh(FRAME_GEO,new T.MeshBasicMaterial({color:DIST_COL[d],transparent:true,opacity:.95}));
-    ring.position.set(x,.98,y);ring.userData.i=id;ring.userData.region=r;ring.userData.district=d;sc.add(ring);districtRings.push(ring);
-    cells.push({x,y,r,top:.7,district:d,id,name});
+    const ring=new T.Mesh(FRAME_GEO,new T.MeshBasicMaterial({color:DIST_COL[d],transparent:true,opacity:.72}));
+    ring.position.set(x,.98,y);ring.scale.setScalar(d===2?1.12:1);ring.userData.i=id;ring.userData.region=r;ring.userData.district=d;sc.add(ring);districtRings.push(ring);
+    cells.push({x,y,r,top:.66,district:d,id,name});
   }
   // Lignes de flux : les quatre pôles extérieurs convergent discrètement vers le Centre-Ville.
 }
@@ -540,39 +640,69 @@ for(let r=0;r<13;r++){
 let regionBackdrops=[];
 for(let r=0;r<13;r++){
   const [name,cx,cy]=RN[r];
-  const bg=new T.Group();bg.position.set(cx,0,cy-2.5);
-  const pn=new T.Mesh(new T.ShapeGeometry(rrPath(new T.Shape(),46,42,4),8),new T.MeshBasicMaterial({color:0x0c1826,transparent:true,opacity:.92,depthWrite:false}));pn.rotation.x=-Math.PI/2;pn.position.y=.3;bg.add(pn);
-  const gr=new T.GridHelper(42,21,0x24435f,0x18304a);gr.position.y=.32;bg.add(gr);
+  const bg=new T.Group();bg.position.set(cx,0,cy);
+  const pn=new T.Mesh(new T.ShapeGeometry(rrPath(new T.Shape(),44,44,5),8),new T.MeshBasicMaterial({color:0x0b1724,transparent:true,opacity:.94,depthWrite:false}));pn.rotation.x=-Math.PI/2;pn.position.y=.25;bg.add(pn);
+  const gr=new T.GridHelper(40,20,0x1d3a52,0x12283a);gr.position.y=.27;gr.material.opacity=.22;gr.material.transparent=true;bg.add(gr);
+  const halo=new T.Mesh(new T.CircleGeometry(5.2,48),new T.MeshBasicMaterial({color:0x263e52,transparent:true,opacity:.28,depthWrite:false}));halo.rotation.x=-Math.PI/2;halo.position.set(0,.29,0);bg.add(halo);
   bg.userData.region=r;sc.add(bg);regionBackdrops.push(bg);
 }
+// Zone de clic économique : anneau périphérique autour des districts.
+// Les districts restent réservés à leur interaction de construction.
+const clickZoneGeo=new T.RingGeometry(21.5,28,96);
+clickZoneGeo.rotateX(-Math.PI/2);
+const clickZoneMat=new T.MeshBasicMaterial({color:0x54e38a,transparent:true,opacity:.18,side:T.DoubleSide,depthWrite:false});
+const clickZoneMesh=new T.Mesh(clickZoneGeo,clickZoneMat);clickZoneMesh.position.y=.34;clickZoneMesh.visible=false;sc.add(clickZoneMesh);
+const clickZoneLineGeo=new T.BufferGeometry();
+const clickZonePts=[];for(let k=0;k<96;k++){const a=k/96*Math.PI*2;clickZonePts.push(new T.Vector3(Math.cos(a)*24.75,.48,Math.sin(a)*24.75))}
+clickZonePts.push(clickZonePts[0].clone());clickZoneLineGeo.setFromPoints(clickZonePts);
+const clickZoneLine=new T.Line(clickZoneLineGeo,new T.LineBasicMaterial({color:0x7dffb2,transparent:true,opacity:.82,depthWrite:false}));clickZoneLine.visible=false;sc.add(clickZoneLine);
+// Repère visuel permanent de la zone rémunérée : les districts restent hors de cette zone.
+const clickZoneLabelCv=document.createElement('canvas');clickZoneLabelCv.width=1100;clickZoneLabelCv.height=180;const czx=clickZoneLabelCv.getContext('2d');
+czx.clearRect(0,0,1100,180);czx.fillStyle='rgba(4,18,13,.94)';czx.strokeStyle='#7dffb2';czx.lineWidth=6;czx.beginPath();czx.roundRect(8,8,1084,164,36);czx.fill();czx.stroke();
+czx.fillStyle='#7dffb2';czx.font='900 58px system-ui';czx.textAlign='center';czx.textBaseline='middle';czx.fillText('👆 CLIQUEZ SUR LA CARTE',550,70);
+czx.fillStyle='#e9fff1';czx.font='700 30px system-ui';czx.fillText('+ € à chaque clic · toute la surface',550,124);
+const clickZoneLabel=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(clickZoneLabelCv),transparent:true,depthTest:false,depthWrite:false}));
+clickZoneLabel.scale.set(14.5,2.38,1);clickZoneLabel.visible=false;clickZoneLabel.renderOrder=60;sc.add(clickZoneLabel);
 const districtLabels=[];
+const DISTRICT_LABELS=['Résidentiel','Industriel','Centre-ville','Santé','Éducation','Transport','Commerce','Numérique'];
 for(let d=0;d<8;d++){
-  const cv=document.createElement('canvas');cv.width=360;cv.height=72;const x=cv.getContext('2d');
-  x.fillStyle='rgba(7,13,22,.92)';x.strokeStyle='rgba(255,211,90,.8)';x.lineWidth=3;x.beginPath();x.roundRect(2,2,356,68,18);x.fill();x.stroke();x.font='700 25px system-ui';x.fillStyle='#fff';x.textAlign='center';x.fillText(['🏠 Résidentiel','🏭 Industriel','🏙️ Centre-ville','🩺 Santé','🎓 Éducation','🚆 Transport','🛒 Commerce','💻 Numérique'][d],180,44);
-  const sp=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(cv),transparent:true,depthTest:false}));sp.scale.set(8.6,1.72,1);sp.visible=false;sc.add(sp);districtLabels.push(sp);
+  // Étiquette courte et très lisible : le nom est prioritaire, le numéro est supprimé.
+  const cv=document.createElement('canvas');cv.width=900;cv.height=150;const x=cv.getContext('2d');
+  x.clearRect(0,0,cv.width,cv.height);
+  const col='#'+DIST_COL[d].toString(16).padStart(6,'0');
+  x.fillStyle='rgba(5,11,18,.97)';x.strokeStyle=col;x.lineWidth=5;
+  x.beginPath();x.roundRect(5,5,890,140,28);x.fill();x.stroke();
+  x.fillStyle=col;x.beginPath();x.roundRect(22,28,14,94,7);x.fill();
+  x.font='900 54px system-ui';x.fillStyle='#ffffff';x.textAlign='center';x.textBaseline='middle';x.fillText(DISTRICT_LABELS[d],450,75);
+  const tex=new T.CanvasTexture(cv);tex.minFilter=T.LinearFilter;tex.magFilter=T.LinearFilter;tex.needsUpdate=true;
+  const sp=new T.Sprite(new T.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false}));
+  sp.scale.set(d===2?10.8:10.2,1.72,1);sp.visible=false;sc.add(sp);districtLabels.push(sp);
 }
 let G;
 const SAVE_KEY='ftyc_production_final',LEGACY_KEYS=['ftyc2','ftyc'];let saveReady=false; // clé de sauvegarde unique + verrou d'écriture tant que le chargement n'est pas fait
-function disposeGroup(g){if(!g)return;g.traverse(o=>{if(o.geometry)o.geometry.dispose();const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];for(const m of ms){for(const k in m){const v=m[k];if(v&&v.isTexture)v.dispose()}m.dispose()}})}
+function disposeGroup(g){if(!g)return;g.traverse(o=>{if(o.geometry&&!o.geometry.userData.shared)o.geometry.dispose();const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];for(const m of ms){if(m.userData&&m.userData.shared)continue;for(const k in m){const v=m[k];if(v&&v.isTexture)v.dispose()}m.dispose()}})}
 function killMesh(g){if(!g)return;sc.remove(g);disposeGroup(g)}
 const fmt=n=>Math.round(n).toLocaleString('fr-FR');
 const zoneLabels=new Map();
 function zoneUnlocked(id){return Array.isArray(G?.unlocked)&&G.unlocked.includes(id)}
 function refreshMapVisual(){
   for(let i=0;i<cells.length;i++){
-    const c=cells[i],m=meshes[i],u=zoneUnlocked(c.r),visible=G?.view==='region'?(c.r===G.activeRegion):false;
-    m.material.color.setHex(u?m.userData.baseColor:0x39414b);m.material.opacity=visible&&u?.98:(u?.20:.08);
+    const c=cells[i],m=meshes[i],u=zoneUnlocked(c.r),visible=G?.view==='region'?(c.r===G.activeRegion):false,focused=visible&&evoDockI===i;
+    m.material.color.setHex(u?m.userData.baseColor:0x39414b);m.material.opacity=visible&&u?.96:(u?.20:.08);
+    m.material.emissive.setHex(focused?0x526f8f:0x000000);m.material.emissiveIntensity=focused?.42:0;
+    m.scale.setScalar((m.userData.baseScale||1)*(focused?1.07:1));
     m.visible=G?.view==='region'&&c.r===G.activeRegion;
   }
   regionBackdrops.forEach((m,r)=>{m.visible=G?.view==='region'&&r===G.activeRegion});
-  districtLabels.forEach((sp,d)=>{const c=cells[(G?.activeRegion??2)*8+d];sp.visible=G?.view==='region';if(c)sp.position.set(c.x,c.top+2.65,c.y)});
+  clickZoneMesh.visible=false;clickZoneLine.visible=false;clickZoneLabel.visible=false;
+  if(G?.view==='region'&&RN[G.activeRegion]){const rx=RN[G.activeRegion][1],rz=RN[G.activeRegion][2];clickZoneMesh.position.set(rx,.34,rz);clickZoneLine.position.set(rx,0,rz);clickZoneLabel.position.set(rx,.62,rz+24.8);clickZoneLabel.scale.set(14.5,2.38,1);}
+  districtLabels.forEach((sp,d)=>{const c=cells[(G?.activeRegion??2)*8+d];sp.visible=G?.view==='region';if(c){sp.position.set(c.x,c.top+3.25,c.y);sp.renderOrder=50;}});
   districtRings.forEach((ring,i)=>{
     const c=cells[i],active=G?.view==='region'&&c?.r===G.activeRegion,focused=active&&evoDockI===i;
     ring.visible=active; ring.scale.setScalar(focused?1.12:1);
     ring.material.color.setHex(focused?0xffffff:DIST_COL[c.district]); ring.material.opacity=focused?.98:.82;
   });
   districtFlux.forEach(line=>{line.visible=G?.view==='region'&&line.userData.region===G.activeRegion;line.material.opacity=line.visible?.28:0});
-  updateTacticalMap();
 }
 function updateTacticalMap(){
  const el=$('tacticalMap');if(!el)return;
@@ -588,12 +718,12 @@ function updateTacticalMap(){
    const r=RN[i],u=zoneUnlocked(i),ready=!u&&regionReady(i),meta=REGION_META[i];
    const budget=G?.budgets?.[i]??0;
    const status=u?'OUVERTE':ready?'PRÊTE À DÉBLOQUER':'VERROUILLÉE';
-   const detail=u?'Budget · '+fmt(budget)+' €':fmt(meta.cost)+' € · '+(meta.obj.split(' + ')[0]||'Objectif');
-   return `<button class="tRegion ${u?'unlocked':'locked'} ${ready?'ready':''} ${G?.activeRegion===i?'current':''}" data-region="${i}" style="left:${r[1]}%;top:${r[2]}%" aria-label="${r[0]} — ${status}"><span class="tEmoji">${meta.emoji}</span><b>${r[0]}</b><small>${u?'✓ '+detail:'🔒 '+detail}</small><i>${u?'OUVRIR':ready?'DÉBLOQUER':'VERROUILLÉE'}</i></button>`;
+   const detail=u?fmt(budget)+' €':fmt(meta.cost)+' €';
+   return `<button class="tRegion ${u?'unlocked':'locked'} ${ready?'ready':''} ${G?.activeRegion===i?'current':''}" data-region="${i}" style="left:${r[1]}%;top:${r[2]}%" aria-label="${r[0]} — ${status}"><span class="tEmoji">${meta.emoji}</span><span class="tRegionBody"><b>${r[0]}</b><small>${u?'Budget régional · '+detail:ready?'Coût · '+detail:'Prérequis · '+detail}</small><i>${u?'OUVRIR':ready?'DÉBLOQUER':'VERROUILLÉE'}</i></span></button>`;
  }).join('');
  const openCount=G?.unlocked?.length||1;
  const current=RN[G?.activeRegion??2]?.[0]||'France';
- el.innerHTML=`<svg class="tMapFrance" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="land" d="M28 8L43 7L57 13L68 10L79 18L89 29L94 43L88 53L92 64L84 74L82 87L67 91L52 95L38 92L25 87L16 76L13 61L7 51L11 38L7 29L15 23L20 12Z"/><path class="coast" d="M91 82L96 82L98 87L94 91Z"/><g>${routeSvg}</g></svg><div class="tacticalTitle"><b>🇫🇷 Grille métropolitaine</b><span>${openCount}/13 régions · ${current} sélectionnée</span></div><div class="tacticalStats"><span>Régions <b>${openCount}/13</b></span><span>Mode <b>Stratégique</b></span></div>${regionNodes}<div class="tacticalHint"><b>Cliquez une région ouverte</b> pour entrer dans la vue de construction · les lignes indiquent les raccordements</div>`;
+ el.innerHTML=`<svg class="tMapFrance" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="softGlow"><feGaussianBlur stdDeviation="1.2"/></filter></defs><path class="land" d="M28 8L43 7L57 13L68 10L79 18L89 29L94 43L88 53L92 64L84 74L82 87L67 91L52 95L38 92L25 87L16 76L13 61L7 51L11 38L7 29L15 23L20 12Z"/><path class="coast" d="M91 82L96 82L98 87L94 91Z"/><g>${routeSvg}</g></svg><div class="mapGridTitle">13 RÉGIONS</div><div class="tacticalTitle"><b>🇫🇷 Carte stratégique</b><span>${openCount}/13 ouvertes · ${current}</span></div><div class="tacticalStats"><span>Régions <b>${openCount}/13</b></span><span>Réseau <b>National</b></span></div>${regionNodes}<div class="tacticalHint"><b>Une région ouverte se joue au district</b> · cliquez pour entrer dans sa zone de construction</div>`;
 }
 function renderRegionSilhouette(id){
  const el=$('regionFocusSilhouette'); if(!el)return;
@@ -609,10 +739,10 @@ function setView(mode,id=G.activeRegion){
  if(G.view==='region'&&Number.isInteger(G.activeRegion))G.budgets[G.activeRegion]=G.m;
  G.view=mode;
  if(mode==='region'){
-   G.activeRegion=id;G.m=G.budgets[id]??0;focusRegion(id);$('tacticalMap').style.display='none';$('cv').style.display='block';$('regionBack').style.display='flex';
+   G.activeRegion=id;G.m=G.budgets[id]??0;focusRegion(id);$('tacticalMap').style.display='none';$('cv').style.display='block';try{rs()}catch(e){}$('regionBack').style.display='flex';
    $('focusTitle').style.display='block';$('focusRegionName').textContent=REGION_META[id].emoji+' '+RN[id][0];$('focusRegionSub').textContent='8 districts · cliquez pour construire';
    $('regionFocusSilhouette').style.display='block';renderRegionSilhouette(id);
-   $('tip').textContent='Cliquez un district pour ouvrir son dock de construction';
+   $('tip').textContent='👆 Cliquez n’importe où sur la carte pour gagner de l’argent · cliquez un district pour construire';
  }else{
    $('cv').style.display='none';$('tacticalMap').style.display='grid';$('regionBack').style.display='none';$('focusTitle').style.display='none';$('regionFocusSilhouette').style.display='none';
    $('tip').textContent='Cliquez sur une région ouverte pour entrer dans son écran de construction';
@@ -623,7 +753,7 @@ function setView(mode,id=G.activeRegion){
 function regionReady(id){
  if(zoneUnlocked(id))return false;
  const meta=REGION_META[id];if(!meta||meta.prev==null||!zoneUnlocked(meta.prev))return false;
- const prev=regionStats()[meta.prev];return regionalHealthCoverage(meta.prev)>=.95&&(G.budgets?.[meta.prev]||0)>=meta.tax;
+ return regionalHealthCoverage(meta.prev)>=.95&&(G.budgets?.[meta.prev]||0)>=meta.tax;
 }
 function regionalHealthCoverage(id){
  const st=regionStats()[id];return cl((st?.health||0)/Math.max(1,(st?.houses||0)),0,1);
@@ -698,7 +828,130 @@ dam:{n:'💧 Barrage hydroélectrique',c:28,u:.5,en:4,jobs:.12,inc:1,lv:9,cat:'�
 BD.home=BD.phoenix;
 const LF=[1,1.8,3],UC=[0,1.5,2.5];
 const BUILD_MUL={bus:1.06,ter:1.075,tram:1.085,velo:1.06,adsl:1.05,vdsl:1.06,fibrepro:1.075,wifi7:1.08,reseau5g:1.09,datacenter:1.10,coron:1.10,phoenix:1.12,lli:1.15,hauss:1.17,hotel:1.20,chateau:1.24,bastide:1.18,maitre:1.19,malouiniere:1.20,recon:1.14,echoppe:1.15,hlm:1.12,longere:1.11,chaumiere:1.11,toulousaine:1.12,farm:1.07,route:1.07,wind:1.085,sol:1.08,fib:1.08,ind:1.09,com:1.085,sch:1.09,hosp:1.095,tgv:1.10,park:1.075,tour:1.09,port:1.09,metro:1.085,res:1.11,airport:1.12,rec:1.095,dam:1.11,nuc:1.12};
-function buildingUnlocked(t){return !!BD[t]&&G.lvl>=(BD[t].lv||1)}
+
+/* ================================================================
+   🌍 GAMEPLAY RÉGIONAL MODULAIRE — Régions-Défis
+   Le moteur reste commun ; chaque région injecte ses règles, bâtiments,
+   contraintes et objectifs sans casser les districts ni les sauvegardes.
+   ================================================================ */
+
+const rgStyle=document.createElement('style');rgStyle.textContent=`#regionChallenge{position:absolute;left:18px;top:118px;width:min(390px,calc(100% - 36px));z-index:75;padding:12px 14px;border:1px solid #ffffff22;border-radius:14px;background:rgba(6,13,22,.94);box-shadow:0 12px 30px #0008;color:#fff;font:600 11px system-ui;pointer-events:none}.rch-head{display:flex;justify-content:space-between;gap:10px;color:#8fe8ff;font-size:13px}.rch-head b{color:#ffd35a}.rch-head+strong{display:block;margin-top:5px;font-size:14px}.rch-head+strong+small{display:block;color:#aab8c8;margin-top:2px}.rch-status{margin-top:8px;padding:7px 8px;border-radius:9px;background:#102a22;color:#9dffbf}.rch-status.bad{background:#3a1e22;color:#ff9c9c}.rch-goal{margin-top:7px;color:#ffd76a;font-weight:800}.rch-status~div{margin-top:5px}@media(max-width:600px){#regionChallenge{left:10px;top:105px;width:calc(100% - 20px);font-size:10px}}`;document.head.appendChild(rgStyle);
+
+const REGION_GAMEPLAY={
+  2:{id:'FR-BRE',name:'Bretagne',emoji:'🍏',title:'Tutoriel avancé',desc:'Agriculture, pêche, eau et tourisme.',
+    exclusive:['coop','conserverie','algues','stationEau','festival'],blocked:['super','megamarche','stationSki','dam'],
+    district:{coop:6,conserverie:6,algues:3,stationEau:3,festival:2},
+    objective:'Remplir les cuves de la conserverie et inaugurer le Festival Interceltique.'},
+  8:{id:'FR-NAQ',name:'Nouvelle-Aquitaine',emoji:'🍇',title:'Grands domaines & risques',desc:'Viticulture, tourisme saisonnier et prévention des incendies.',
+    exclusive:['chateauVin','chateauEau','dechetterie','secoursMajeur'],blocked:['super'],district:{chateauVin:6,chateauEau:3,dechetterie:6,secoursMajeur:1},
+    objective:'Effectuer une vendange et sécuriser la forêt avec un Centre de Secours Majeur.'},
+  9:{id:'FR-ARA',name:'Auvergne-Rhône-Alpes',emoji:'🏔️',title:'La verticalité',desc:'Densité, ski, barrages et routes de montagne.',
+    exclusive:['immeubleDense','stationSki','barrageHydro','tunnelRoute'],blocked:[],district:{immeubleDense:0,stationSki:2,barrageHydro:5,tunnelRoute:5},
+    objective:'Atteindre une forte densité résidentielle et produire de l’énergie hydroélectrique.'},
+  0:{id:'FR-HDF',name:'Hauts-de-France',emoji:'🏭',title:'La reconversion',desc:'Friches, dépollution, logistique européenne et aides de reconversion.',
+    exclusive:['friche','plateformeLogistique','centreReconversion'],blocked:[],district:{friche:1,plateformeLogistique:5,centreReconversion:1},
+    objective:'Dépolluer les friches et créer une plateforme logistique ou une production éolienne.'}
+};
+const REGION_LAWS={
+  climate:{id:'climate',name:'Loi Climat & Résilience',unlockRegion:8,desc:'Les constructions sur espaces naturels supportent une taxe carbone de 30 %.'},
+  sru:{id:'sru',name:'Loi SRU',unlockRegion:9,desc:'Chaque région doit atteindre 25 % de logements sociaux.'}
+};
+const NATURAL_BUILDINGS=new Set(['farm','park','wind','sol','port','chateauVin','stationSki']);
+const SOCIAL_HOUSING=new Set(['hlm','recon']);
+function rg(){return REGION_GAMEPLAY[G?.activeRegion]||null}
+function rgUnlocked(id){return Array.isArray(G?.unlocked)&&G.unlocked.includes(id)}
+function rgHasLaw(id){return !!G?.laws?.[id]}
+function rgInitState(){
+  G.laws=Object.assign({climate:false,sru:false},G.laws||{});
+  G.medals=Array.isArray(G.medals)?G.medals:[];
+  G.rg=Object.assign({},G.rg||{});
+  for(const id of [0,2,8,9]) G.rg[id]=Object.assign({algae:0,water:100,forest:100,summer:1,harvests:0,aid:0,ruins:false,conserverieFill:0,festival:false,skiboom:0,vertical:0},G.rg[id]||{});
+  if(rgUnlocked(8))G.laws.climate=true;
+  if(rgUnlocked(9))G.laws.sru=true;
+}
+function rgBuildingAllowed(t){
+  const cfg=rg(); if(!cfg)return true;
+  if(cfg.blocked?.includes(t))return false;
+  const all=Object.values(REGION_GAMEPLAY).find(x=>x.exclusive?.includes(t));
+  if(all && all!==cfg)return false;
+  return true;
+}
+function rgCostMultiplier(t){
+  const id=G?.activeRegion;
+  let m=1;
+  if(id===9 && t==='tunnelRoute')m*=5;
+  if(id===9 && ['route','bus','ter','tram','tgv','metro','airport'].includes(t))m*=1.35;
+  if(rgHasLaw('climate')&&NATURAL_BUILDINGS.has(t))m*=1.30;
+  if(id===0 && ['friche','plateformeLogistique','centreReconversion'].includes(t))m*=.82;
+  return m;
+}
+function rgCost(t,cost){return Math.round(cost*rgCostMultiplier(t))}
+function rgRegionStarts(d){
+  const cfg=rg();
+  const base=[];
+  if(cfg){for(const k of cfg.exclusive||[])if(cfg.district?.[k]===d&&BD[k])base.push(k)}
+  return base;
+}
+function rgStatus(C=calc()){
+  const id=G.activeRegion,st=G.rg?.[id]||{};
+  if(id===2){
+    const farms=BVal('farm'),poll=Math.max(0,(farms*14)+(st.algae||0));st.algae=cl(poll,0,100);
+    st.water=cl(100+(st.stationWaterBonus||0)-(st.algae*.72),0,100);
+    return {key:'BRE',score:st.water,detail:`🌿 Algues vertes ${Math.round(st.algae)} % · 💧 Eau ${Math.round(st.water)} %`,bad:st.algae>55};
+  }
+  if(id===8){const summer=st.summer||1,hot=G.t%12>=5&&G.t%12<=8;const popFactor=hot?3:1;st.summer=popFactor;const ch=BVal('chateauVin'),safety=BVal('secoursMajeur');return {key:'NAQ',score:cl(safety/1,0,1),detail:`🍇 Châteaux ${ch} · ☀️ Affluence ×${popFactor} · 🔥 Sécurité ${safety?'OK':'à renforcer'}`,bad:hot&&!safety};}
+  if(id===9){const dense=BVal('immeubleDense'),hydro=BVal('barrageHydro'),stn=BVal('stationSki');return {key:'ARA',score:cl((dense*.2+hydro*.4+stn*.1),0,1),detail:`🏢 Verticalité ${dense} · 🏔️ Ski ${stn} · 💧 Barrages ${hydro}`,bad:false};}
+  if(id===0){const fr=BVal('friche'),log=BVal('plateformeLogistique'),dep=BVal('centreReconversion');const unemployment=C?.unemployment??1;return {key:'HDF',score:cl((log+dep)/3,0,1),detail:`🏭 Friches ${fr} · ♻️ Reconversion ${dep} · 🚚 Logistique ${log} · 🇪🇺 Aides ${Math.round((st.aid||0))} €`,bad:unemployment>.15};}
+  return {key:'GEN',score:1,detail:'Gameplay régional standard',bad:false};
+}
+function rgMedalReady(id){
+  const st=G.rg?.[id]||{};
+  if(id===2)return st.conserverieFill>=100&&st.festival;
+  if(id===8)return st.harvests>=1&&BVal('secoursMajeur')>=1;
+  if(id===9)return BVal('immeubleDense')>=3&&BVal('barrageHydro')>=1;
+  if(id===0)return BVal('centreReconversion')>=1&&BVal('plateformeLogistique')>=1;
+  return false;
+}
+function rgRefreshMedal(id){
+  if(rgMedalReady(id)&&!G.medals.includes(id)){G.medals.push(id);addXP(40);celebrate('🏅 Médaille de la République · '+REGION_GAMEPLAY[id].name);log('🏅 Défi régional terminé : '+REGION_GAMEPLAY[id].name);}
+}
+function rgTick(){
+  rgInitState(); const id=G.activeRegion,st=G.rg[id],C=calc();
+  if(id===2){
+    const farms=BVal('farm'),eco=BVal('algues')+BVal('stationEau');
+    st.algae=cl(st.algae+(farms*.65)-eco*.8,0,100);
+    if(BVal('conserverie')>0){st.conserverieFill=cl((st.conserverieFill||0)+farms*1.8+BVal('port')*.8,0,100)}
+    if(st.algae>70)G.hap=Math.max(0,G.hap-.25);
+    if(BVal('festival')>0)st.festival=true;
+  } else if(id===8){
+    const month=G.t%12;const hot=month>=5&&month<=8;st.summer=hot?3:1;
+    if(hot&&BVal('chateauEau')<1)G.hap=Math.max(0,G.hap-.18);
+    if(hot&&BVal('dechetterie')<1)G.hap=Math.max(0,G.hap-.12);
+    if(G.t%12===9&&BVal('chateauVin')>0){st.harvests=(st.harvests||0)+1;const gain=45000*BVal('chateauVin');G.m+=gain;G.budgets[id]=G.m;celebrate('🍇 Vendanges · +'+fmt(gain)+' €');}
+    if((month===6||month===7)&&BVal('secoursMajeur')<1&&BVal('park')+BVal('farm')>0){st.forest=cl((st.forest||100)-1.2,0,100);if(st.forest<50)G.hap=Math.max(0,G.hap-.3);}
+  } else if(id===9){
+    st.skiboom=(G.t%12>=11||G.t%12<=1)?3:1;
+    if(BVal('barrageHydro')){ /* la production réelle est calculée par energyStats() : +3 ⚡/mois */ }
+    if(BVal('tunnelRoute')){ /* routes de montagne : coût appliqué à la construction */ }
+  } else if(id===0){
+    if(BVal('friche')>0&&BVal('centreReconversion')<1){G.hap=Math.max(0,G.hap-.08);}
+    if((C.unemployment||1)>.15){const aid=1800+BVal('friche')*650;st.aid+=aid;G.m+=aid;G.budgets[id]=G.m;}
+  }
+  if(rgUnlocked(8))G.laws.climate=true;
+  if(rgUnlocked(9))G.laws.sru=true;
+  rgRefreshMedal(id);
+}
+function rgBuildPrecheck(t){
+  if(!rgBuildingAllowed(t)){toast('🚫 Ce bâtiment est spécifique à une autre région.');return false}
+  const id=G.activeRegion,st=G.rg?.[id]||{};
+  if(id===2&&t==='festival'&&BVal('conserverie')<1){toast('🍏 Le Festival Interceltique nécessite une conserverie active.');return false}
+  if(id===8&&t==='secoursMajeur'&&BVal('centreReconversion')<0){};
+  if(id===9&&BD[t]?.residential&&t!=='immeubleDense'){toast('🏔️ En montagne, les logements diffus sont bloqués : utilisez l’Immeuble haute densité.');return false}
+  if(id===9&&t==='stationSki'&&G.lvl<4){toast('🏔️ Les stations de ski nécessitent le niveau 4.');return false}
+  return true;
+}
+
+function buildingUnlocked(t){return !!BD[t]&&rgBuildingAllowed(t)&&G.lvl>=(BD[t].lv||1)}
 function housingBlocked(C,t){
   const d=BD[t]; if(!d?.residential)return {blocked:false,reason:''};
   if((C.unemployment??0)>.15) return {blocked:true,reason:"Permis de construire suspendu. Réduisez le chômage sous 15 % en développant le District Industriel."};
@@ -713,7 +966,7 @@ function targetDistrictFor(t){
   const d=BD[t]; const preferred=d?.residential?0:d?.healthTier?3:d?.eduTier?4:['bus','ter','tram','velo','route','tgv','port','metro','airport'].includes(t)?5:['boulangerie','com'].includes(t)?6:['adsl','vdsl','fibrepro','wifi7','reseau5g','datacenter','fib'].includes(t)?7:['artisan','ind','nuc','aero','defense'].includes(t)?1:2;
   return zoneUnlocked(mapRegion)?mapRegion*8+preferred:-1;
 }
-function ownedCount(t){return n(t)}
+function ownedCount(t){let c=0;for(const [,b] of allBuildings())if(b?.t===t)c++;return c}
 // ---- progression économique universelle des bâtiments ----
 const BUILDING_MAX_LEVEL=12;
 function buildingProfitClass(t){const cost=EURO_COST[t]||1,income=EURO_MONTHLY[t]||BD[t]?.inc||0,ratio=income/(cost/12);return cl(Math.round(ratio*2.2),1,6)}
@@ -722,10 +975,12 @@ function buildingMaxLevel(t){const d=BD[t];if(!d)return 1;return Math.min(BUILDI
 function buildingLevelUnlocked(t,l){return!!BD[t]&&l<=buildingMaxLevel(t)&&G.lvl>=buildingLevelRequirement(t,l)}
 function levelIncome(t,l=1){const d=BD[t];if(!d)return 0;const base=EURO_MONTHLY[t]??d.inc??0;if(!base)return 0;const profit=buildingProfitClass(t),growth=1.42+profit*.035;return Math.round(base*Math.pow(growth,Math.max(0,l-1)))}
 function levelCost(t,l=1){const base=EURO_COST[t]??((BD[t]?.c||0)*10000);if(l<=1)return Math.round(base);const profit=buildingProfitClass(t),growth=1.55+profit*.055;return Math.round(base*Math.pow(growth,l-1))}
+// Coût total réellement investi dans un bâtiment : même référentiel que les achats/améliorations.
 function totalCost(t,l){return levelCost(t,l)}
-function nextCost(t){const d=BD[t];if(!d)return 0;const count=ownedCount(t),countMul=Math.pow(BUILD_MUL[t]||1.08,count);return Math.round(levelCost(t,1)*countMul)}
-function upgradeCost(t,l){return Math.max(0,levelCost(t,l+1)-levelCost(t,l))}
-const bx=(g,w,h,d,c,x,y,z)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshLambertMaterial({color:c}));m.position.set(x,y+h/2,z);g.add(m);return m};
+function nextCost(t){const d=BD[t];if(!d||!rgBuildingAllowed(t))return 0;const count=ownedCount(t),countMul=Math.pow(BUILD_MUL[t]||1.08,count);return rgCost(t,Math.round(levelCost(t,1)*countMul))}
+function upgradeCost(t,l){return rgCost(t,Math.max(0,levelCost(t,l+1)-levelCost(t,l)))}
+const _bg={},_bm={};
+const bx=(g,w,h,d,c,x,y,z)=>{const gk=w+'|'+h+'|'+d,ge=_bg[gk]||(_bg[gk]=new T.BoxGeometry(w,h,d)),ma=_bm[c]||(_bm[c]=new T.MeshLambertMaterial({color:c}));ge.userData.shared=ma.userData.shared=true;const m=new T.Mesh(ge,ma);m.position.set(x,y+h/2,z);g.add(m);return m};
 const cy=(g,a,b,h,c,x,y,z,s=12)=>{const m=new T.Mesh(new T.CylinderGeometry(a,b,h,s),new T.MeshLambertMaterial({color:c}));m.position.set(x,y+h/2,z);g.add(m);return m};
 function mk(t){const g=new T.Group();
 switch(t){
@@ -779,31 +1034,97 @@ Object.assign(BD,{
  villa:Object.assign({},BD.chateau,{n:'🏖️ Villa de luxe',c:260,u:.6,homes:5.2,jobs:.28,eduNeed:26,healthNeed:14,lv:14})
 });
 Object.assign(EURO_COST,{super:100000,megamarche:320000,villa:2600000});
+
+/* ===== Bâtiments exclusifs des Régions-Défis ===== */
+Object.assign(BD,{
+ coop:{n:'🌾 Coopérative agricole bretonne',c:90000,u:.18,jobs:.35,inc:2400,pol:.8,lv:1,cat:'🏗️ Infrastructures & réseaux',sub:'Agriculture bretonne'},
+ conserverie:{n:'🐟 Conserverie de poisson',c:140000,u:.25,jobs:.42,inc:3600,pol:.7,lv:2,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Pêche et transformation'},
+ algues:{n:'🌿 Station anti-algues vertes',c:110000,u:.12,jobs:.18,health:20,lv:2,cat:'🩺 Santé',sub:'Eau et environnement'},
+ stationEau:{n:'💧 Station d’épuration écologique',c:180000,u:.22,jobs:.28,health:35,lv:3,cat:'🩺 Santé',sub:'Eau et environnement'},
+ festival:{n:'🎻 Festival Interceltique',c:500000,u:.5,jobs:.65,inc:12000,lv:5,cat:'🏛️ Bâtiments publics',sub:'Prestige breton'},
+ chateauVin:{n:'🍇 Château viticole',c:320000,u:.38,jobs:.55,inc:1800,pol:.25,lv:2,cat:'🏗️ Infrastructures & réseaux',sub:'Viticulture · revenus de vendanges'},
+ chateauEau:{n:'🚰 Château d’eau littoral',c:150000,u:.18,jobs:.2,health:15,lv:2,cat:'🩺 Santé',sub:'Gestion de la pointe estivale'},
+ dechetterie:{n:'♻️ Déchetterie littorale',c:130000,u:.16,jobs:.22,health:10,lv:2,cat:'🏗️ Infrastructures & réseaux',sub:'Tourisme et déchets'},
+ secoursMajeur:{n:'🚒 Centre de Secours Majeur · Canadairs',c:650000,u:.75,jobs:.85,lv:5,cat:'🏛️ Bâtiments publics',sub:'Prévention des feux de forêt'},
+ immeubleDense:{n:'🏢 Immeuble haute densité',c:240000,u:.28,homes:5.5,jobs:.35,inc:9000,eduNeed:4,healthNeed:3,lv:3,residential:true,tier:1.1,cat:'🏠 Logements',sub:'Verticalité alpine'},
+ stationSki:{n:'🎿 Station de ski',c:520000,u:.7,jobs:1.0,inc:7000,lv:4,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'Tourisme de montagne'},
+ barrageHydro:{n:'💧 Barrage hydroélectrique',c:650000,u:.55,jobs:.35,en:0,inc:3500,lv:4,cat:'🏗️ Infrastructures & réseaux',sub:'Énergie hydraulique'},
+ tunnelRoute:{n:'🚇 Tunnel / route de montagne',c:350000,u:.12,jobs:.18,lv:3,cat:'🏗️ Infrastructures & réseaux',sub:'Transport alpin'},
+ friche:{n:'🏚️ Fiche industrielle polluée',c:70000,u:.18,jobs:.08,inc:0,pol:2.5,lv:1,cat:'🏭 Privés · industrie, commerce & bureaux',sub:'À dépolluer'},
+ plateformeLogistique:{n:'📦 Plateforme logistique géante',c:420000,u:.8,jobs:1.1,inc:6500,pol:.45,lv:3,cat:'🚆 Transport',sub:'Reconversion industrielle'},
+ centreReconversion:{n:'♻️ Centre de reconversion',c:260000,u:.5,jobs:.55,health:10,lv:2,cat:'🏛️ Bâtiments publics',sub:'Dépollution et aides européennes'}
+});
+Object.assign(EURO_COST,{coop:90000,conserverie:140000,algues:110000,stationEau:180000,festival:500000,chateauVin:320000,chateauEau:150000,dechetterie:130000,secoursMajeur:650000,immeubleDense:240000,stationSki:520000,barrageHydro:650000,tunnelRoute:350000,friche:70000,plateformeLogistique:420000,centreReconversion:260000});
+Object.assign(EURO_MONTHLY,{coop:2400,conserverie:3600,algues:0,stationEau:0,festival:12000,chateauVin:1800,chateauEau:0,dechetterie:0,secoursMajeur:0,immeubleDense:9000,stationSki:7000,barrageHydro:3500,tunnelRoute:0,friche:0,plateformeLogistique:6500,centreReconversion:0});
+for(const k of ['coop','conserverie','algues','stationEau','festival','chateauVin','chateauEau','dechetterie','secoursMajeur','immeubleDense','stationSki','barrageHydro','tunnelRoute','friche','plateformeLogistique','centreReconversion']){BD[k].c=EURO_COST[k];BD[k].inc=EURO_MONTHLY[k]||0}
+Object.assign(BUILD_MUL,{coop:1.08,conserverie:1.09,algues:1.08,stationEau:1.09,festival:1.12,chateauVin:1.16,chateauEau:1.08,dechetterie:1.08,secoursMajeur:1.12,immeubleDense:1.12,stationSki:1.14,barrageHydro:1.12,tunnelRoute:1.10,friche:1.05,plateformeLogistique:1.11,centreReconversion:1.09});
+const REGION_MK_ALIAS={coop:'farm',conserverie:'ind',algues:'rec',stationEau:'hosp',festival:'tour',chateauVin:'chateau',chateauEau:'rec',dechetterie:'rec',secoursMajeur:'defense',immeubleDense:'hauss',stationSki:'tour',barrageHydro:'dam',tunnelRoute:'route',friche:'ind',plateformeLogistique:'port',centreReconversion:'rec'};
+
+/* ===== Rééquilibrage économique France =====
+   Les coûts d'achat représentent désormais un investissement initial nettement plus lourd.
+   Le Studio reste volontairement le premier investissement accessible avec le capital de départ.
+*/
+const ECON_PRICE_FACTOR=1.5;
+for(const k of Object.keys(EURO_COST)) EURO_COST[k]=Math.round(EURO_COST[k]*ECON_PRICE_FACTOR);
+EURO_COST.coron=30000;
 Object.assign(EURO_MONTHLY,{super:1400,megamarche:5200,villa:85000});
 Object.assign(BUILD_MUL,{super:1.085,megamarche:1.10,fibre:1.065,fibre50g:1.085,fibre100g:1.095,g4:1.085,g6:1.10,villa:1.26});
+for(const k of Object.keys(EURO_COST)){if(BD[k])BD[k].c=EURO_COST[k];}
 for(const k of ['super','megamarche','villa']){BD[k].c=EURO_COST[k];BD[k].inc=EURO_MONTHLY[k]}
 Object.entries({coron:'🛖 Studio',phoenix:'🏠 Appartement T2',longere:'🏡 Appartement T3',chaumiere:'🏘️ Appartement T4',toulousaine:'🏢 Appartement T5',hlm:'🏢 Appartement T6',recon:'🏡 Maison de plain-pied',echoppe:'🏠 Maison à 2 étages',lli:'🏠 Maison à 3 étages',hauss:'🏛️ Maison à 4 étages',bastide:'🏡 Manoir provençal',boulangerie:'🥖 Marché',com:'🛒 Hypermarché',fib:'📡 Réseau mobile 3G',reseau5g:'📡 Réseau mobile 5G',fibrepro:'🔌 Fibre 10G'}).forEach(([k,n])=>{if(BD[k])BD[k].n=n});
-const MK_ALIAS={super:'com',megamarche:'com',fibre:'adsl',fibre50g:'adsl',fibre100g:'adsl',g4:'reseau5g',g6:'reseau5g',villa:'chateau'};
+const MK_ALIAS=Object.assign({},REGION_MK_ALIAS,{super:'com',megamarche:'com',fibre:'adsl',fibre50g:'adsl',fibre100g:'adsl',g4:'reseau5g',g6:'reseau5g',villa:'chateau'});
 const __mk0=mk;mk=function(k){return __mk0(MK_ALIAS[k]||k)};
-function totalCost(t,l){const c=EURO_COST[t]??((BD[t]?.c||0)*10000);return Math.round(c*(l<=1?1:l===2?1.7:2.6))}
+// totalCost est défini une seule fois plus haut pour éviter les divergences entre achat, évolution et remboursement.
 function stackAt(i){const v=blds.get(i);return Array.isArray(v)?v:(v?[v]:[])}
+function districtOccupied(i){return stackAt(i).length>0}
+// Un bâtiment donné ne peut être acheté qu'une seule fois dans toute la France.
+// En revanche, plusieurs bâtiments différents peuvent coexister dans un même district.
+function hasBuildingType(t,exclude=null,districtIndex=null){
+  // Un même type est limité à UNE occurrence par district.
+  // Mais ce même type peut être construit dans d'autres districts/régions.
+  for(const [i,b] of allBuildings()){
+    if(!b||b===exclude||b.t!==t)continue;
+    if(districtIndex==null||i===districtIndex)return true;
+  }
+  return false;
+}
 function lastBuilding(i){const a=stackAt(i);return a.length?a[a.length-1]:null}
 function allBuildings(){const a=[];for(const [i,v] of blds){for(const b of (Array.isArray(v)?v:[v]))if(b)a.push([i,b])}return a}
 function buildingCount(){let n=0;for(const v of blds.values())n+=Array.isArray(v)?v.length:(v?1:0);return n}
 function place(i,t,l=1,build=false,spent=null){
-  if(!cells[i]||!BD[t])return false;
-  const a=stackAt(i),g=mk(t),c=cells[i],slot=a.length;
-  const ang=slot*.95,rad=Math.min(2.8,1.1+slot*.38);
+  if(!cells[i]||!BD[t]||!rgBuildingAllowed(t))return false;
+  // Règle de jeu :
+  // - plusieurs TYPES différents peuvent coexister dans le même district ;
+  // - un TYPE précis ne peut apparaître qu'une seule fois DANS CE DISTRICT ;
+  // - le même TYPE reste constructible dans d'autres districts ;
+  // - une évolution remplace le bâtiment existant, elle ne crée pas un doublon.
+  if(hasBuildingType(t,null,i))return false;
+
+  const a=stackAt(i),c=cells[i],slot=a.length;
+  const g=mk(t);
+  if(!g)return false;
+
+  // Positionnement radial : chaque projet possède sa propre place dans le district.
+  const ang=slot*.95,rad=Math.min(3.6,1.1+slot*.42);
   g.position.set(c.x+Math.cos(ang)*rad,c.top,c.y+Math.sin(ang)*rad);
-  g.scale.x=g.scale.z=.72+.12*(l-1);g.scale.y=.05;g.userData.birth=performance.now();g.userData.targetScale=1+.3*(l-1);
+  g.scale.x=g.scale.z=.72+.12*(l-1);
+  g.scale.y=.05;
+  g.userData.birth=performance.now();
+  g.userData.targetScale=1+.3*(l-1);
   sc.add(g);
-  a.push({t,l,g,dur:0,rd:0,spent:spent==null?totalCost(t,l):spent}); blds.set(i,a);
+
+  a.push({
+    t,l,g,dur:0,rd:0,
+    spent:spent==null?totalCost(t,l):Math.max(0,Number(spent)||0)
+  });
+  blds.set(i,a);
   return true;
 }
 
 function log(t){const el=$('log');const d=document.createElement('div');d.textContent=t;el.prepend(d);while(el.children.length>150)el.lastElementChild.remove();uiDirty=true}
 function newGame(){for(const [i,b] of allBuildings())killMesh(b.g);blds.clear();$('log').innerHTML='';
-history=[];G={m:120000,y:0.2,a:0,o:0,hap:68,tax:30,budgets:Array(13).fill(0),activeRegion:2,view:'tactical',t:0,cycle:0,cycleName:'Création',momentum:0,milestones:[],tm:{hit:0,hapd:0,up:0,heat:0}};defaults();G.budgets[2]=120000;G.m=120000;run=true;last=performance.now();
+sel=-1;mapRegion=-1;cool=0;hiddenAt=0;history=[];evoDockI=-1;evoDockSig='';document.body.classList.remove('evo-open');
+G={m:30000,stock:0,y:0.2,a:0,o:0,hap:68,tax:30,budgets:Array(13).fill(0),energy:Array(13).fill(0),activeRegion:2,view:'tactical',t:0,cycle:0,cycleName:'Création',momentum:0,milestones:[],clickLvl:1,clickXP:0,clickTotal:0,tm:{hit:0,hapd:0,up:0,heat:0}};defaults();G.budgets[2]=30000;G.m=30000;G.energy[2]=3;G.spd=1;G.boostUntil=0;G.laws={climate:false,sru:false};G.medals=[];G.rg={};rgInitState();G.boostReady=0;G.challenge=null;G.lowUnempStreak=0;run=true;last=performance.now();
 const free=shuffle(cells.map((_,i)=>i).filter(i=>cells[i].r===2));
 // Le pays démarre réellement sans infrastructure : aucune construction gratuite.
 
@@ -814,8 +1135,10 @@ function totals(){
   const regional={};
   for(let r=0;r<13;r++) regional[r]={occupied:0,active:0,sch:0,hosp:0,metro:0,residential:0,pressure:0};
   for(const c of cells) if(zoneUnlocked(c.r)) regional[c.r].active++;
-  for(const [i,b] of allBuildings()){
-    if(b.rd>G.t||cells[i]?.r!==G.activeRegion)continue;
+  const mine=allBuildings().filter(([i])=>cells[i]?.r===G.activeRegion),own={},byType={};
+  for(const [,b] of mine){own[b.t]=(own[b.t]||0)+1;if(b.rd<=G.t)(byType[b.t]||(byType[b.t]=[])).push(b)}
+  for(const [i,b] of mine){
+    if(b.rd>G.t)continue;
     const d=BD[b.t],f=LF[b.l-1]||1,r=cells[i]?.r??2;
     if(r!==(G.activeRegion??2))continue;
     for(const k of ['homes','jobs','en','health','edu','pol','hapb','res','fib','tgv'])B[k]+=(d[k]||0)*f; B.healthNeed+=(d.healthNeed||0)*f; B.eduNeed+=(d.eduNeed||0)*f; if(d.publicBonus)B.publicBonus=Math.max(B.publicBonus,d.publicBonus); if(d.factoryBoost)B.factoryBoost=Math.max(B.factoryBoost,d.factoryBoost); if(d.healthStrike)B.healthStrike=true;
@@ -833,13 +1156,13 @@ function totals(){
     q.pressure=cl((q.occupied-capacity)/Math.max(1,capacity),0,2.5);
     pressureSum+=q.pressure;pressureN++;
     const service=cl(q.sch*.12+q.hosp*.18+q.metro*.05,0,4);
-    for(const [i,b] of allBuildings()){
-      if(b.rd>G.t||cells[i]?.r!==r||r!==G.activeRegion)continue;
+    if(r===G.activeRegion)for(const [i,b] of mine){
+      if(b.rd>G.t)continue;
       const d=BD[b.t]; if(!d.residential)continue;
       const lowTier=(d.tier||0)<.5;
       const densityFactor=cl(1-q.pressure*(lowTier?.72:.28),lowTier?.18:.55,1);
       const prestigeFactor=1+service*(d.tier||0)*.72;
-      const marketFactor=1+Math.min(1.5,(Math.max(0,G.lvl-1)*.035)+(Math.max(0,(ownedCount(b.t)||0)-1)*.012));
+      const marketFactor=1+Math.min(1.5,(Math.max(0,G.lvl-1)*.035)+(Math.max(0,(own[b.t]||0)-1)*.012));
       const base=(d.inc||0)*LF[b.l-1]*densityFactor*prestigeFactor*marketFactor;
       B.resIncome+=base;
       B.prestigeBonus+=Math.max(0,prestigeFactor-1)*base;
@@ -848,11 +1171,11 @@ function totals(){
     }
   }
   B.ind=cnt.ind||0;B.com=cnt.com||0;
-  for(const t in cnt){if(BD[t]?.residential)continue;const typeBuildings=allBuildings().filter(([i,b])=>b.t===t&&b.rd<=G.t&&cells[i]?.r===G.activeRegion);const typeIncome=typeBuildings.reduce((sum,[i,b])=>sum+levelIncome(t,b.l),0);B.inc+=typeIncome*Math.max(0,Math.pow(cnt[t],-.15)-.15)}
+  for(const t in cnt){if(BD[t]?.residential)continue;const typeIncome=(byType[t]||[]).reduce((sum,b)=>sum+levelIncome(t,b.l),0);B.inc+=typeIncome*Math.max(0,Math.pow(cnt[t],-.15)-.15)}
   B.inc+=B.resIncome;
   B.up=Math.max(0,B.up*18);
   B.landTax=0;
-  const networkBase=20+(B.tgv*8)+(B.fib*3)+(n('route')*1.5);
+  const networkBase=20+(B.tgv*8)+(B.fib*3)+((own.route||0)*1.5);
   const networkLoad=(B.ind*1.5+B.com*1.1+B.tgv*.5+(cnt.nuc||0)*.8);
   B.network=networkBase;B.networkLoad=networkLoad;B.bottleneck=networkLoad>networkBase?Math.min(1,(networkLoad-networkBase)/Math.max(1,networkBase)):0;
   B.avgLandPressure=pressureN?pressureSum/pressureN:0;
@@ -885,7 +1208,7 @@ function calc(){
 function regionalSolidarityMalus(){const C=calc();return C.solidarity}
 
 function xpNeed(l){return Math.round(55+32*Math.pow(l-1,1.32))}
-function levelReward(l){return Math.round(2500+1250*l)}
+function levelReward(l){return Math.round(350+150*l)}
 function levelLabel(l){const names=['Fondateur local','Entrepreneur régional','Capitaine industriel','Métropole émergente','Puissance économique','Nation moderne','Nation connectée','Pôle européen','Leader continental','Puissance nationale','Économie avancée','Nation automatisée','Grande puissance'];return names[Math.min(l-1,names.length-1)]||('Niveau '+l)}
 function nextLevelText(){const n=G.lvl+1;const z=MAPZ.filter(z=>!zoneUnlocked(z.id)&&z.level<=n).sort((a,b)=>a.level-b.level)[0];return z?'Prochain cap : '+z.emoji+' '+z.city+' · niveau '+z.level:(n<=10?'Prochain cap : nouvelles infrastructures':'Prochain cap : nouvelle expansion régionale')}
 function addXP(v){G.xp=(G.xp||0)+Math.max(0,v);let up=false;while(G.xp>=xpNeed(G.lvl)){G.xp-=xpNeed(G.lvl);G.lvl++;G.m+=levelReward(G.lvl);up=true;celebrate('⭐ Niveau '+G.lvl+' ! +'+levelReward(G.lvl)+' € · '+levelLabel(G.lvl));log('⭐ Niveau '+G.lvl+' atteint : '+levelLabel(G.lvl));}if(up){uiDirty=true;refreshMapVisual()} }
@@ -893,18 +1216,18 @@ function zoneReady(z,C){return regionReady(z)}
 function unlockRegion(id){
  const meta=REGION_META[id];if(!meta||zoneUnlocked(id)||meta.prev==null||!zoneUnlocked(meta.prev))return false;
  const prevBudget=G.budgets[meta.prev]||0;if(regionalHealthCoverage(meta.prev)<.95||prevBudget<meta.tax)return false;
- G.budgets[meta.prev]=prevBudget-meta.tax;G.unlocked.push(id);G.unlocked.sort((a,b)=>a-b);if(!(G.budgets[id]>0))G.budgets[id]=120000;G.activeRegion=id;G.m=G.budgets[id];G.view='region';setView('region',id);celebrate('🗺️ '+RN[id][0]+' débloquée !');log('🗺️ Nouvelle région : '+RN[id][0]+' · taxe de raccordement '+fmt(meta.tax)+' € · dotation initiale régionale 120 000 €');addXP(25);return true;
+ G.budgets[meta.prev]=prevBudget-meta.tax;G.unlocked.push(id);G.unlocked.sort((a,b)=>a-b);if(!(G.budgets[id]>0))G.budgets[id]=120000;G.activeRegion=id;G.m=G.budgets[id];G.view='region';setView('region',id);if(id===0&&buildingCount()===0){for(const idx of [1,2]){const di=id*8+idx;if(cells[di]&&place(di,'friche',1,false,0)){const b=lastBuilding(di);if(b)b.ruined=true;} }G.rg[0].ruins=true;log('🏭 Deux friches industrielles sont récupérées en ruine : dépolluez-les pour lancer la reconversion.')}celebrate('🗺️ '+RN[id][0]+' débloquée !');log('🗺️ Nouvelle région : '+RN[id][0]+' · taxe de raccordement '+fmt(meta.tax)+' € · dotation initiale régionale 120 000 €');addXP(25);return true;
 }
 function checkMapUnlocks(){updateTacticalMap()}
 function BVal(t){let q=0;for(const [i,b] of allBuildings())if(b.t===t&&(cells[i]?.r??2)===G.activeRegion)q++;return q}
 function checkMapUnlocks(C){updateTacticalMap()}
 // Jalons économiques : déclaration unique hors de la boucle tick()
 const MILESTONE_RULES=[
-  [250000,'Premier quart de million',5000],
-  [1000000,'Première autonomie régionale',15000],
-  [5000000,'Économie industrielle',50000],
-  [15000000,'Pôle régional',120000],
-  [50000000,'Puissance économique',300000]
+  [250000,'Premier quart de million',1000],
+  [1000000,'Première autonomie régionale',3000],
+  [5000000,'Économie industrielle',10000],
+  [15000000,'Pôle régional',25000],
+  [50000000,'Puissance économique',60000]
 ];
 
 function checkMilestones(){
@@ -925,7 +1248,7 @@ function tick(){
    const RC=calc();G.m+=RC.net*(1+(G.momentum||0)*.08);G.budgets[r]=G.m;
  }
  G.activeRegion=savedRegion;G.m=G.budgets[savedRegion]||0;
- const C=calc(),tm=G.tm;G.t++;uiDirty=true;updateGameSystems(C);
+ const C=calc(),tm=G.tm;G.t++;produceEnergy();uiDirty=true;updateGameSystems(C);rgTick();G.lastNet=Number(C.net)||0;
  const quality=(C.emp*.25+Math.min(1,C.health)*.2+Math.min(1,C.edu)*.15+C.dig*.1+(C.B.en>=C.dem?.15:0)+Math.min(1,C.B.networkLoad/Math.max(1,C.B.network))*.15+Math.min(1,C.B.inc/Math.max(1,C.P*.8))*.15);
  G.momentum=cl((G.momentum||0)*.92+quality*.08,0,1);
 const phase=G.t%120;G.cycle=phase<55?0:phase<85?1:phase<105?2:3;G.cycleName=['Croissance','Ralentissement','Boom','Transition'][G.cycle];
@@ -937,7 +1260,7 @@ const imm=G.hap>55&&C.P<C.cap?(G.hap-55)/45*.05:0;
 const bi=G.a*.0015*(G.hap/50)*(C.P<C.cap?1:.25),dy=G.y*.0001,da=G.a*.0004,dd=G.o*.003*(1.5-C.health*.5);
 G.y+=bi-G.y/216-dy;G.a+=imm+G.y/216-G.a/564-da;G.o+=G.a/564-dd;
 if(G.m<-300&&G.t%20==0)log('⚠ Faillite : l\'économie tourne au ralenti. Vends ou taxe !');
-const ib=allBuildings().filter(([i,b])=>BD[b.t]?.inc&&b.rd<=G.t&&(cells[i]?.r??-1)===G.activeRegion);
+const ib=G.view!=='region'?[]:allBuildings().filter(([i,b])=>BD[b.t]?.inc&&b.rd<=G.t&&(cells[i]?.r??-1)===G.activeRegion);
 if(ib.length){
   const soundCount=Math.min(6,ib.length);
   ib.slice(0,6).forEach(([i,b],k)=>fx(i,'+'+levelIncome(b.t,b.l).toFixed(0)+' €','#ffe08a'));
@@ -945,27 +1268,13 @@ if(ib.length){
 }
 citizens(C);objectives(C);checkMapUnlocks();G.budgets[G.activeRegion]=G.m;checkMilestones();
 
-if(G.pe){G.pe.eta--;if(G.pe.eta<=0){const k=G.pe.k;G.pe=null;if(PREP[k](C)){G.m+=15;celebrate('Crise évitée : '+EV[k][0]+' ! +15 € — vous étiez prêts.')}else askEv(EV[k])}}
-else{cool--;if(cool<=0&&G.t>25&&rnd()<.05){cool=25;const k=Math.floor(rnd()*EV.length);G.pe={k,eta:5};log('⚠ Alerte : '+EV[k][0]+' dans 5 mois. '+HINT[k])}}
+// Les événements aléatoires ont été retirés : aucune alerte, aucun événement forcé, aucune pause de jeu.
+G.pe=null;
 if(G.t%15==0)saveG()}
 function saveG(){if(!saveReady)return;G.budgets[G.activeRegion]=G.m;try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:8,G,ts:Date.now(),r:run,b:allBuildings().map(([i,b])=>[i,b.t,b.l,Math.max(0,b.rd-G.t),b.spent??totalCost(b.t,b.l)])}))}catch(e){console.error('Sauvegarde impossible',e);log('⚠ Sauvegarde impossible : stockage navigateur indisponible ou plein.')}}
-// ---- événements aléatoires
-const EV=[['Pandémie','Un nouveau virus circule.',[['Confiner (−20 €, économie freinée)',()=>{G.m-=20;G.tm.hit=.3}],['Laisser courir',()=>{const h=Math.min(1.2,totals().health/(G.y+G.a+G.o));const d=.6*(1.4-h);G.o-=d*.7;G.a-=d*.3;G.tm.hapd=10;log('Décès : '+Math.round(d*1e3)+' 000')}]]],
-['Canicule','Demande d\'énergie +30 % pendant 10 mois.',[['Aide climatisation (−10 €)',()=>{G.m-=10;G.tm.heat=10}],['Rien faire',()=>{G.tm.heat=10;G.tm.hapd=8}]]],
-['Krach boursier','Les marchés s\'effondrent.',[['Plan de relance (−25 €)',()=>{G.m-=25}],['Subir',()=>{G.tm.hit=.15}]]],
-['Grève générale','Les syndicats bloquent le pays.',[['Concessions (−12 €)',()=>{G.m-=12;G.tm.hapd=-3}],['Bras de fer',()=>{G.tm.hit=.2;G.tm.hapd=6}]]],
-['Crise énergétique','Les coûts d\'entretien grimpent de 25 %.',[['Bouclier tarifaire (−15 €)',()=>{G.m-=15}],['Ne rien faire',()=>{G.tm.up=.25;G.tm.hapd=6}]]],
-['Grand événement sportif','La France accueille le monde.',[['Investir (−20 €, +45 €)',()=>{G.m+=25}],['Passer son tour',()=>{}]]],
-['Inondations','Des crues frappent le pays.',[['Reconstruire (−15 €)',()=>{G.m-=15}],['Laisser',()=>{const k=[...blds.keys()].filter(i=>cells[i]?.r===G.activeRegion);if(k.length){const i=k[Math.floor(rnd()*k.length)];{const a=stackAt(i),b=a.pop();if(b)killMesh(b.g);if(a.length)blds.set(i,a);else blds.delete(i);}log('Un bâtiment a été détruit.')}}]]],
-['Boom des startups','Un vent d\'innovation souffle.',[['Financer (−10 €, +30 €)',()=>{G.m+=20}],['Ignorer',()=>{}]]]];
-function askEv(e){run=true;$('mt').textContent=e[0];$('mx').textContent=e[1];$('mb').innerHTML='';
-e[2].forEach(c=>{const b=document.createElement('button');b.textContent=c[0];b.onclick=()=>{c[1]();log(e[0]+' : '+c[0]);$('md').style.display='none';ui()};$('mb').append(b)});$('md').style.display='flex'}
-
-// ---- v2 : attachement, objectifs, alertes, lois, effets
+// Événements aléatoires supprimés : aucune fenêtre d'événement n'est générée.
 const n=t=>{let c=0;for(const [i,b] of allBuildings())if(b.t==t&&(cells[i]?.r??2)===(G?.activeRegion??2))c++;return c};
 const nAll=t=>{let c=0;for(const [i,b] of allBuildings())if(b.t==t)c++;return c};
-const HINT=['Prépare : santé ≥ 100 %.','Prépare : énergie ≥ 130 % de la demande.','Prépare : garde ≥ 100 €.','Prépare : bonheur ≥ 65 %.','Prépare : énergie ≥ 120 %.','Prépare : 5 gares TGV.','Prépare : 6 parcs naturels.','Prépare : 1 centre de recherche.'];
-const PREP=[C=>C.health>=1,C=>C.B.en>=C.dem*1.3,()=>G.m>=100,()=>G.hap>=65,C=>C.B.en>=C.dem*1.2,C=>C.B.tgv>=5,()=>n('park')>=6,C=>C.B.res>=1];
 let AC=null,mute=false;
 function beep(f,d=.12){if(mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
 function coinChime(simultaneous=1){
@@ -1019,9 +1328,17 @@ function updateFxPosition(e){
  e.style.top=((-v.y*.5+.5)*r.height)+'px';
  e.style.display=(v.z>=-1&&v.z<=1)?'block':'none';
 }
+const _fxV=new T.Vector3();
 function updateFxPositions(){
- const box=$('fx');if(!box)return;
- box.querySelectorAll('.fl,.replaceBurst').forEach(e=>updateFxPosition(e));
+ const box=$('fx');if(!box||!box.firstElementChild)return;
+ const r=cvs.getBoundingClientRect();
+ for(const e of box.children){
+  if(!e.dataset||e.dataset.cell===undefined||e.classList.contains('paymentNotice'))continue;
+  const p=cells[Number(e.dataset.cell)];if(!p)continue;
+  _fxV.set(p.x,p.top+2,p.y).project(cam);
+  e.style.left=((_fxV.x*.5+.5)*r.width)+'px';e.style.top=((-_fxV.y*.5+.5)*r.height)+'px';
+  e.style.display=(_fxV.z>=-1&&_fxV.z<=1)?'block':'none';
+ }
 }
 function celebrate(t){beep(523);setTimeout(()=>beep(659),120);setTimeout(()=>beep(784),240);for(let k=0;k<36;k++){const e=document.createElement('i');e.className='cf';e.style.left=rnd()*100+'%';e.style.background=['#ef4135','#fff','#0055a4','#ffd166'][k%4];e.style.animationDelay=rnd()*.5+'s';$('fx').append(e);setTimeout(()=>e.remove(),2700)}log('🎉 '+t)}
 function info(t,x){$('mt').textContent=t;$('mx').textContent=x;$('mb').innerHTML='';const b=document.createElement('button');b.textContent='Reprendre';b.onclick=()=>{$('md').style.display='none'};$('mb').append(b);$('md').style.display='flex'}
@@ -1032,7 +1349,7 @@ const TR=['optimiste','râleur(se)','courageux(se)','rêveur(se)','têtu(e)','g�
 const pk=a=>a[Math.floor(rnd()*a.length)];
 function newC(k){const j=JOBS[k%JOBS.length];return{n:pk(FN)+' '+pk(LN),j:j[0],g:j[1],t:pk(TR),age:k%10==6?66+Math.floor(rnd()*20):k%10==7?19+Math.floor(rnd()*5):25+Math.floor(rnd()*35),r:Math.floor(rnd()*13),mood:65,hp:5,p:null}}
 const mkCZ=()=>Array.from({length:20},(_,k)=>newC(k));
-function defaults(){G=G||{};G.budgets=Array.isArray(G.budgets)&&G.budgets.length===13?G.budgets.map(v=>Number.isFinite(v)?v:0):Array(13).fill(0);G.activeRegion=Number.isInteger(G.activeRegion)?cl(G.activeRegion,0,12):2;G.view=G.view==='region'?'region':'tactical';G.m=Number.isFinite(G.m)?G.m:G.budgets[G.activeRegion]||120000;G.budgets[G.activeRegion]=G.m;G.y=Number.isFinite(G.y)?G.y:.2;G.a=Number.isFinite(G.a)?G.a:0;G.o=Number.isFinite(G.o)?G.o:0;G.hap=Number.isFinite(G.hap)?G.hap:65;G.tax=Number.isFinite(G.tax)?G.tax:30;G.t=Number.isFinite(G.t)?G.t:0;G.tm=Object.assign({hit:0,hapd:0,up:0,heat:0},G.tm||{});G.serviceBoostUntil=Number.isFinite(G.serviceBoostUntil)?G.serviceBoostUntil:0;G.educationPulseUntil=Number.isFinite(G.educationPulseUntil)?G.educationPulseUntil:0;G.healthPulseUntil=Number.isFinite(G.healthPulseUntil)?G.healthPulseUntil:0;G.mi=Number.isFinite(G.mi)?G.mi:0;G.mm=Number.isFinite(G.mm)?G.mm:0;G.lt=Number.isFinite(G.lt)?G.lt:0;G.xp=Number.isFinite(G.xp)?G.xp:0;G.lvl=Number.isFinite(G.lvl)?G.lvl:1;G.progressionVersion=7;ensureGameSystems();G.unlocked=Array.isArray(G.unlocked)?G.unlocked.filter(i=>i>=0&&i<13):[2];if(!G.unlocked.length)G.unlocked=[2];if(!G.unlocked.includes(2))G.unlocked.unshift(2);G.budgets[2]=G.budgets[2]||G.m;G.pe=G.pe||null;if(!Array.isArray(G.cz)||G.cz.length!==20)G.cz=mkCZ()}
+function defaults(){G=G||{};G.budgets=Array.isArray(G.budgets)&&G.budgets.length===13?G.budgets.map(v=>Number.isFinite(v)?v:0):Array(13).fill(0);G.energy=Array.isArray(G.energy)&&G.energy.length===13?G.energy.map(v=>Math.max(0,Number(v)||0)):Array(13).fill(0);G.activeRegion=Number.isInteger(G.activeRegion)?cl(G.activeRegion,0,12):2;G.view=G.view==='region'?'region':'tactical';G.m=Number.isFinite(G.m)?G.m:G.budgets[G.activeRegion]||30000;G.stock=Number.isFinite(G.stock)?Math.max(0,G.stock):0;G.spd=Number.isFinite(G.spd)?cl(G.spd,1,5):1;G.budgets[G.activeRegion]=G.m;G.y=Number.isFinite(G.y)?G.y:.2;G.a=Number.isFinite(G.a)?G.a:0;G.o=Number.isFinite(G.o)?G.o:0;G.hap=Number.isFinite(G.hap)?G.hap:65;G.tax=Number.isFinite(G.tax)?G.tax:30;G.t=Number.isFinite(G.t)?G.t:0;G.tm=Object.assign({hit:0,hapd:0,up:0,heat:0},G.tm||{});G.serviceBoostUntil=Number.isFinite(G.serviceBoostUntil)?G.serviceBoostUntil:0;G.educationPulseUntil=Number.isFinite(G.educationPulseUntil)?G.educationPulseUntil:0;G.healthPulseUntil=Number.isFinite(G.healthPulseUntil)?G.healthPulseUntil:0;G.mi=Number.isFinite(G.mi)?G.mi:0;G.mm=Number.isFinite(G.mm)?G.mm:0;G.lt=Number.isFinite(G.lt)?G.lt:0;G.xp=Number.isFinite(G.xp)?G.xp:0;G.lvl=Number.isFinite(G.lvl)?G.lvl:1;G.progressionVersion=8;ensureGameSystems();rgInitState();G.unlocked=Array.isArray(G.unlocked)?G.unlocked.filter(i=>i>=0&&i<13):[2];if(!G.unlocked.length)G.unlocked=[2];if(!G.unlocked.includes(2))G.unlocked.unshift(2);G.budgets[2]=G.budgets[2]||G.m;G.energy[2]=Math.max(3,G.energy[2]||0);G.pe=null;G.clickLvl=Math.max(1,Number(G.clickLvl)||1);G.clickXP=Math.max(0,Number(G.clickXP)||0);G.clickTotal=Math.max(0,Number(G.clickTotal)||0);if(!Array.isArray(G.cz)||G.cz.length!==20)G.cz=mkCZ()}
 function citizens(C){
   // Population cachée : aucune fiche individuelle n'est affichée.
   // Plus le niveau monte, plus le temps biologique s'accélère pour les premiers habitants.
@@ -1062,42 +1379,68 @@ function celebrateBuild(i,name){
 function ensureGameSystems(){
  G.challenges=Array.isArray(G.challenges)?G.challenges:[];G.achievements=Array.isArray(G.achievements)?G.achievements:[];
  G.records=Object.assign({maxMoney:0,maxHap:0,maxLevel:1,maxBuildings:0,bestScore:0},G.records||{});
- G.challenge=G.challenge||null;G.eventClock=Number.isFinite(G.eventClock)?G.eventClock:22;G.lastMiniEvent=G.lastMiniEvent||0;
+ G.challenge=G.challenge||null;
 }
+/* ---------- Énergie d'amélioration : une ressource simple et explicite ---------- */
+const POWER_OUTPUT={wind:1,sol:0.8,dam:3,nuc:5};
+function energyStats(region=G.activeRegion){
+  let production=0,powerCount=0;
+  for(const [i,b] of allBuildings()){
+    if(cells[i]?.r!==region||b.rd>G.t)continue;
+    if(POWER_OUTPUT[b.t]){production+=POWER_OUTPUT[b.t]*((LF[b.l-1]||1));powerCount++;}
+  }
+  const cap=10+powerCount*3+Math.max(0,(G.lvl||1)-1);
+  const stock=Array.isArray(G.energy)?Math.max(0,Number(G.energy[region])||0):0;
+  return {production,powerCount,cap,stock};
+}
+function energyUpgradeCost(t,l){return Math.min(8,1+Math.floor(Math.max(0,l-1)/2));}
+function energyEvolutionCost(fromLevel,nextType){return Math.min(8,2+Math.floor(Math.max(0,fromLevel-1)/2));}
+function hasEnergy(cost,region=G.activeRegion){return (Array.isArray(G.energy)?Number(G.energy[region])||0:0)>=cost;}
+function spendEnergy(cost,region=G.activeRegion){if(!hasEnergy(cost,region))return false;G.energy[region]-=cost;return true;}
+function produceEnergy(){
+  if(!Array.isArray(G.energy)||G.energy.length!==13)G.energy=Array(13).fill(0);
+  for(const r of (G.unlocked||[2])){
+    const es=energyStats(r);
+    G.energy[r]=Math.min(es.cap,Math.max(0,Number(G.energy[r])||0)+es.production);
+  }
+}
+
 const ACH=[
- ['urban','🏙️ Urbaniste','Construire 10 bâtiments',()=>buildingCount()>=10,1000],
- ['jobs','👷 Plein emploi','Maintenir le chômage sous 15 % pendant 30 mois',()=>G.lowUnempStreak>=30,2500],
- ['digital','💻 France connectée','Atteindre 100 % de couverture numérique',C=>C.dig>=1,3000],
- ['mobility','🚆 Grande mobilité','Atteindre 100 % de couverture transport',C=>C.transportScore>=1,3000],
- ['green','🌱 Transition','Pollution ≤ 20 % avec 10 parcs/solutions vertes',C=>C.pol<=.2&&n('park')+n('rec')+n('wind')+n('sol')>=10,4000],
- ['million','💰 Million régional','Dépasser 1 000 000 €',()=>G.m>=1000000,10000]
+ ['urban','🏙️ Urbaniste','Construire 10 bâtiments',()=>buildingCount()>=10,250],
+ ['jobs','👷 Plein emploi','Maintenir le chômage sous 15 % pendant 30 mois',()=>G.lowUnempStreak>=30,500],
+ ['digital','💻 France connectée','Atteindre 100 % de couverture numérique',C=>C.dig>=1,750],
+ ['mobility','🚆 Grande mobilité','Atteindre 100 % de couverture transport',C=>C.transportScore>=1,750],
+ ['green','🌱 Transition','Pollution ≤ 20 % avec 10 parcs/solutions vertes',C=>C.pol<=.2&&n('park')+n('rec')+n('wind')+n('sol')>=10,1000],
+ ['million','💰 Million régional','Dépasser 1 000 000 €',()=>G.m>=1000000,2500]
 ];
 const CHALLENGES=[
- {id:'speed_jobs',title:'Contrat express',text:'Crée 2 emplois sans dépasser 15 % de chômage.',time:90,goal:C=>C.unemployment<=.15&&C.B.jobs>=2,reward:3500},
- {id:'speed_digital',title:'Plan fibre',text:'Atteins 50 % de couverture numérique.',time:120,goal:C=>C.dig>=.5,reward:4500},
- {id:'speed_transport',title:'Mobilité régionale',text:'Atteins 50 % de couverture transport.',time:150,goal:C=>C.transportScore>=.5,reward:5000},
- {id:'speed_health',title:'Urgence santé',text:'Atteins 95 % de couverture santé.',time:120,goal:C=>C.healthCoverage>=.95,reward:5000}
+ {id:'speed_jobs',title:'Contrat express',text:'Crée 2 emplois sans dépasser 15 % de chômage.',time:90,goal:C=>C.unemployment<=.15&&C.B.jobs>=2,reward:400},
+ {id:'speed_digital',title:'Plan fibre',text:'Atteins 50 % de couverture numérique.',time:120,goal:C=>C.dig>=.5,reward:600},
+ {id:'speed_transport',title:'Mobilité régionale',text:'Atteins 50 % de couverture transport.',time:150,goal:C=>C.transportScore>=.5,reward:750},
+ {id:'speed_health',title:'Urgence santé',text:'Atteins 95 % de couverture santé.',time:120,goal:C=>C.healthCoverage>=.95,reward:750}
 ];
-function newChallenge(){ensureGameSystems();const pool=CHALLENGES.filter(x=>!G.achievements.includes('challenge:'+x.id));const q=pool[Math.floor(rnd()*pool.length)]||CHALLENGES[Math.floor(rnd()*CHALLENGES.length)];G.challenge={id:q.id,title:q.title,text:q.text,remain:q.time,reward:q.reward};toast('⏱️ '+q.title+' · '+q.text);log('⏱️ Nouveau contrat : '+q.text+' · '+q.time+' s');}
+function newChallenge(){ensureGameSystems();const pool=CHALLENGES.filter(x=>!G.achievements.includes('challenge:'+x.id));const q=pool[Math.floor(rnd()*pool.length)]||CHALLENGES[Math.floor(rnd()*CHALLENGES.length)];G.challenge={id:q.id,title:q.title,text:q.text,remain:q.time,reward:q.reward};log('⏱️ Nouveau contrat : '+q.text+' · '+q.time+' s');}
 function checkAchievements(C){ensureGameSystems();for(const a of ACH){if(!G.achievements.includes(a[0])&&a[3](C)){G.achievements.push(a[0]);G.m+=a[4];addXP(15);celebrate('🏆 '+a[1]+' · +'+fmt(a[4])+' €');}}
  const score=Math.round((C.balanceScore||0)*100+G.lvl*10+Math.log10(Math.max(1,G.m))*20);G.records.maxMoney=Math.max(G.records.maxMoney,G.m);G.records.maxHap=Math.max(G.records.maxHap,G.hap);G.records.maxLevel=Math.max(G.records.maxLevel,G.lvl);G.records.maxBuildings=Math.max(G.records.maxBuildings,buildingCount());G.records.bestScore=Math.max(G.records.bestScore,score);return score;}
-function miniEvent(C){const choices=[
- ['🌧️ Alerte inondation','Des pluies exceptionnelles mettent les réseaux sous pression.',[['Prévention (-2 500 €)',()=>{G.m-=2500;G.tm.hit=.05;toast('🌧️ Réseaux sécurisés')}],['Attendre',()=>{G.tm.hit=.18;G.tm.hapd=3;toast('🌧️ Des quartiers ralentissent')}]]],
- ['🌱 Pacte vert local','Une entreprise propose un contrat de transition énergétique.',[['Accepter (-4 000 €, pollution ↓)',()=>{G.m-=4000;G.o=Math.max(0,G.o-.04);G.hap+=2;toast('🌱 Contrat vert signé')}],['Refuser',()=>toast('Contrat refusé')]]],
- ['💻 Mission numérique','Un opérateur propose de fibrer rapidement la région.',[['Signer (-6 000 €, numérique ↑)',()=>{G.m-=6000;G.y+=.01;toast('💻 Chantier numérique lancé')}],['Négocier',()=>{G.m+=1000;toast('💬 Négociation réussie')}]]]
- ];const e=choices[Math.floor(rnd()*choices.length)];askEv(e);}
 function updateGameSystems(C){ensureGameSystems();if(C.unemployment<=.15)G.lowUnempStreak=(G.lowUnempStreak||0)+1;else G.lowUnempStreak=0;
  if(!G.challenge)newChallenge();else{G.challenge.remain--;if((CHALLENGES.find(x=>x.id===G.challenge.id)?.goal||(()=>false))(C)){const q=CHALLENGES.find(x=>x.id===G.challenge.id);G.m+=G.challenge.reward;G.achievements.push('challenge:'+G.challenge.id);celebrate('⏱️ Contrat terminé · +'+fmt(G.challenge.reward)+' €');G.challenge=null;}else if(G.challenge.remain<=0){toast('⌛ Contrat échoué · un nouveau défi arrive');G.challenge=null;}}
- G.eventClock--;if(G.eventClock<=0){G.eventClock=35+Math.floor(rnd()*45);miniEvent(C);}checkAchievements(C);renderChallengeHUD(C);
+ checkAchievements(C);renderChallengeHUD(C);
 }
-function renderChallengeHUD(C){let h=document.getElementById('challengeHUD');if(!h){h=document.createElement('div');h.id='challengeHUD';h.innerHTML='<b></b><span></span><i></i>';document.body.appendChild(h);const st=document.createElement('style');st.textContent='#challengeHUD{position:fixed;left:50%;bottom:calc(34px + 58px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;min-width:260px;max-width:440px;padding:9px 12px;border:1px solid #ffd35a66;border-radius:12px;background:#0c1522eF;box-shadow:0 8px 30px #0008;color:#fff;font:800 10px Inter,Arial;pointer-events:none}#challengeHUD b{display:block;color:#ffd35a;font-size:11px}#challengeHUD span{display:block;color:#c8d3e2;margin-top:3px;font-weight:600}#challengeHUD i{display:block;height:3px;margin-top:6px;background:#ffd35a;border-radius:9px;width:100%;transform-origin:left}';document.head.appendChild(st)}
- if(!G.challenge){h.style.display='none';return}h.style.display='block';h.querySelector('b').textContent='⏱️ '+G.challenge.title+' · '+G.challenge.remain+'s';h.querySelector('span').textContent=G.challenge.text+' · +'+fmt(G.challenge.reward)+' €';h.querySelector('i').style.transform='scaleX('+cl(G.challenge.remain/Math.max(1,(CHALLENGES.find(q=>q.id===G.challenge.id)?.time||1)),0,1)+')';}
+function renderChallengeHUD(C){
+  // Le contrat reste visible dans le panneau « Progression dynamique » et la barre d'alerte.
+  // Aucun bandeau flottant ne doit recouvrir la zone de jeu.
+  const h=document.getElementById('challengeHUD');
+  if(h)h.remove();
+}
+
 function objectives(C){
   const r=regionStats();
   const goal=(G.unlocked?.length||1)>=2&&C.unemployment<=.15&&C.serviceGap<=.15;
-  if(goal&&!G.mi){G.mi=1;G.m+=5000;celebrate('🏆 Équilibre régional atteint · +5 000 €')}
+  if(goal&&!G.mi){G.mi=1;G.m+=1000;celebrate('🏆 Équilibre régional atteint · +1 000 €')}
 }
-function regionStats(){const out=[];for(let r=0;r<13;r++){let houses=0,jobs=0,edu=0,health=0,inc=0;for(const [i,b] of allBuildings()){if(cells[i]?.r!==r)continue;const x=BD[b.t];houses+=x.homes||0;jobs+=x.jobs||0;edu+=x.edu||0;health+=x.health||0;inc+=EURO_MONTHLY[b.t]||0}out.push({r,houses,jobs,edu,health,inc,active:zoneUnlocked(r)})}return out}
+function regionStats(){const out=[];for(let r=0;r<13;r++)out.push({r,houses:0,jobs:0,edu:0,health:0,inc:0,active:zoneUnlocked(r)});
+  for(const [i,b] of allBuildings()){const o=out[cells[i]?.r],x=BD[b.t];if(!o||!x)continue;o.houses+=x.homes||0;o.jobs+=x.jobs||0;o.edu+=x.edu||0;o.health+=x.health||0;o.inc+=EURO_MONTHLY[b.t]||0}
+  return out}
 
 function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>e.style.display='none',1200)}
 function why(C){const w=[];if(C.health<1)w.push('Santé −'+((1-C.health)*15).toFixed(0));if(C.edu<1)w.push('Éducation −'+((1-C.edu)*10).toFixed(0));if(C.emp<.7)w.push('Emploi −'+((.7-C.emp)*25).toFixed(0));if(C.pol>.1)w.push('Pollution −'+(C.pol*12).toFixed(0));if(C.autoTax>30)w.push('Impôts −'+((C.autoTax-30)*.9).toFixed(0));if(C.enOk<1)w.push('Coupures −15');if(C.P>C.cap)w.push('Surpopulation −10');if(G.tm.hapd>.5)w.push('Crise −'+G.tm.hapd.toFixed(0));return 'Bonheur '+Math.round(G.hap)+' % — '+(w.length?'freins : '+w.join(', '):'tout va bien 👍')}
@@ -1147,7 +1490,7 @@ var evoDockI=-1,evoDockSig='';
 const EVO_CAP=5; // niveaux 1→5 puis mutation vers le palier suivant
 const EVO_LINES=[
  {d:0,items:['coron','phoenix','longere','chaumiere','toulousaine','hlm','recon','echoppe','lli','hauss','bastide','maitre','malouiniere','hotel','chateau','villa']},
- {d:1,items:['artisan','ind','nuc','aero','defense']},
+ {d:1,items:['artisan','ind','nuc','aero','defense','friche','centreReconversion','plateformeLogistique']},
  {d:3,items:['med','chr','chu']},
  {d:4,items:['sch','lycee','univ']},
  {d:6,items:['boulangerie','super','com','megamarche']},
@@ -1160,24 +1503,36 @@ Object.assign(RADIAL_MAP,{0:['coron'],1:['artisan'],2:EVO_FIXED[2],3:['med'],4:[
 function evoCapFor(k){const e=EVO_OF[k];return e&&e.ix<e.L.items.length-1?EVO_CAP:BUILDING_MAX_LEVEL}
 function evoMax(k){return Math.min(evoCapFor(k),buildingMaxLevel(k))}
 function evoState(b){const e=EVO_OF[b.t];
- if(e&&e.ix<e.L.items.length-1)return b.l>=EVO_CAP?{mode:'evo',next:e.L.items[e.ix+1]}:{mode:'up',cap:EVO_CAP};
+ // Une lignée évolutive transforme directement le bâtiment existant : Studio → T2 → T3 → …
+ if(e&&e.ix<e.L.items.length-1)return {mode:'evo',next:e.L.items[e.ix+1]};
  return b.l>=BUILDING_MAX_LEVEL?{mode:'max'}:{mode:'up',cap:BUILDING_MAX_LEVEL}}
 const evoIcon=k=>(BD[k].n.match(/^\S+/)||['🏗️'])[0],evoName=k=>BD[k].n.replace(/^\S+\s*/,'');
 function evoWhyBlocked(k,C){const hb=housingBlocked(C,k);if(!hb.blocked)return false;
  beep(180,.09);if(BD[k]?.residential&&C.unemployment>.15){setTimeout(()=>beep(120,.08),70);if(typeof flashUnemployment==='function')flashUnemployment();toast('🚫 Logements bloqués : chômage à '+Math.round(C.unemployment*100)+' % · ouvrez le District Industriel.')}else toast(hb.reason);return true}
 function evoHTML(i){
  const C=calc(),a=stackAt(i),d=cells[i].district,out=[];
- out.push(`<div class="evo-head"><b>🏗️ ${DISTRICT_TYPES[d].short} · ${RN[cells[i].r][0]}</b><span>${a.length} projet${a.length>1?'s':''}</span><button data-a="all">⬆ Tout améliorer</button><button data-a="close">✕ Fermer</button></div>`);
+ out.push(`<div class="evo-head"><b>${DISTRICT_TYPES[d].short} · ${RN[cells[i].r][0]}</b><span>${a.length} bâtiment${a.length>1?'s':''}</span></div>`);
+ if(a.length)out.push(`<div class="evo-section">Bâtiments du district</div>`);
  a.forEach((b,ix)=>{const st=evoState(b),nm=evoName(b.t),ic=evoIcon(b.t);let main;
   if(st.mode==='up'){const uc=upgradeCost(b.t,b.l),ok=buildingLevelUnlocked(b.t,b.l+1),can=ok&&canSpend(uc,C);
-   main=`<button class="evo-btn upgrade-mode ${can?'':'locked'}" data-a="up" data-ix="${ix}"><i>${ic}</i><b>${nm}</b><small>⬆ Niv. ${b.l} → ${b.l+1}/${st.cap}</small><small>${ok?fmt(uc)+' €':'🔒 Niveau joueur '+buildingLevelRequirement(b.t,b.l+1)}</small></button>`}
-  else if(st.mode==='evo'){const nx=st.next,net=Math.max(0,nextCost(nx)-(b.spent||0)),lock=!buildingUnlocked(nx),can=!lock&&!housingBlocked(C,nx).blocked&&canSpend(net,C);
-   main=`<button class="evo-btn evolve-mode ${can?'':'locked'}" data-a="evo" data-ix="${ix}"><i>⚡</i><b>${nm} → ${evoName(nx)}</b><small>${lock?'🔒 Niveau '+BD[nx].lv:'Mutation · '+fmt(net)+' €'}</small></button>`}
+   const ec=energyUpgradeCost(b.t,b.l),energyOK=hasEnergy(ec);
+   main=`<button class="evo-btn upgrade-mode ${can&&energyOK?'':'locked'}" ${can&&energyOK?'':'disabled'} data-a="up" data-ix="${ix}"><i>${ic}</i><b>${nm}</b><small>⬆ Niv. ${b.l} → ${b.l+1}/${st.cap}</small><small>${!ok?'🔒 Niveau joueur '+buildingLevelRequirement(b.t,b.l+1):!energyOK?'⚡ '+ec+' requis · '+Math.floor(energyStats().stock)+' disponible':fmt(uc)+' € · ⚡ '+ec}</small></button>`}
+  else if(st.mode==='evo'){
+   const nx=st.next,already=hasBuildingType(nx,b,i),net=Math.max(0,nextCost(nx)-(b.spent||0)),ec=energyEvolutionCost(b.l,nx);
+   const lock=!buildingUnlocked(nx),blocked=already||lock||housingBlocked(C,nx).blocked||!canSpend(net,C)||!hasEnergy(ec);
+   const reason=already?'🔒 Déjà construit dans ce district':lock?'🔒 Niveau '+BD[nx].lv:housingBlocked(C,nx).blocked?'🔒 '+housingBlocked(C,nx).reason:!canSpend(net,C)?'💶 Budget régional insuffisant':!hasEnergy(ec)?'⚡ '+ec+' énergie requise · produisez-en avec une infrastructure énergétique':'Mutation · '+fmt(net)+' € · ⚡ '+ec;
+   main=`<button class="evo-btn evolve-mode ${blocked?'locked':''}" ${blocked?'disabled':''} data-a="evo" data-ix="${ix}"><i>⚡</i><b>${nm} → ${evoName(nx)}</b><small>${reason}</small></button>`
+  }
   else main=`<button class="evo-btn max-mode" disabled><i>👑</i><b>${nm}</b><small>Niveau maximum (${b.l})</small></button>`;
   out.push(`<div class="evo-grp">${main}<button class="evo-btn evo-del" data-a="del" data-ix="${ix}" title="Démolir"><i>🗑️</i><small>+${fmt(b.spent||0)} €</small></button></div>`)});
- const starts=EVO_LINES.filter(L=>L.d===d).map(L=>L.items[0]).concat(EVO_FIXED[d]||[]);
- starts.filter(k=>BD[k]).forEach(k=>{const st=smartState(C,k),cost=nextCost(k),lock=st.kind==='locked',can=!lock&&!housingBlocked(C,k).blocked&&canSpend(cost,C);
-  out.push(`<button class="evo-btn build-mode ${st.kind==='good'?'reco ':''}${can?'':'locked'}" data-a="build" data-k="${k}" title="${st.reason}"><i>${evoIcon(k)}</i><b>Construire ${evoName(k)}</b><small>${lock?'🔒 Niveau '+BD[k].lv:fmt(cost)+' € · +'+fmt(levelIncome(k,1))+' €/mois'}</small></button>`)});
+ const starts=rgRegionStarts(d).concat(EVO_LINES.filter(L=>L.d===d).map(L=>L.items[0]).concat(EVO_FIXED[d]||[]).filter(k=>rgBuildingAllowed(k)));
+ if(starts.some(k=>BD[k]&&!hasBuildingType(k,null,i)))out.push(`<div class="evo-section">Développer le district</div>`);
+ // Plusieurs bâtiments différents peuvent coexister dans le même district.
+ // Un type déjà présent dans CE district doit être amélioré/évolué.
+ const availableStarts=starts.filter(k=>BD[k]&&!hasBuildingType(k,null,i));
+ availableStarts.forEach(k=>{const st=smartState(C,k),cost=nextCost(k),lock=st.kind==='locked',can=!lock&&!housingBlocked(C,k).blocked&&canSpend(cost,C);
+   out.push(`<button class="evo-btn build-mode ${st.kind==='good'?'reco ':''}${can?'':'locked'}" data-a="build" data-k="${k}" title="${st.reason}"><i>${evoIcon(k)}</i><b>Construire ${evoName(k)}</b><small>${lock?'🔒 Niveau '+BD[k].lv:fmt(cost)+' € · +'+fmt(levelIncome(k,1))+' €/mois'}</small></button>`)});
+ if(!availableStarts.length)out.push('<div class="buildHint"><b>🔒 Tous les bâtiments de ce district sont déjà construits</b> · améliorez ou faites évoluer les bâtiments existants.</div>');
  return out.join('')}
 function evoDock(){let d=$('evoDock');if(!d){d=document.createElement('div');d.id='evoDock';$('v').appendChild(d);d.addEventListener('click',evoClick);['pointerdown','pointerup'].forEach(ev=>d.addEventListener(ev,e=>e.stopPropagation()))}return d}
 function renderEvoDock(force){
@@ -1188,27 +1543,82 @@ function renderEvoDock(force){
 function evoClick(e){
  const bt=e.target.closest('button');if(!bt||evoDockI<0||bt.disabled)return;
  const i=evoDockI,a=bt.dataset.a,C=calc(),arr=stackAt(i),o=arr[Number(bt.dataset.ix)];
- if(a==='close'){closeRadial();return}
- if(a==='all')districtUp(cells[i].district);
- else if(a==='build'){const k=bt.dataset.k;
+ if(a==='build'){const k=bt.dataset.k;
+  // IMPORTANT : un district peut accueillir plusieurs bâtiments différents.
+  // Le même TYPE ne peut apparaître qu'une fois dans ce district.
+  if(hasBuildingType(k,null,i)){
+    toast('🔒 '+(BD[k]?.n||k)+' est déjà présent dans ce district · faites-le évoluer.');
+    renderEvoDock(true);return
+  }
   if(!buildingUnlocked(k))toast('🔒 Bâtiment disponible au niveau '+BD[k].lv);
   else if(!evoWhyBlocked(k,C)){if(!canSpend(nextCost(k),C))toast('💶 Budget régional insuffisant');else placeSelected(k,i)}}
  else if(a==='up'&&o){
   if(!buildingLevelUnlocked(o.t,o.l+1))toast('🔒 Niveau joueur '+buildingLevelRequirement(o.t,o.l+1)+' requis');
   else if(doUp(o,i)){o.g.userData.birth=performance.now();o.g.userData.targetScale=1+.3*(o.l-1);toast('Niveau '+o.l+' · +'+fmt(levelIncome(o.t,o.l))+' €/mois')}}
- else if(a==='evo'&&o){const nx=evoState(o).next,gross=nextCost(nx),old=o.spent||0,net=Math.max(0,gross-old);
-  if(!buildingUnlocked(nx))toast('🔒 '+evoName(nx)+' : niveau '+BD[nx].lv);
+ else if(a==='evo'&&o){
+  const nx=evoState(o).next;
+  if(!nx){toast('Bâtiment déjà au dernier palier');}
+  else if(hasBuildingType(nx,o,i)){
+    toast('🔒 '+evoName(nx)+' existe déjà dans ce district · améliorez le bâtiment déjà présent.');
+  }
+  else if(!buildingUnlocked(nx))toast('🔒 '+evoName(nx)+' : niveau '+BD[nx].lv);
   else if(!evoWhyBlocked(nx,C)){
-   if(!canSpend(net,C))toast('💶 Budget régional insuffisant');
-   else{const pos=o.g.position.clone(),from=evoName(o.t);G.m-=net;killMesh(o.g);
-    const rest=arr.filter(x=>x!==o);if(rest.length)blds.set(i,rest);else blds.delete(i);
-    place(i,nx,1,false,Math.max(gross,old));const nb=lastBuilding(i);if(nb&&nb.g)nb.g.position.copy(pos);
-    addXP(15);fx(i,'⚡ Mutation → '+evoName(nx),'#ffd35a');beep(880,.14);coinChime(3);toast('⚡ '+from+' → '+evoName(nx))}}}
+    const gross=nextCost(nx),old=o.spent||0,net=Math.max(0,gross-old),ec=energyEvolutionCost(o.l,nx);
+    if(!canSpend(net,C))toast('💶 Budget régional insuffisant');
+    else if(!hasEnergy(ec))toast('⚡ Il faut '+ec+' énergie · construisez une infrastructure énergétique.');
+    else{
+      const pos=o.g.position.clone(),from=evoName(o);
+      // Retrait temporaire de l'ancien objet pour que place() puisse créer le nouveau type.
+      killMesh(o.g);
+      const rest=arr.filter(x=>x!==o);
+      if(rest.length)blds.set(i,rest);else blds.delete(i);
+
+      const placed=place(i,nx,1,false,Math.max(gross,old));
+      if(!placed){
+        // Rollback complet : bâtiment, position et argent restent inchangés.
+        const restored=place(i,o.t,o.l,false,o.spent||old);
+        const rb=lastBuilding(i);
+        if(restored&&rb?.g)rb.g.position.copy(pos);
+        toast('⚠️ Évolution annulée : le bâtiment précédent a été restauré.');
+        uiDirty=true;ui();renderEvoDock(true);return;
+      }
+
+      G.m-=net;spendEnergy(ec);
+      const nb=lastBuilding(i);if(nb?.g)nb.g.position.copy(pos);
+      addXP(15);fx(i,'⚡ Évolution → '+evoName(nx),'#ffd35a');beep(880,.14);coinChime(3);
+      toast('⚡ '+from+' → '+evoName(nx));
+    }
+  }
+}
  else if(a==='del'&&o){G.m+=o.spent||0;killMesh(o.g);const rest=arr.filter(x=>x!==o);if(rest.length)blds.set(i,rest);else blds.delete(i);fx(i,'+'+fmt(o.spent||0)+' €','#9dffb0');beep(520)}
  uiDirty=true;ui();renderEvoDock(true)}
 function openRadial(i){const c=cells[i];if(!c||G.view!=='region'||c.r!==G.activeRegion)return;evoDockI=i;renderEvoDock(true);refreshMapVisual()}
 function closeRadial(){const d=$('evoDock');evoDockI=-1;evoDockSig='';if(d)d.style.display='none';document.body.classList.remove('evo-open');refreshMapVisual()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&evoDockI>=0){e.preventDefault();closeRadial()}});
+document.addEventListener('pointerdown',e=>{
+  if(evoDockI<0)return;
+  const dock=$('evoDock');
+  if(dock&&dock.contains(e.target))return;
+  if(e.target===cvs)return;
+  closeRadial();
+  sel=-1;
+});
+
+
+function renderRegionChallenge(C){
+ let h=document.getElementById('regionChallenge');
+ if(!h){h=document.createElement('div');h.id='regionChallenge';document.getElementById('v').appendChild(h);}
+ const cfg=rg(),st=rgStatus(C);if(!cfg){h.style.display='none';return}
+ const medal=G.medals?.includes(G.activeRegion);
+ let socialPct=0;
+ if(rgHasLaw('sru')){let hh=0,ss=0;for(const [ii,bb] of allBuildings()){if(cells[ii]?.r===G.activeRegion&&BD[bb.t]?.residential){hh+=BD[bb.t].homes||0;if(SOCIAL_HOUSING.has(bb.t))ss+=BD[bb.t].homes||0}}socialPct=hh?Math.round(ss/hh*100):0;}
+ let extra='';
+ if(G.activeRegion===2)extra=`<div>Cuves conserverie : <b>${Math.round(G.rg[2].conserverieFill||0)}%</b></div>`;
+ if(G.activeRegion===8)extra=`<div>Vendanges : <b>${G.rg[8].harvests||0}</b> · Forêt : <b>${Math.round(G.rg[8].forest??100)}%</b></div>`;
+ if(G.activeRegion===9)extra=`<div>Énergie hydro : <b>${BVal('barrageHydro')*3} ⚡/mois</b> · Routes montagne ×5</div>`;
+ if(G.activeRegion===0)extra=`<div>Aides UE cumulées : <b>${fmt(G.rg[0].aid||0)} €</b></div>`;
+ h.style.display='block';h.innerHTML=`<div class="rch-head"><span>${cfg.emoji} ${cfg.name}</span><b>${medal?'🏅 Défi terminé':'🎯 Défi régional'}</b></div><strong>${cfg.title}</strong><small>${cfg.desc}</small><div class="rch-status ${st.bad?'bad':''}">${st.detail}</div>${extra}<div class="rch-goal">${cfg.objective}</div>${rgHasLaw('climate')?'<div>🇫🇷 Loi Climat : +30 % sur espaces naturels</div>':''}${rgHasLaw('sru')?'<div>🏛️ Loi SRU : logements sociaux '+socialPct+'%</div>':''}`;
+}
 
 function ui(){
  if(G?.budgets&&Number.isInteger(G.activeRegion))G.budgets[G.activeRegion]=G.m;
@@ -1221,26 +1631,18 @@ function ui(){
  $('hubEdu').textContent=eduPct+'%';$('hubEduFill').style.width=Math.min(100,eduPct)+'%';
  $('healthGauge').classList.toggle('bad',healthPct<100);$('eduGauge').classList.toggle('bad',eduPct<100);
  $('hubLevel').textContent='⭐ Niveau '+G.lvl;$('hubLevelLabel').textContent=levelLabel(G.lvl);$('hubXpFill').style.width=pct.toFixed(1)+'%';$('hubXpText').textContent=Math.floor(xp)+' / '+need+' XP';
- const en=Math.round(C.B.en),dem=Math.max(1,Math.round(C.dem)),energyBad=en<dem;
- $('kx1').textContent=en+'/'+dem;$('kx1s').textContent=energyBad?'À renforcer':'OK';$('energyKpi').classList.toggle('alert',energyBad);$('energyKpi').classList.toggle('ok',!energyBad);
+ const en=Math.round(C.B.en),dem=Math.max(1,Math.round(C.dem)),energyBad=en<dem,es=energyStats();
+ $('kx1').textContent=Math.floor(es.stock)+'/'+Math.floor(es.cap)+' ⚡';$('kx1s').textContent=es.production>0?'+'+es.production.toFixed(1)+' ⚡/mois · Réseau '+(energyBad?'à renforcer':'OK'):'Construisez éolien / solaire / barrage / nucléaire';$('energyKpi').classList.toggle('alert',!hasEnergy(1)&&es.production<=0);$('energyKpi').classList.toggle('ok',hasEnergy(1)||es.production>0);
  const unemployment=Math.round((1-C.emp)*100);const jobBad=unemployment>15;
  $('kx2').textContent=unemployment+'%';$('kx2s').textContent=jobBad?'Ouvrir le district industriel':'Marché équilibré';$('unemploymentKpi').classList.toggle('alert',jobBad);
  const networkBad=C.B.bottleneck>0.05;$('kx4').textContent=networkBad?'À surveiller':'OK';$('kx4s').textContent=networkBad?'Flux saturés':'Flux opérationnels';$('networkKpi').classList.toggle('alert',networkBad);$('networkKpi').classList.toggle('ok',!networkBad);
- renderMapZones(C);selUI();ui2(C);renderEvoDock();
+ renderMapZones(C);renderRegionChallenge(C);selUI();ui2(C);renderEvoDock();
  if(!history.length||history[history.length-1].t!==G.t||history[history.length-1].m!==Math.round(G.m))history.push({t:G.t,m:G.m,en:C.B.en,dem:C.dem,net:C.net});
  if(history.length>120)history.shift();
 }
 function drawChart(C){const c=$('chart');if(!c)return;const x=c.getContext('2d');if(!x)return;const w=c.width=c.clientWidth*2,h=c.height=c.clientHeight*2;x.clearRect(0,0,w,h);if(history.length<2)return;const max=Math.max(1,...history.map(v=>Math.max(v.en,v.dem)),1);const minM=Math.min(...history.map(v=>v.m)),maxM=Math.max(...history.map(v=>v.m),minM+1);const line=(key,scale=1)=>{x.beginPath();history.forEach((v,i)=>{const px=i/(history.length-1)*w,py=h-(v[key]*scale/max)*h*.78-h*.08;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()};x.globalAlpha=.85;x.lineWidth=4;line('en');line('dem');x.lineWidth=3;x.setLineDash([8,8]);line('net',Math.max(1,max/(maxM-minM)));x.setLineDash([]);x.globalAlpha=1;x.font='24px system-ui';x.fillText('Énergie',8,26);x.fillText('Demande',120,26);x.fillText('€ / mois',255,26)}
-function selUI(){const s=$('sl');if(sel<0){return}const c=cells[sel],b=lastBuilding(sel);let h=`<b>${RN[c.r][0]}</b> · case ${sel}`;
-if(b){const d=BD[b.t],rc=calc();h+=`<div>${d.cat||''} · ${d.n} · niveau ${b.l}/${buildingMaxLevel(b.t)} · +${fmt(levelIncome(b.t,b.l))} €/mois${b.rd>G.t?' · 🚧 chantier : '+(b.rd-G.t)+' mois':''}</div>`+(d.residential?`<div>🏙️ Rendement dynamique · foncier ${Math.round(rc.B.avgLandPressure*100)} % · services locaux = bonus progressif</div>`:'')+`<div class="bl">`;const maxL=buildingMaxLevel(b.t),req=buildingLevelRequirement(b.t,b.l+1),uc=upgradeCost(b.t,b.l);if(b.l<maxL){const locked=G.lvl<req;h+=`<button data-a="up" ${locked||!canSpend(uc,calc())?'disabled':''}>Améliorer → niv. ${b.l+1}<small>${locked?'🔒 Niveau joueur '+req:fmt(uc)+' € · +'+fmt(levelIncome(b.t,b.l+1))+' €/mois'}</small></button>`}h+=`<button data-a="bulk" ${b.l>=maxL?'disabled':''}>⬆ Tout améliorer<small>même type · paliers disponibles</small></button><button data-a="del">Démolir<small>remboursement 100 %</small></button></div>`}
-else{h+=`<div class="bl">`+Object.keys(BD).map(k=>{const d=BD[k],locked=!buildingUnlocked(k),e=[d.homes&&'+logements',d.jobs>.1&&'emplois',d.en&&'énergie',d.health&&'santé',d.edu&&'éducation',d.inc&&'revenus',d.res&&'recherche',d.fib&&'numérique',d.tgv&&'transport',d.hapb&&'bien-être',d.pol<0&&'dépollue',d.pol>0&&'pollue'].filter(Boolean).join(', ');return`<button data-a="${k}" ${locked||!canSpend(nextCost(k),calc())?'disabled':''}>${locked?'🔒 '+d.n+' · niveau '+d.lv:d.n}<small>${locked?'Déblocage progressif':fmt(nextCost(k))+' € · niveau 1 · +'+fmt(levelIncome(k,1))+' €/mois · '+e}</small></button>`}).join('')+'</div>'}
-s.innerHTML=h}
-const slBtn=$('sl');if(slBtn)slBtn.onclick=e=>{const b=e.target.closest('button');if(!b||sel<0)return;const a=b.dataset.a,o=lastBuilding(sel);
-if(!o)return;
-if(a==='up'){const req=buildingLevelRequirement(o.t,o.l+1),uc=upgradeCost(o.t,o.l),maxL=buildingMaxLevel(o.t);if(o.l<maxL&&G.lvl>=req&&canSpend(uc)){G.m-=uc;o.l++;o.spent=(o.spent||0)+uc;o.g.scale.x=o.g.scale.z=.72+.12*(o.l-1);o.g.scale.y=.05;o.g.userData.birth=performance.now();o.g.userData.targetScale=1+.3*(o.l-1);fx(sel,'⬆ Niv. '+o.l,'#9be7ff');beep(660);addXP(10+o.l*2);toast('Niveau '+o.l+' · +'+fmt(levelIncome(o.t,o.l))+' €/mois')}}
-else if(a==='bulk'){const targets=allBuildings().filter(([i,z])=>z.t===o.t&&z.l<buildingMaxLevel(z.t)&&G.lvl>=buildingLevelRequirement(z.t,z.l+1));let cost=targets.reduce((sum,[i,z])=>sum+upgradeCost(z.t,z.l),0);if(targets.length&&canSpend(cost)){G.m-=cost;for(const [i,z] of targets){const uc=upgradeCost(z.t,z.l);z.l++;z.spent=(z.spent||0)+uc;z.g.scale.x=z.g.scale.z=.72+.12*(z.l-1);z.g.scale.y=.05;z.g.userData.birth=performance.now();z.g.userData.targetScale=1+.3*(z.l-1)}fx(sel,'⬆ x'+targets.length,'#9be7ff');beep(760);addXP(10*targets.length);toast(targets.length+' bâtiments améliorés')}}
-else if(a==='del'){G.m+=o.spent??totalCost(o.t,o.l);killMesh(o.g);const arr=stackAt(sel).filter(x=>x!==o);if(arr.length)blds.set(sel,arr);else blds.delete(sel);fx(sel,'+100 %','#9dffb0');beep(520);toast('Bâtiment remboursé à 100 %')}
-else if(BD[a]){placeSelected(a)}uiDirty=true;ui()};
+function selUI(){const s=$('sl');if(s)s.innerHTML='';}
+const slBtn=$('sl');if(slBtn)slBtn.onclick=null;
 function randomFreeIndex(){return targetDistrictFor('coron')}
 function bestBuildCell(t){
   if(G.view!=='region')return -1;
@@ -1270,22 +1672,68 @@ function replaceBurst(i,refund,oldName,newName){
 }
 function placeSelected(t,forcedTarget=null){
   if(G.view!=='region'){toast('🗺️ Ouvrez une région pour construire.');return false}
-  const d=BD[t],cost=nextCost(t); if(!d||!buildingUnlocked(t)){toast('Bâtiment verrouillé · niveau '+(d?.lv||'?'));return false}
-  const C=calc(); if(t==='artisan'&&BVal('phoenix')<1){toast('🛠️ L’Atelier nécessite au moins 1 Appartement T2.');return false} const hb=housingBlocked(C,t); if(hb.blocked){toast(hb.reason);return false}
+  const d=BD[t],cost=nextCost(t);
+  if(!d||!rgBuildPrecheck(t)||!buildingUnlocked(t)){toast('Bâtiment verrouillé · niveau '+(d?.lv||'?'));return false}
+
+  const C=calc();
+  if(t==='artisan'&&BVal('phoenix')<1){
+    toast('🛠️ L’Atelier nécessite au moins 1 Appartement T2.');
+    return false;
+  }
+  const hb=housingBlocked(C,t);
+  if(hb.blocked){toast(hb.reason);return false}
+
   let target=forcedTarget!=null?forcedTarget:bestBuildCell(t);
-  if(mapRegion<0){toast('Ouvre une région depuis la grille métropolitaine avant de construire.');return false}if(target<0||!cells[target]||cells[target].r!==mapRegion||!zoneUnlocked(cells[target].r)){toast('Région verrouillée ou hors du zoom actuel');return false}
-  if(!canSpend(cost,C)){toast('Budget régional insuffisant');return false}
-  G.m-=cost; sel=target; place(target,t,1); if(meshes[target]?.material?.emissive) meshes[target].material.emissive.setHex(0x3a5570); addXP(6); celebrateBuild(target,d.n);
-  if(d.eduTier||d.healthTier){const isEdu=!!d.eduTier,boostPts=isEdu?(d.edu||0):(d.health||0);if(isEdu)G.educationPulseUntil=Math.max(G.educationPulseUntil||0,G.t+10);else G.healthPulseUntil=Math.max(G.healthPulseUntil||0,G.t+10);fx(target,isEdu?'🎓 ÉDUCATION +'+boostPts:'🩺 SANTÉ +'+boostPts,'#7dffb2');fx(target,'⚡ GAINS ×2','#ffe66d');beep(880,.14);toast((isEdu?'🎓 Éducation +'+boostPts:'🩺 Santé +'+boostPts)+' · ⚡ gains ×2 pendant 10 mois')}
-  else{fx(target,'🏗 '+d.n,'#ffd28a');beep(440,.08);toast('🏗 '+d.n+' · '+fmt(cost)+' €')}
-  uiDirty=true;ui();return true
+  if(mapRegion<0){
+    toast('Ouvre une région depuis la grille métropolitaine avant de construire.');
+    return false;
+  }
+  if(target<0||!cells[target]||cells[target].r!==mapRegion||!zoneUnlocked(cells[target].r)){
+    toast('Région verrouillée ou hors du zoom actuel');
+    return false;
+  }
+
+  // Même bâtiment dans le même district = évolution obligatoire.
+  // Le même type reste disponible dans les autres districts.
+  if(hasBuildingType(t,null,target)){
+    toast('🔒 '+d.n+' est déjà présent dans ce district · faites-le évoluer.');
+    return false;
+  }
+
+  if(!canSpend(cost,C)){toast('💶 Budget régional insuffisant');return false}
+
+  // On place d'abord. Si une protection quelconque refuse la construction,
+  // aucun euro n'est retiré.
+  if(!place(target,t,1,true,cost)){
+    toast('⚠️ Construction impossible : aucun argent n’a été retiré.');
+    return false;
+  }
+
+  G.m-=cost;
+  sel=target;
+  if(meshes[target]?.material?.emissive)meshes[target].material.emissive.setHex(0x3a5570);
+  addXP(6);
+  celebrateBuild(target,d.n);
+
+  if(d.eduTier||d.healthTier){
+    const isEdu=!!d.eduTier,boostPts=isEdu?(d.edu||0):(d.health||0);
+    if(isEdu)G.educationPulseUntil=Math.max(G.educationPulseUntil||0,G.t+10);
+    else G.healthPulseUntil=Math.max(G.healthPulseUntil||0,G.t+10);
+    fx(target,isEdu?'🎓 ÉDUCATION +'+boostPts:'🩺 SANTÉ +'+boostPts,'#7dffb2');
+    fx(target,'⚡ GAINS ×2','#ffe66d');beep(880,.14);
+    toast((isEdu?'🎓 Éducation +'+boostPts:'🩺 Santé +'+boostPts)+' · ⚡ gains ×2 pendant 10 mois');
+  }else{
+    fx(target,'🏗 '+d.n,'#ffd28a');beep(440,.08);
+    toast('🏗 '+d.n+' · '+fmt(cost)+' €');
+  }
+  uiDirty=true;ui();return true;
 }
 
 let holdTimer=null,holdInterval=null;
 function stopHold(){clearTimeout(holdTimer);clearInterval(holdInterval);holdTimer=null;holdInterval=null}
 function startHold(k){stopHold();holdTimer=setTimeout(()=>{holdInterval=setInterval(()=>{if(!placeSelected(k))stopHold()},115)},280)}
 document.addEventListener('pointerup',stopHold);
-$('ng').onclick=()=>{try{[SAVE_KEY,...LEGACY_KEYS].forEach(k=>localStorage.removeItem(k))}catch(e){}newGame()};
+$('ng').onclick=()=>{try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(['ftyc_production_final','ftyc2','ftyc'].includes(k)||k.startsWith('ftyc')))localStorage.removeItem(k)}}catch(e){}newGame();saveReady=true;saveG()};
 $('cv').addEventListener('dragover',e=>{e.preventDefault();const i=hitCell(e);meshes.forEach(m=>m.classList?.remove?.('districtDrop'));if(i>=0&&zoneUnlocked(cells[i].r))meshes[i].material.emissive.setHex(0x3d5a78)});
 $('cv').addEventListener('drop',e=>{e.preventDefault();const k=e.dataTransfer.getData('text/plain');const i=hitCell(e);meshes.forEach(m=>m.material.emissive.setHex(0));if(k&&i>=0&&mapRegion>=0&&cells[i].r===mapRegion)placeSelected(k,i);else if(k)toast('Ouvre une région puis dépose le projet dans un de ses 8 districts.')});
 // ---- caméra
@@ -1300,13 +1748,135 @@ function cam_(){if(mapRegion>=0&&RN[mapRegion]){const c=RN[mapRegion],e=1.0,asp=
 const cvs=$('cv');
 cvs.oncontextmenu=e=>e.preventDefault();
 function pointerNdc(e){const r=cvs.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*2-1,y:-((e.clientY-r.top)/r.height*2-1)}}
-function hitCell(e){const p=pointerNdc(e);rc.setFromCamera(p,cam);const h=rc.intersectObjects(meshes)[0];return h?h.object.userData.i:-1}
+function hitCell(e){
+  const p=pointerNdc(e);
+  rc.setFromCamera(p,cam);
+  // Surface + contour : les deux appartiennent au même district.
+  const targets=meshes.concat(districtRings);
+  const hits=rc.intersectObjects(targets,false);
+  if(hits.length)return hits[0].object.userData.i;
+  // Secours fiable : test de la vraie surface projetée du carré + de sa bordure.
+  // Cela évite qu'un clic sur l'étiquette / le bord du district tombe dans la récolte économique.
+  const inside=(pt,poly)=>{let ok=false;for(let a=0,b=poly.length-1;a<poly.length;b=a++){const xa=poly[a].x,ya=poly[a].y,xb=poly[b].x,yb=poly[b].y;const hit=((ya>pt.y)!==(yb>pt.y))&&(pt.x<(xb-xa)*(pt.y-ya)/(yb-ya)+xa);if(hit)ok=!ok}return ok};
+  const q=[[-8.65,-8.65],[8.65,-8.65],[8.65,8.65],[-8.65,8.65]];
+  let best=-1,bestDist=Infinity;
+  for(const m of meshes){
+    if(!m.visible)continue;
+    const poly=q.map(([x,z])=>{const v=new T.Vector3(m.position.x+x*m.scale.x,m.position.y,m.position.z+z*m.scale.z).project(cam);return {x:(v.x+1)*cvs.clientWidth*.5,y:(1-v.y)*cvs.clientHeight*.5}});
+    const pt={x:(p.x+1)*cvs.clientWidth*.5,y:(1-p.y)*cvs.clientHeight*.5};
+    if(inside(pt,poly)){
+      const c=m.position,sp=new T.Vector3(c.x,c.y,c.z).project(cam);
+      const dx=(sp.x-p.x),dy=(sp.y-p.y),d2=dx*dx+dy*dy;
+      if(d2<bestDist){bestDist=d2;best=m.userData.i;}
+    }
+  }
+  return best;
+}
 function districtLabel(i){const c=cells[i],d=DISTRICT_TYPES[c.district];return RN[c.r][0]+' · '+d.n}
 function hitCity(e){return null}
-cvs.onpointerdown=e=>{if(document.body.classList.contains('radial-active')){e.preventDefault();return}dr={x:e.clientX,y:e.clientY,m:0};cvs.setPointerCapture(e.pointerId)};
-cvs.onpointermove=e=>{if(document.body.classList.contains('radial-active')){e.preventDefault();return}if(!dr)return;const dx=e.clientX-dr.x,dy=e.clientY-dr.y;dr.m+=Math.abs(dx)+Math.abs(dy);dr.x=e.clientX;dr.y=e.clientY;};
-cvs.onpointerup=e=>{if(e.target!==cvs)return;if(document.body.classList.contains('radial-active')){e.preventDefault();dr=null;return}if(!dr)return;if(dr.m<6){if(mapRegion<0){const id=hitCity(e);if(id!=null){focusRegion(id);dr=null;return}}else{const i=hitCell(e);if(i>=0&&cells[i].r===mapRegion){if(sel>=0&&meshes[sel])meshes[sel].material.emissive.setHex(0);sel=i;meshes[sel].material.emissive.setHex(0x3a5570);selUI();openRadial(i);refreshMapVisual();dr=null;return}}}dr=null};
-cvs.addEventListener('wheel',e=>{e.preventDefault();if(document.body.classList.contains('radial-active'))return;}, {passive:false});
+function ensureClickSystem(){
+  // Initialise le système de clic sans jamais créer de gain ailleurs dans l'interface.
+  if(!G||typeof G!=='object')return;
+  G.clickLvl=Math.max(1,Number(G.clickLvl)||1);
+  G.clickXP=Math.max(0,Number(G.clickXP)||0);
+  G.clickTotal=Math.max(0,Number(G.clickTotal)||0);
+}
+function clickNeed(level){
+  const l=Math.max(1,Number(level)||1);
+  return Math.round(18+Math.pow(l-1,1.35)*7);
+}
+function clickReward(level){
+  const l=Math.max(1,Number(level)||1);
+  // Récompense par paliers : chaque tranche de 5 niveaux augmente fortement la valeur du clic.
+  const tier=Math.floor((l-1)/5);
+  const step=(l-1)%5;
+  const base=10*Math.pow(2.5,tier);
+  return Math.max(10,Math.round(base*(1+step*.12)));
+}
+function clickZonePoint(e){
+  // Compatibilité : le clic économique n'est plus limité à un anneau.
+  // Toute la surface de jeu est une zone de clic.
+  return (G?.view==='region' && mapRegion>=0) ? {x:e.clientX,y:e.clientY} : null;
+}
+function floatTxt(text,x,y,color){
+  const host=document.getElementById('v')||document.body;
+  const el=document.createElement('div');
+  el.textContent=text;
+  el.style.position='absolute';
+  el.style.left=Math.round(x)+'px';
+  el.style.top=Math.round(y)+'px';
+  el.style.transform='translate(-50%,-50%)';
+  el.style.pointerEvents='none';
+  el.style.zIndex='99999';
+  el.style.fontWeight='800';
+  el.style.fontSize='16px';
+  el.style.color=color||'#7dffb2';
+  el.style.textShadow='0 2px 8px rgba(0,0,0,.8)';
+  el.style.transition='transform .65s ease, opacity .65s ease';
+  host.appendChild(el);
+  requestAnimationFrame(()=>{
+    el.style.transform='translate(-50%,-100%)';
+    el.style.opacity='0';
+  });
+  setTimeout(()=>el.remove(),700);
+}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function mapClickIncome(e){
+  if(!G||!e||document.body.classList.contains('evo-open'))return false;
+  if(G.view!=='region' && G.view!=='tactical')return false;
+  ensureClickSystem();
+  const before=G.clickLvl,gain=clickReward(G.clickLvl);
+  const vEl=document.getElementById('v');
+  if(!vEl)return false;
+  G.m+=gain;G.budgets[G.activeRegion]=G.m;G.clickXP++;G.clickTotal++;
+  const need=clickNeed(G.clickLvl);
+  while(G.clickXP>=need){G.clickXP-=need;G.clickLvl++;}
+  const leveled=G.clickLvl>before,r=vEl.getBoundingClientRect();
+  floatTxt('+'+fmt(gain)+' €'+(leveled?'  ⬆ Niv. '+G.clickLvl:''),clamp(e.clientX-r.left,55,r.width-55),clamp(e.clientY-r.top,55,r.height-55),'#7dffb2');
+  beep(leveled?760:520,.055);uiDirty=true;return true;
+}
+cvs.onpointerdown=e=>{dr={x:e.clientX,y:e.clientY,m:0};if(document.body.classList.contains('evo-open')){e.preventDefault();return}cvs.setPointerCapture(e.pointerId)};
+cvs.onpointermove=e=>{if(document.body.classList.contains('evo-open')){e.preventDefault();return}if(!dr)return;const dx=e.clientX-dr.x,dy=e.clientY-dr.y;dr.m+=Math.abs(dx)+Math.abs(dy);dr.x=e.clientX;dr.y=e.clientY;};
+cvs.onpointerup=e=>{
+  if(e.target!==cvs)return;
+  if(!dr)return;
+  const wasClick=dr.m<6;
+  if(document.body.classList.contains('evo-open')){
+    e.preventDefault();
+    if(wasClick){
+      const i=mapRegion>=0?hitCell(e):-1;
+      // Un clic ailleurs ferme systématiquement le panneau.
+      if(i<0){closeRadial();sel=-1;refreshMapVisual();dr=null;return}
+      // Un clic sur un autre district ferme l'ancien panneau puis ouvre directement le nouveau.
+      if(i!==evoDockI){
+        closeRadial();
+        if(sel>=0&&meshes[sel])meshes[sel].material.emissive.setHex(0);
+        sel=i;meshes[sel].material.emissive.setHex(0x3a5570);
+        selUI();openRadial(i);refreshMapVisual();dr=null;return;
+      }
+      // Clic sur le district déjà ouvert : fermeture.
+      closeRadial();sel=-1;refreshMapVisual();dr=null;return;
+    }
+    dr=null;return;
+  }
+  if(wasClick){
+    if(mapRegion>=0){
+      const i=hitCell(e);
+      if(i>=0&&cells[i].r===mapRegion){
+        if(evoDockI===i){closeRadial();sel=-1;dr=null;return}
+        if(sel>=0&&meshes[sel])meshes[sel].material.emissive.setHex(0);
+        sel=i;meshes[sel].material.emissive.setHex(0x3a5570);selUI();openRadial(i);refreshMapVisual();
+        // Un clic sur un district est réservé à l'ouverture du menu de construction.
+        // Il ne doit jamais déclencher la récolte économique.
+        dr=null;return;
+      }
+      // Le clic économique ne s'applique qu'aux zones libres de la carte.
+      mapClickIncome(e);
+    }
+  }
+  dr=null;
+};
+cvs.addEventListener('wheel',e=>{e.preventDefault();if(document.body.classList.contains('evo-open'))return;}, {passive:false});
 const mapHomeBtn=$('mapHome'),mapMinusBtn=$('mapMinus'),mapPlusBtn=$('mapPlus'),mapRegionSel=$('mapRegion'),regionBackBtn=$('regionBack'),tacticalMapEl=$('tacticalMap'),mapAccessBtn=$('mapAccess');
 if(mapAccessBtn)mapAccessBtn.onclick=()=>{closeRadial();setView('tactical')};
 if(mapHomeBtn)mapHomeBtn.onclick=()=>{closeRadial();G.view==='region'?setView('tactical'):setView('region',G.activeRegion)};
@@ -1314,17 +1884,43 @@ if(mapMinusBtn)mapMinusBtn.onclick=()=>zoomMap(4);
 if(mapPlusBtn)mapPlusBtn.onclick=()=>zoomMap(-4);
 if(mapRegionSel)mapRegionSel.onchange=e=>{const id=Number(e.target.value);if(id>=0&&zoneUnlocked(id))setView('region',id)};
 if(regionBackBtn)regionBackBtn.onclick=()=>{closeRadial();setView('tactical')};
-if(tacticalMapEl)tacticalMapEl.addEventListener('click',e=>{closeRadial();const b=e.target.closest('[data-region]');if(!b)return;const id=Number(b.dataset.region);if(zoneUnlocked(id))setView('region',id);else if(regionReady(id))unlockRegion(id);else toast('🔒 '+REGION_META[id].obj)});
+if(tacticalMapEl)tacticalMapEl.addEventListener('click',e=>{
+  if(document.body.classList.contains('evo-open'))return;
+  // Toute la carte de France est une zone de clic économique, y compris les régions et leurs boutons.
+  mapClickIncome(e);
+  closeRadial();
+  const b=e.target.closest('[data-region]');
+  if(!b)return;
+  const id=Number(b.dataset.region);
+  if(zoneUnlocked(id))setView('region',id);
+  else if(regionReady(id))unlockRegion(id);
+  else toast('🔒 '+REGION_META[id].obj);
+});
 
 function rs(){const w=Math.max(1,cvs.clientWidth),h=Math.max(1,cvs.clientHeight);rd.setSize(w,h,false);rd.info.reset();cam.aspect=w/h;cam.updateProjectionMatrix()}
+function resizeDistrictLabels(){const w=window.innerWidth||900;const k=w<=420?.78:w<=600?.88:w<=900?.96:1;districtLabels.forEach((sp,d)=>sp.scale.set((d===2?10.8:10.2)*k,1.72*k,1))}
+window.addEventListener('resize',resizeDistrictLabels);setTimeout(resizeDistrictLabels,0);
 addEventListener('resize',rs);
-function loop(t){if(!last)last=t;const spd=Math.max(1,Math.min(3,(G&&G.spd)||1));let dt=Math.min(.25,Math.max(0,(t-last)/1000))*spd;acc=Math.min(1.25,acc+dt);let steps=0;while(acc>=1&&steps<1){tick();acc-=1;steps++}if(uiDirty&&(t-lastUI>=160||!lastUI))ui();last=t;
-for(const v of blds.values()){const arr=Array.isArray(v)?v:[v];for(const b of arr){if(!b?.g)continue;const pr=b.rd>G.t&&b.dur>0?Math.max(.08,1-(b.rd-G.t)/b.dur):1;b.g.scale.y+=((1+.3*((b.l||1)-1))*pr-b.g.scale.y)*.15;if(b.g.userData?.rotor)b.g.userData.rotor.rotation.z=t/400}}
-if(fcs){tg.lerp(fcs,.08);if(tg.distanceTo(fcs)<.5)fcs=null}cam_();updateFxPositions();rd.render(sc,cam);requestAnimationFrame(loop)}
+let lastRender=0;
+function loop(t){if(!last)last=t;const spd=Math.max(1,Math.min(5,(G&&G.spd)||1));let dt=Math.min(.25,Math.max(0,(t-last)/1000))*spd;acc=Math.min(1.25,acc+dt);let steps=0;while(acc>=1&&steps<1){tick();acc-=1;steps++}if(uiDirty&&(t-lastUI>=180||!lastUI))ui();last=t;
+const inReg=G&&G.view==='region';
+if(inReg){
+  if(fcs){tg.lerp(fcs,.12);if(tg.distanceTo(fcs)<.35)fcs=null}
+  if(t-lastRender>=33){
+    for(const v of blds.values()){const arr=Array.isArray(v)?v:[v];for(const b of arr){if(!b?.g)continue;const pr=b.rd>G.t&&b.dur>0?Math.max(.08,1-(b.rd-G.t)/b.dur):1,tg2=(1+.3*((b.l||1)-1))*pr,df=tg2-b.g.scale.y;if(df>.0005||df<-.0005)b.g.scale.y+=df*.15;if(b.g.userData?.rotor)b.g.userData.rotor.rotation.z=t/400}}
+    cam_();updateFxPositions();rd.render(sc,cam);lastRender=t
+  }
+}
+requestAnimationFrame(loop)}
 rs();fillRegionSelector();newGame();setView('tactical',2);
 requestAnimationFrame(loop);
 
-</script><style id="france-map-v11">.frBox{position:absolute;left:50%;top:50%;height:90%;aspect-ratio:1.06/1;max-width:96%;transform:translate(-50%,-50%);z-index:2}
+</script><style id="click-zone-performance">
+#cv{cursor:pointer!important}
+.clickHUD{z-index:80!important;background:rgba(4,18,13,.94)!important;border:2px solid #54e38a!important;box-shadow:0 0 0 3px #54e38a22,0 8px 24px #0008!important}
+#tip{z-index:70!important}
+</style>
+<style id="france-map-v11">.frBox{position:absolute;left:50%;top:50%;height:90%;aspect-ratio:1.06/1;max-width:96%;transform:translate(-50%,-50%);z-index:2}
 .frBox svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .frBox .fr{fill:url(#frg);stroke:#6f95b5;stroke-width:.45;stroke-linejoin:round;filter:drop-shadow(0 0 1.8px #59a8ff77)}
 .frBox .rt{stroke:#3b5870;stroke-width:.35;stroke-dasharray:1.2 1.2;fill:none;opacity:.85}
@@ -1357,6 +1953,7 @@ requestAnimationFrame(loop);
 .pin b{font-size:7.5px;max-width:78px}
 .frLegend,.tacticalHint{display:none}
 }
+#challengeHUD{display:none!important}
 </style>
 <style id="idle-ui-v13">.left{grid-template-rows:minmax(0,1fr) auto auto!important}
 @media(max-width:600px){.left{grid-template-rows:minmax(420px,calc(100dvh - 270px)) auto auto!important}
@@ -1452,7 +2049,7 @@ requestAnimationFrame(loop);
 #menuBar button{width:34px;height:34px;border-radius:9px;background:#172334;border:1px solid #43526b}
 #gold{position:absolute;z-index:12;width:64px;height:64px;border-radius:50%;font-size:32px;background:radial-gradient(circle,#ffe58a,#e0a418);border:3px solid #fff5;box-shadow:0 0 30px #ffd35acc;animation:goldp .8s ease-in-out infinite alternate}
 @keyframes goldp{to{transform:scale(1.18) rotate(8deg)}}
-.hubMoney{cursor:pointer;user-select:none}
+
 </style>
 <script>
 addEventListener('load',function(){
@@ -1461,34 +2058,39 @@ if(typeof newGame!=='function'||typeof G==='undefined'){console.error('Patch Fra
 const KEY=SAVE_KEY, vEl=$('v');
 
 /* ---------- Corrections ---------- */
-totalCost=(t,l)=>levelCost(t,l);               // doublon qui écrasait levelCost
 const _place=placeSelected;                     // remboursement = prix réellement payé
 placeSelected=function(t,f){const c=nextCost(t),ok=_place(t,f);if(ok){const b=lastBuilding(sel);if(b)b.spent=c;(G.cnt||(G.cnt={build:0,up:0,collect:0})).build++}return ok};
 const _tick=tick;                               // le jeu se met en pause pendant les fenêtres d'événement
-let goldT=35+Math.random()*30;
-tick=function(){if($('md').style.display==='flex')return;_tick();{const nn=Math.max(0,_calc().net);G.stock=Math.min(Math.max(1000,nn*600),(G.stock||0)+nn*.2)}if(--goldT<=0&&!$('gold')){spawnGold();goldT=50+Math.random()*50}};
+tick=function(){if($('md').style.display==='flex')return;_tick();{const nn=Math.max(0,Number(G.lastNet)||0);G.stock=Math.min(Math.max(1000,nn*600),(G.stock||0)+nn*.2)}};
 const _calc=calc;                               // boost temporaire ×3
-calc=function(){const c=_calc(),tm=G.tm||{};if(allBuildings().length===0&&c.attractiveness<1)c.attractiveness=1;
-  if(c.net>0){if((G.boostUntil||0)>G.t)c.net*=3;c.net*=(1-Math.min(.6,tm.hit||0))*(1+.25*(G.prestige||0))}
+let _memo=null;
+calc=function(){if(_memo&&_memo.c&&_memo.r===G.activeRegion)return _memo.c;const c=_calc(),tm=G.tm||{};if(buildingCount()===0&&c.attractiveness<1)c.attractiveness=1;
+  if(c.net>0){if((G.boostUntil||0)>G.t)c.net*=1.5;c.net*=(1-Math.min(.6,tm.hit||0))*(1+.25*(G.prestige||0))}
   c.net-=c.B.up*Math.min(.5,tm.up||0);if(tm.heat>0)c.dem*=1.3;
-  c.hap=Math.max(0,c.hap-(tm.hapd||0));return c};
-const _askEv=askEv;                             // les coûts d'événements suivent l'échelle de l'économie
-askEv=function(e){_askEv(e);const S=Math.max(400,_calc().net*6);
-  $('mb').querySelectorAll('button').forEach(b=>{const f=b.onclick;b.onclick=()=>{const m0=G.m;f();const d=G.m-m0;if(d&&Math.abs(d)<100)G.m=m0+d*S}})};
-
+  c.hap=Math.max(0,c.hap-(tm.hapd||0));if(_memo&&_memo.r===G.activeRegion)_memo.c=c;return c};
 /* ---------- Sauvegarde / chargement ---------- */
 saveG=function(){if(!saveReady)return;try{G.budgets[G.activeRegion]=G.m;localStorage.setItem(KEY,JSON.stringify({G,ts:Date.now(),b:allBuildings().map(([i,b])=>[i,b.t,b.l,Math.max(0,b.rd-G.t),b.spent])}))}catch(e){}};
 function readSave(){for(const k of [KEY,...LEGACY_KEYS]){try{const raw=localStorage.getItem(k);if(!raw)continue;const x=JSON.parse(raw);if(x&&x.G&&Array.isArray(x.b))return{s:x,k,raw}}catch(e){}}return null}
-function ensureStartBudget(){if(allBuildings().length===0&&!(G.m>0)&&(G.budgets||[]).every(v=>!(v>0))){G.activeRegion=2;G.budgets[2]=120000;G.m=120000}}
+function ensureStartBudget(){if(allBuildings().length===0&&!(G.m>0)&&(G.budgets||[]).every(v=>!(v>0))){G.activeRegion=2;G.budgets[2]=30000;G.m=30000;G.energy=Array(13).fill(0);G.energy[2]=3}}
 function loadSave(){const f=readSave();if(!f)return null;const s=f.s;
   for(const [i,b] of allBuildings())killMesh(b.g);blds.clear();
   G=s.G;G.view='tactical';defaults();
-  for(const [i,t,l,rl,sp] of s.b){if(place(i,t,l)){const a=stackAt(i),o=a[a.length-1];o.spent=sp;o.rd=G.t+rl}}
+  for(const [i,t,l,rl,sp] of s.b){
+    const idx=Number(i),lvl=Math.max(1,Number(l)||1);
+    if(!cells[idx]||!BD[t]){log('⚠ Construction de sauvegarde ignorée : données invalides.');continue}
+    if(hasBuildingType(t,null,idx)){log('⚠ Doublon ignoré : '+(BD[t]?.n||t)+' · ce type existe déjà dans ce district.');continue}
+    if(place(idx,t,lvl,false,Math.max(0,Number(sp)||totalCost(t,lvl)))){
+      const a=stackAt(idx),o=a[a.length-1];
+      o.rd=G.t+Math.max(0,Number(rl)||0);
+    }
+  }
   const bud=G.budgets[G.activeRegion];G.m=bud>0?bud:(Number.isFinite(G.m)?G.m:0);G.budgets[G.activeRegion]=G.m;ensureStartBudget();
   if(f.k!==KEY){try{localStorage.setItem(KEY,f.raw);LEGACY_KEYS.forEach(k=>localStorage.removeItem(k))}catch(e){}} // migration des anciennes clés
   sel=-1;setView('tactical');return s}
 function offlineGain(sec){let tot=0;const sr=G.activeRegion;G.budgets[sr]=G.m;
-  try{for(const r of (G.unlocked||[sr])){G.activeRegion=r;G.m=G.budgets[r]||0;const g=Math.max(0,_calc().net)*(1+.25*(G.prestige||0))*sec*.5;G.budgets[r]=G.m+g;tot+=g}}
+  // 1 heure réelle = 12 mois de jeu hors-ligne, plafonné à 24 mois.
+  const months=Math.min(24,Math.max(0,sec/300));
+  try{for(const r of (G.unlocked||[sr])){G.activeRegion=r;G.m=G.budgets[r]||0;const g=Math.max(0,_calc().net)*(1+.25*(G.prestige||0))*months*.35;G.budgets[r]=G.m+g;tot+=g}}
   finally{G.activeRegion=sr;G.m=G.budgets[sr]}
   return tot}
 let hiddenAt=0;
@@ -1496,30 +2098,10 @@ addEventListener('visibilitychange',()=>{if(document.hidden){hiddenAt=Date.now()
   else if(hiddenAt){const sec=Math.min(8*3600,(Date.now()-hiddenAt)/1000);hiddenAt=0;
     if(sec>30){const g=Math.round(offlineGain(sec));uiDirty=true;info('Bon retour !','Pendant votre absence ('+Math.round(sec/60)+' min), vos régions ont rapporté +'+fmt(g)+' €.')}}});addEventListener('beforeunload',saveG);
 
-/* ---------- Coup de pouce (tap sur la trésorerie) + combo ---------- */
-let combo=0,lastTap=0;
-function floatTxt(t,x,y,c){const e=document.createElement('div');e.className='fl';e.textContent=t;e.style.left=x+'px';e.style.top=y+'px';e.style.color=c;$('fx').append(e);setTimeout(()=>e.remove(),1300)}
-document.querySelector('.hubMoney').addEventListener('pointerdown',e=>{
-  const now=performance.now();combo=now-lastTap<1200?Math.min(10,combo+1):0;lastTap=now;
-  const v=Math.round(Math.max(100,_calc().net*2)*(1+combo*.2));G.m+=v;addXP(.3);
-  const r=vEl.getBoundingClientRect();floatTxt('+'+fmt(v)+' €'+(combo>1?' 🔥×'+combo:''),clamp(e.clientX-r.left,60,r.width-60),90,combo>4?'#ffb347':'#ffe08a');
-  beep(480+combo*45,.05);uiDirty=true});
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
-
-/* ---------- Bulle dorée aléatoire ---------- */
-function spawnGold(){const g=document.createElement('button');g.id='gold';g.textContent='⭐';
-  g.style.left=(12+Math.random()*70)+'%';g.style.top=(22+Math.random()*55)+'%';
-  g.onclick=()=>{g.remove();const C=_calc(),r=Math.random();
-    if(r<.4){const v=Math.round(Math.max(2000,C.net*90));G.m+=v;celebrate('⭐ Manne exceptionnelle · +'+fmt(v)+' €')}
-    else if(r<.8){G.boostUntil=G.t+30;celebrate('⚡ Surchauffe économique · revenus ×3 pendant 30 s')}
-    else{const x=Math.round(xpNeed(G.lvl)*.3);addXP(x);celebrate('🎓 Inspiration · +'+x+' XP')}
-    uiDirty=true};
-  vEl.append(g);setTimeout(()=>g.remove(),14000)}
-
 /* ---------- Gestion des bâtiments (améliorer / démolir) ---------- */
-function doUp(o,i,quiet){const uc=upgradeCost(o.t,o.l);
-  if(o.l>=evoMax(o.t)||G.lvl<buildingLevelRequirement(o.t,o.l+1)||G.m<uc){if(!quiet)toast('Amélioration impossible');return false}
-  G.m-=uc;o.l++;o.spent=(o.spent||0)+uc;o.g.scale.x=o.g.scale.z=.72+.12*(o.l-1);o.g.scale.y=.05;
+function doUp(o,i,quiet){const uc=upgradeCost(o.t,o.l),ec=energyUpgradeCost(o.t,o.l);
+  if(o.l>=evoMax(o.t)||G.lvl<buildingLevelRequirement(o.t,o.l+1)||G.m<uc||!hasEnergy(ec)){if(!quiet)toast(!hasEnergy(ec)?'⚡ Énergie insuffisante · construisez une éolienne, du solaire, un barrage ou du nucléaire.':'Amélioration impossible');return false}
+  G.m-=uc;spendEnergy(ec);o.l++;o.spent=(o.spent||0)+uc;o.g.scale.x=o.g.scale.z=.72+.12*(o.l-1);o.g.scale.y=.05;
   if(!quiet){fx(i,'⬆ Niv. '+o.l,'#9be7ff');beep(660)}addXP(10+o.l*2);(G.cnt||(G.cnt={build:0,up:0,collect:0})).up++;return true}
 
 /* ---------- Menu utilitaire ---------- */
@@ -1529,12 +2111,12 @@ vEl.append(bar);
 bar.onclick=e=>{const b=e.target.closest('button');if(!b)return;const m=b.dataset.m;
   if(m==='snd'){mute=!mute;b.textContent=mute?'🔇':'🔊'}
   else if(m==='save'){saveG();toast('💾 Partie sauvegardée')}
-  else if(m==='new'&&confirm('Effacer la partie et recommencer ?')){try{localStorage.removeItem(KEY)}catch(x){}location.reload()}};
+  else if(m==='new'&&confirm('Effacer TOUTE la partie et recommencer ? Les bâtiments, régions, argent, énergie, niveau et progression seront remis à zéro.')){try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(['ftyc_production_final','ftyc2','ftyc'].includes(k)||k.startsWith('ftyc')))localStorage.removeItem(k)}}catch(x){}saveReady=false;location.reload()}};
 
 /* ---------- Affichage : revenus/s et boost ---------- */
 const _ui=ui;ui=function(){_ui();try{const C=calc();
-  $('hubRegion').textContent=RN[G.activeRegion][0]+' · '+(C.net>=0?'+':'−')+fmt(Math.abs(C.net))+' €/s'+((G.boostUntil||0)>G.t?' · ⚡×3':'')+' · 👆 touchez';
-  if(C.B.homes===0&&C.B.ind===0&&C.B.com===0){$('kx1').textContent=Math.round(C.B.en)+'/0';$('kx1s').textContent='Aucune demande';$('energyKpi').classList.remove('alert');$('energyKpi').classList.add('ok')}}catch(e){}};
+  $('hubRegion').textContent=RN[G.activeRegion][0]+' · '+(C.net>=0?'+':'−')+fmt(Math.abs(C.net))+' €/mois'+((G.boostUntil||0)>G.t?' · ⚡×1,5':'');
+  if(C.B.homes===0&&C.B.ind===0&&C.B.com===0){const es=energyStats();$('kx1').textContent=Math.floor(es.stock)+'/'+Math.floor(es.cap)+' ⚡';$('kx1s').textContent=es.production>0?'+'+es.production.toFixed(1)+' ⚡/mois · Aucun besoin réseau':'Construisez une infrastructure énergétique pour générer des ⚡';}}catch(e){}};
 
 /* ---------- Carte de France (contour réel + régions géolocalisées) ---------- */
 const FR_OUT=[[2.37,51.05],[1.6,50.72],[1.55,50.2],[1.08,49.93],[0.1,49.5],[0.3,49.4],[-0.35,49.3],[-1.1,49.35],[-1.27,49.7],[-1.95,49.72],[-1.85,49.2],[-1.6,48.83],[-1.85,48.68],[-2.32,48.68],[-2.7,48.55],[-3.45,48.83],[-4.0,48.72],[-4.75,48.45],[-4.77,48.33],[-4.73,48.03],[-4.35,47.8],[-3.4,47.72],[-3.1,47.5],[-2.45,47.5],[-2.2,47.27],[-2.2,46.95],[-1.8,46.5],[-1.2,46.15],[-1.3,45.9],[-1.1,45.55],[-1.25,44.65],[-1.4,44.0],[-1.78,43.37],[-0.7,42.85],[0.7,42.85],[1.75,42.5],[3.1,42.43],[3.05,42.9],[3.7,43.4],[4.85,43.35],[5.4,43.28],[5.9,43.1],[6.65,43.2],[7.0,43.55],[7.5,43.78],[7.05,44.2],[6.75,45.1],[7.1,45.4],[6.85,45.9],[6.1,46.2],[6.45,46.45],[7.0,47.0],[7.55,47.6],[7.6,48.0],[7.8,48.6],[8.2,49.0],[7.05,49.15],[6.35,49.45],[5.8,49.55],[4.85,50.1],[4.2,50.3],[3.5,50.4],[3.1,50.75]];
@@ -1543,7 +2125,7 @@ const GEO=[[2.9,50.1],[0.2,49.1],[-3.0,48.1],[-0.8,47.4],[2.5,48.7],[5.5,48.7],[
 const px=(lo,la)=>[+((lo+5.4)/15.3*100).toFixed(1),+((51.3-la)/10*100).toFixed(1)];
 const pth=pts=>'M'+pts.map(q=>px(q[0],q[1]).join(' ')).join('L')+'Z';
 let sg1='',sg2='';
-updateTacticalMap=function(){const m=$('tacticalMap');if(!m)return;
+updateTacticalMap=function(){const m=$('tacticalMap');if(!m)return;if(G.view==='region'&&m.firstChild)return;
   const a=JSON.stringify([G.unlocked,G.activeRegion,G.view,REGION_ORDER.map(i=>regionReady(i))]),
         b=(G.budgets||[]).map(v=>Math.floor((v||0)/1000)).join();
   if(a===sg1&&m.firstChild&&(b===sg2||m.matches(':hover')))return;sg1=a;sg2=b;
@@ -1561,12 +2143,14 @@ updateTacticalMap=function(){const m=$('tacticalMap');if(!m)return;
 /* ---------- Barre d'actions façon idle tycoon ---------- */
 const actBar=document.createElement('div');actBar.id='actBar';
 actBar.innerHTML='<button class="ab pr" id="abPr"><i>🏅</i>Prestige<small id="abPrS"></small></button>'+
- '<button class="ab bo" id="abBo"><i>⚡</i>Boost ×3<small id="abBoS"></small></button>'+
+ '<button class="ab bo" id="abBo"><i>⚡</i>Accélérer<small id="abBoS"></small></button>'+
  '<button class="ab zn" id="abZn"><i>🗺️</i>Zones<small id="abZnS"></small></button>';
 const kr=document.querySelector('.kpiRow');kr.parentNode.insertBefore(actBar,kr);
 const prestigeGain=()=>G.lvl>=5?Math.floor((G.lvl-3)/2)+((G.unlocked||[2]).length-1):0;
-function doBoost(){if(G.t<(G.boostReady||0)){toast('⏳ Prochain boost dans '+(G.boostReady-G.t)+' s');return}
-  G.boostUntil=G.t+30;G.boostReady=G.t+120;toast('⚡ Boost ×3 pendant 30 s');beep(880,.1);uiDirty=true}
+function doBoost(){
+  const cost=3;if(G.t<(G.boostReady||0)){toast('⏳ Accélération disponible dans '+(G.boostReady-G.t)+' mois');return}
+  if(!hasEnergy(cost)){toast('⚡ Il faut 3 énergie · construisez une éolienne, du solaire, un barrage ou du nucléaire.');return}
+  spendEnergy(cost);G.boostUntil=G.t+6;G.boostReady=G.t+18;toast('⚡ Accélération ×1,5 pendant 6 mois · −3 ⚡');beep(880,.1);uiDirty=true}
 function doPrestige(){const gain=prestigeGain(),keep={prestige:(G.prestige||0)+gain,achievements:G.achievements||[],dayKey:G.dayKey,streak:G.streak,records:G.records,spd:G.spd};
   closeRadial();for(const [i,b] of allBuildings())killMesh(b.g);blds.clear();
   newGame();Object.assign(G,keep);G.boostReady=0;setView('tactical');saveG();
@@ -1579,11 +2163,11 @@ function askPrestige(){const g=prestigeGain();
 $('abPr').onclick=askPrestige;$('abBo').onclick=doBoost;
 $('abZn').onclick=()=>{closeRadial();G.view==='region'?setView('tactical'):setView('region',G.activeRegion)};
 const spBtn=document.createElement('button');spBtn.title='Vitesse du jeu';bar.prepend(spBtn);
-spBtn.onclick=()=>{G.spd=(G.spd||1)>=3?1:(G.spd||1)+1;uiDirty=true};
+spBtn.onclick=()=>{G.spd=(G.spd||1)>=5?1:(G.spd||1)+1;uiDirty=true};
 function updateBar(){let n=0;
   for(const [i,b] of allBuildings()){if(cells[i].r!==G.activeRegion)continue;if(b.l<buildingMaxLevel(b.t)&&G.lvl>=buildingLevelRequirement(b.t,b.l+1)&&upgradeCost(b.t,b.l)<=G.m)n++}
   const act=(G.boostUntil||0)>G.t,rdy=G.t>=(G.boostReady||0);
-  $('abBoS').textContent=act?'ACTIF '+(G.boostUntil-G.t)+'s':rdy?'Prêt !':'⏳ '+(G.boostReady-G.t)+'s';
+  $('abBoS').textContent=act?'ACTIF ×1,5 · '+(G.boostUntil-G.t)+' mois':rdy?'Prêt · 3 ⚡':'⏳ '+(G.boostReady-G.t)+' mois';
   $('abBo').classList.toggle('rdy',rdy&&!act);
   const g=prestigeGain();$('abPrS').textContent=g?'+'+g+' 🏅':'Niv. 5';
   $('abZnS').textContent=G.view==='region'?'Carte':'Régions';
@@ -1600,8 +2184,8 @@ document.querySelector('.left').prepend(questBar);
 $('collectBtn').onclick=()=>{const v=Math.floor(G.stock||0);if(v<1){toast('📦 Rien à collecter');return}
   G.m+=v;G.stock=0;cnt().collect++;G.budgets[G.activeRegion]=G.m;coinChime(6);beep(700,.08);floatTxt('+'+fmt(v)+' €',vEl.clientWidth/2,90,'#7dffb2');uiDirty=true};
 function newQuest(avoid){const ty=['build','up','collect','cash'].filter(x=>x!==avoid),t=ty[Math.floor(Math.random()*ty.length)],sn=G.season||1,net=Math.max(0,_calc().net);
-  const q={t,rw:Math.round(Math.max(8000,net*240))};
-  if(t==='cash'){const base=50000+(G.lvl||1)*75000;q.goal=G.m>=base?Math.ceil((G.m*1.25+50000)/1000)*1000:base;q.l='💰 Atteindre '+fmt(q.goal)+' €'}
+  const q={t,rw:Math.round(Math.max(250,Math.min(3000,net*4)))};
+  if(t==='cash'){const base=50000+(G.lvl||1)*25000;q.goal=G.m>=base?Math.ceil((G.m*1.10+10000)/1000)*1000:base;q.l='💰 Atteindre '+fmt(q.goal)+' €'}
   else{q.goal=Math.ceil({build:3,up:2,collect:2}[t]*(1+sn*.25));q.s=cnt()[t];q.l={build:'🏗️ Construire ',up:'⬆ Améliorer ',collect:'📦 Collecter '}[t]+q.goal+(t==='collect'?' fois':' bâtiments')}
   return q}
 const qProg=q=>q.t==='cash'?Math.min(q.goal,Math.round(G.m)):Math.min(q.goal,cnt()[q.t]-q.s);
@@ -1617,8 +2201,20 @@ function districtUp(d){const i=G.activeRegion*8+d;let n=0;
   for(let g=0;g<200;g++){let best=null;for(const b of stackAt(i)){if(b.l>=evoMax(b.t)||G.lvl<buildingLevelRequirement(b.t,b.l+1))continue;const c=upgradeCost(b.t,b.l);if(c<=G.m&&(!best||c<best.c))best={b,c}}
     if(!best)break;doUp(best.b,i,true);n++}
   if(n){coinChime(5);fx(i,'⬆ ×'+n,'#9be7ff');toast('⬆ '+n+' amélioration'+(n>1?'s':''))}else toast('Rien à améliorer ici')}
-distBar.onclick=e=>{const b=e.target.closest('button');if(!b||G.view!=='region')return;const i=G.activeRegion*8+(+b.dataset.d);sel=i;openRadial(i);ui()};
+window.doUp=doUp;window.districtUp=districtUp; // utilisées par le dock de construction (script de correctifs)
+distBar.onclick=e=>{const b=e.target.closest('button');if(!b||G.view!=='region')return;const i=G.activeRegion*8+(+b.dataset.d);if(evoDockI===i){closeRadial();sel=-1;ui();return}sel=i;openRadial(i);ui()};
+function updateClickHud(){
+  ensureClickSystem();
+  const need=clickNeed(G.clickLvl),gain=clickReward(G.clickLvl),p=Math.min(100,(G.clickXP/need)*100);
+  const t=$('clickTitle'),g=$('clickGain'),f=$('clickFill'),pr=$('clickProgress');
+  if(t)t.textContent='👆 Clic économique · Niv. '+G.clickLvl;
+  if(g)g.textContent='+'+fmt(gain)+' € / clic · toute la carte';
+  if(f)f.style.width=p+'%';
+  if(pr)pr.textContent=G.clickXP+' / '+need+' clics · '+G.clickTotal+' au total';
+  const h=$('clickHUD');if(h)h.style.display=G.view==='region'?'block':'none';
+}
 function updateHud(){
+  updateClickHud();
   if(!G.quests||G.quests.length<2)G.quests=[newQuest(),null],G.quests[1]=newQuest(G.quests[0].t);
   G.quests.forEach((q,k)=>{const p=qProg(q);
     if(p>=q.goal){G.m+=q.rw;addXP(20);G.sp=(G.sp||0)+1;
@@ -1632,28 +2228,49 @@ function updateHud(){
   if(G.view==='region'){const C=calc();
     for(let d=0;d<8;d++){const a=stackAt(G.activeRegion*8+d),inc=a.reduce((z,b)=>z+levelIncome(b.t,b.l),0);
       let nu=0;for(const b of a)if(b.l<evoMax(b.t)&&G.lvl>=buildingLevelRequirement(b.t,b.l+1)&&upgradeCost(b.t,b.l)<=G.m)nu++;
-      $('dcS'+d).textContent=a.length+' 🏗 · +'+fmt(inc)+'/s';
+      $('dcS'+d).textContent=a.length+' 🏗 · +'+fmt(inc)+'/mois';
       $('dcU'+d).textContent='🏗️ Gérer'+(nu?' · ⬆ '+nu:'')}}
   G.budgets[G.activeRegion]=G.m}
 const _ui3=ui;ui=function(){_ui3();try{updateHud()}catch(e){console.error(e)}};
+const _ui4=ui;ui=function(){_memo={r:G.activeRegion,c:null};try{_ui4()}finally{_memo=null}};
 /* Anti-perte d'argent : le budget de la région est resynchronisé après chaque action */
 ['pointerdown','click'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(()=>{if(G&&G.budgets)G.budgets[G.activeRegion]=G.m},0),true));
 /* ---------- Corrections d'affichage ---------- */
-const _rmv=refreshMapVisual;refreshMapVisual=function(){_rmv();if(document.body.classList.contains('radial-active'))districtLabels.forEach(sp=>sp.visible=false)};
+const _rmv=refreshMapVisual;refreshMapVisual=function(){_rmv();districtLabels.forEach((sp,d)=>{const c=cells[(G?.activeRegion??2)*8+d];sp.visible=G?.view==='region'&&!!c;sp.renderOrder=120;})};
+/* ---------- Démarrage robuste de la carte principale ---------- */
+try{
+  G.view='tactical';
+  G.activeRegion=Number.isInteger(G.activeRegion)?G.activeRegion:2;
+  G.unlocked=Array.isArray(G.unlocked)&&G.unlocked.length?G.unlocked:[2];
+  G.budgets=Array.isArray(G.budgets)&&G.budgets.length===13?G.budgets:Array(13).fill(0);
+  if(!(G.budgets[G.activeRegion]>0))G.budgets[G.activeRegion]=Math.max(30000,Number(G.m)||30000);
+  if(!Array.isArray(G.energy)||G.energy.length!==13)G.energy=Array(13).fill(0);
+  if(!(G.energy[G.activeRegion]>0))G.energy[G.activeRegion]=3;
+  G.m=G.budgets[G.activeRegion];
+  updateTacticalMap();
+  $('tacticalMap').style.display='block';
+  $('cv').style.display='none';
+  $('regionFocusSilhouette').style.display='none';
+  $('regionBack').style.display='none';
+  $('focusTitle').style.display='none';
+}catch(e){console.error('Initialisation carte France:',e)}
+
 addEventListener('scroll',e=>{const t=e.target===document?document.scrollingElement:e.target;if(t&&t.scrollLeft)t.scrollLeft=0},true);
 if(document.scrollingElement)document.scrollingElement.scrollLeft=0;
 /* ---------- Anti clic fantôme : les menus 2D n'atteignent pas le raycast 3D ---------- */
 ['actBar','questBar','distBar','menuBar','mgr','mgrBtn'].forEach(id=>{const el=document.getElementById(id);if(el)['pointerdown','pointerup','click'].forEach(ev=>el.addEventListener(ev,e=>e.stopPropagation()))});
 /* ---------- Démarrage : reprise, gains hors-ligne, série quotidienne ---------- */
 const s=loadSave(),today=new Date().toDateString();ensureStartBudget();
-if(s){let msg='';const sec=Math.min(8*3600,(Date.now()-s.ts)/1000);
+if(s){let msg='';const sec=Math.min(2*3600,(Date.now()-s.ts)/1000);
+  if(!Array.isArray(G.energy)||G.energy.length!==13)G.energy=Array(13).fill(0);
+  if(!(G.energy[G.activeRegion]>0))G.energy[G.activeRegion]=3;
   if(sec>30){const g=Math.round(offlineGain(sec));msg+='Pendant votre absence ('+Math.round(sec/60)+' min), vos régions ont rapporté +'+fmt(g)+' €. '}
   if(G.dayKey!==today){const y=new Date(Date.now()-864e5).toDateString();G.streak=G.dayKey===y?Math.min(7,(G.streak||0)+1):1;G.dayKey=today;
-    const r=Math.round(5000*G.streak*(1+G.lvl*.3));G.m+=r;msg+='🔥 Série de '+G.streak+' jour'+(G.streak>1?'s':'')+' : +'+fmt(r)+' € !'}
+    const r=Math.round(250*G.streak);G.m+=r;msg+='🔥 Série de '+G.streak+' jour'+(G.streak>1?'s':'')+' : +'+fmt(r)+' € !'}
   G.budgets[G.activeRegion]=G.m;if(msg)info('Bon retour, Président !',msg)}
 else{G.dayKey=today;G.streak=1}
 saveReady=true;uiDirty=true;ui();
 });
 </script>
 
-</body></html>"
+</body></html>
